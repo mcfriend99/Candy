@@ -1,0 +1,6 @@
+{This is how you add comments to a Candy text value. double the initial '{' i.e. '{{' to actually mean '{' character in the value.}
+{ Use [example_text_name] to include another text's value within a text value }
+
+#site_name Candy
+#welcome [site_name] - Code the simpler way. 
+#welcome_desc I know what you are thinking &mdash; This page isn't exactly impressive.<br> What you heard about [site_name] isn't a lie.

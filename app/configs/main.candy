@@ -1,0 +1,26 @@
+{This is how you add comments to a Candy config value. double the initial '{' i.e. '{{' to actually mean '{' character in the value.}
+
+#404_page 404
+
+#rewrite_base / {If on localhost, this may want to look like /folder/. Be sure to also update this in the .htaccess file.}
+#language en {Default language is English.}
+
+#plugin_dir app/plugins
+#assets_dir resources
+#template_dir templates
+#language_dir langs
+#models_dir models
+#site_dir www
+#uploads_dir uploads
+
+#cookie_life 1209600 {2 Weeks.}
+#cookie_domain .127.0.0.1 {Note: This doesn't mean localhost. You are advised not to change this if you don't know what you are doing}
+#cookie_secret "1gp@TMPS|+$78sfpMJFe-92s" {The quotes are part of our key not necessarily yours. Changing this value may render previous cookies set invalid.}
+
+#show_error yes {yes: Shows error, no: don't show error.}
+
+#encrypt_passwords yes {yes: Makes password secure for database entry, no: Puts password as is in database.}
+
+#email_from Candy <no-reply@candy.com>
+
+#country ng

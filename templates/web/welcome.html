@@ -1,0 +1,20 @@
+@include('head.html')
+<div class="container">
+    <div>
+        <h1 class="title tip-bottom">{{$title}}</h1>
+    </div>
+    <div>
+        @include('meta.html')
+    </div>
+    <br/><br/>
+    <div>
+        {{$welcome}}
+    </div>
+    <br/><br/><br/><br/><br/><br/>
+    <div>
+        <a class="btn" href="">Home</a>
+        <a class="btn" href="">Documentation</a>
+        <a class="btn" href="">Contribute</a>
+    </div>
+</div>
+@include('foot.html')

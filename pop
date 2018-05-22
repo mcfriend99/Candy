@@ -1,0 +1,382 @@
+#!/usr/bin/env php
+<?php
+
+
+define('CANDY', true);
+
+$actions = $_SERVER['argv'];
+
+if(count($actions) <= 1)
+    exit("No argument supplied to pop.\n");
+
+function find_php($include_args = true)
+{
+    $args = array();
+    if ('phpdbg' === PHP_SAPI) {
+        $args[] = '-qrr';
+    }
+
+    $args = $include_args && $args ? ' '.implode(' ', $args) : '';
+
+    // PHP_BINARY return the current sapi executable
+    if (PHP_BINARY && in_array(PHP_SAPI, array('cli', 'cli-server', 'phpdbg')) && is_file(PHP_BINARY)) {
+        return PHP_BINARY.$args;
+    }
+
+    if ($php = getenv('PHP_PATH')) {
+        if (!is_executable($php)) {
+            return false;
+        }
+
+        return $php;
+    }
+
+    if ($php = getenv('PHP_PEAR_PHP_BIN')) {
+        if (is_executable($php)) {
+            return $php;
+        }
+    }
+
+    if (is_executable($php = PHP_BINDIR.('\\' === DIRECTORY_SEPARATOR ? '\\php.exe' : '/php'))) {
+        return $php;
+    }
+
+    $extra_dirs = array(PHP_BINDIR);
+    if ('\\' === DIRECTORY_SEPARATOR) {
+        $extra_dirs[] = 'C:\xampp\php\\';
+    }
+
+    $suffixes = array('.exe', '.bat', '.cmd', '.com');
+
+    if (ini_get('open_basedir')) {
+        $search_path = explode(PATH_SEPARATOR, ini_get('open_basedir'));
+        $dirs = array();
+        foreach ($search_path as $path) {
+            // Silencing against https://bugs.php.net/69240
+            if (@is_dir($path)) {
+                $dirs[] = $path;
+            } else {
+                if (basename($path) == 'php' && @is_executable($path)) {
+                    return $path;
+                }
+            }
+        }
+    } else {
+        $dirs = array_merge(
+            explode(PATH_SEPARATOR, getenv('PATH') ?: getenv('Path')),
+            $extra_dirs
+        );
+    }
+
+    $suffixes = array('');
+    if ('\\' === DIRECTORY_SEPARATOR) {
+        $path_ext = getenv('PATHEXT');
+        $suffixes = array_merge($suffixes, $path_ext ? explode(PATH_SEPARATOR, $path_ext) : $suffixes);
+    }
+    foreach ($suffixes as $suffix) {
+        foreach ($dirs as $dir) {
+            if (@is_file($file = $dir.DIRECTORY_SEPARATOR.'php'.$suffix) && ('\\' === DIRECTORY_SEPARATOR || is_executable($file))) {
+                return $file;
+            }
+        }
+    }
+
+    return false;
+}
+
+
+$type = isset($actions[2]) ? strtolower($actions[2]) : '';
+$name = isset($actions[3]) ? $actions[3] : '';
+$extra = isset($actions[4]) ? strtolower($actions[4]) : '';
+
+
+
+$__configs__ = [];
+
+// Basic requirement for loading Candy.
+require 'app/functions/file.php';
+require 'app/functions/configs.php';
+require 'app/classes/hook.php';
+require 'app/functions/hook.php';
+require 'app/functions/main.php';
+require 'app/classes/chocolate.php';
+
+// Define global configuration directory.
+define('CONFIG_DIR', 'app/configs');
+define('CACHE_DIR', 'app/cache');
+
+// Load Configs.
+$config_files = get_directory(CONFIG_DIR, CANDY_SCAN_FILES, '.candy');
+foreach($config_files as $file){
+    load_configs($file);
+}
+unset($config_files);
+
+// Load Languages.
+$langs_files = get_directory(get_config('language_dir', 'main'), CANDY_SCAN_FILES, '.candy');
+foreach($langs_files as $file){
+    load_texts($file);
+}
+// Free variable name for use.
+unset($lang_files);
+
+define('REWRITE_BASE', get_config('rewrite_base', 'main'));
+define('ROOT', $_SERVER['DOCUMENT_ROOT']);
+define('PLUGIN_DIR', get_config('plugin_dir', 'main'));
+define('ASSETS_DIR', get_config('assets_dir', 'main'));
+define('THEME_DIR', get_config('template_dir', 'main'));
+define('SITE_DIR', get_config('site_dir', 'main'));
+
+// Load Templates.
+$template_files = get_directory(get_config('template_dir', 'main'), CANDY_SCAN_FILES);
+foreach($template_files as $file){
+    $s = new Chocolate(CACHE_DIR . '/template');
+    $s->set_file($file);
+    $s->render(false);
+}
+// Free variable name for use.
+unset($template_files);
+
+
+switch(strtolower($actions[1])){
+
+    case 'server':
+
+        $host = 'localhost';
+        $port = '8000';
+
+        if(!empty($type)){
+            $krs = explode(':', $type);
+
+            if(preg_match('/^\d+$/', $krs[0]) && !isset($krs[1])){
+                 $port = $krs[0];
+            } else {
+
+                $host = $krs[0];
+                if (empty(trim($host))) $host = 'localhost';
+
+                if (
+                    !preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $host)             // Valid hostname.
+                    && !preg_match('/^(\d+\.){3}\d+$/', $host)      // Valid IP address.
+                )
+                    exit("Server name must be a valid IP address or a name consisting or letters, underscores and/or numbers.\n");
+
+                if (isset($krs[1])) {
+                    if (!preg_match('~^\d{2,}$~', $krs[1]))
+                        exit("Server port must be a number greater than 9.\n");
+                    else $port = $krs[1];
+                }
+            }
+        }
+
+        $line = "Candy development server started at http://{$host}:{$port}\n\n";
+        $command = sprintf('%s -S %s:%s',
+            escapeshellarg(find_php(false)), // Php executable path.
+            $host,
+            $port
+        );
+
+        try {
+            echo $line;
+            passthru($command);
+        } catch (Exception $e) {
+            print_r($e->getMessage());
+        }
+
+        break;
+
+    case 'clean':
+
+        do_action('candy_pop_clean');
+
+        $allowed = ['cache', 'uploads', 'plugin', 'plugins'];
+
+        if(!empty($type)){
+            if(!in_array($type, $allowed)){
+                exit("Invalid pop command!\n");
+            } else {
+                $sr = $type;
+            }
+        } else $type = $sr = 'cache';
+
+        if($type == 'cache') $sr = CACHE_DIR;
+        elseif($type == 'plugins') $sr = PLUGIN_DIR;
+        elseif($type == 'plugin'){
+            if(empty($name)) exit("Invalid pop command!\n");
+            else $sr = PLUGIN_DIR . '/' . $name;
+
+            if(!file_exists($sr) || !is_dir($sr))
+                exit("Plugin {$name} cannot be found and so was not removed.\n");
+        } else $sr = $type;
+
+        if(!file_exists($sr) || !is_dir($sr)) {
+            mkdir($sr);
+            exit(
+"
+Your candy application looks broken!
+            
+We could not find the {$sr} directory and took the liberty of creating it for you.
+You are now good to go.
+");
+        } else {
+            try {
+
+                foreach (get_directory($sr, ($type == 'cache' ? CANDY_SCAN_FILES : CANDY_SCAN_ALL), '', -1, false, CANDY_SORT_FILES_FIRST) as $file) {
+                    echo "Removing " . $file . "...\n";
+                    @unlink($file);
+                    @rmdir($file);
+                }
+
+                if($type == 'plugin' || $type == 'plugins')
+                    @rmdir($sr);
+
+                $sr = get_directory_name($sr);
+                exit(ucfirst($sr) . " cleared successfully!\n");
+            } catch (Exception $e) {
+                exit("Could not clear {$sr} because: {$e->getMessage()}");
+            }
+        }
+        break;
+
+    case 'new':
+        if(empty($type) || empty($name))
+            exit("Invalid pop command!\n");
+
+        switch($type){
+
+            case 'language':
+                $g = get_config('language_dir', 'main');
+                $n = $g . '/' . $name . '.candy';
+
+                if(!file_exists($n)){
+                    if(file_put_contents($n, "#language {$name}\n")){
+
+                        exit("Created new language file {$name} in {$g}\n");
+                    } else {
+                        exit("Could not create language file {$name} in {$g}. Please check that you have permission to write into the directory.\n");
+                    }
+                }
+
+                break;
+
+            case 'view':
+                $g = get_config('site_dir', 'main');
+                $n = $g . '/' . $name . '.php';
+
+                $g2 = get_config('template_dir', 'main') . '/web';
+                $n2 = $g2 . '/' . $name . '.html';
+
+                $view_content =
+"<?php
+
+if(!defined('CANDY')){
+    header('Location: /');
+}
+
+// Process view logic here...
+
+get_template(\"{$name}.html\");
+
+";
+
+                $view_content2 =
+"<html lang=\"@config('language', 'main')\">
+<head>
+    <meta charset=\"utf-8\">
+    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
+    <title>" .(ucwords(str_replace('_', ' ', $name))). "</title>
+</head>
+<body>
+
+</body>
+</html>";
+
+                if(!file_exists($n)){
+                    if(file_put_contents($n, $view_content)){
+                        $p = false;
+                        if(!file_exists($n2)){
+                            if(file_put_contents($n2, $view_content2)){
+                                $p = true;
+                            }
+                        }
+
+                        exit("Created new view file {$name} in {$g} and an associated template file " .($p ? " was also created in {$g2}." : " could not be created either because you do not have permission to write into the directory or the template already exists."). "\n");
+                    } else {
+                        exit("Could not create view file {$name} in {$g}. Please check that you have permission to write into the directory.\n");
+                    }
+                } else {
+                    exit("View {$name} already exists.\n");
+                }
+
+                break;
+
+
+            case 'plugin':
+
+                if(!empty($extra)){
+                    if(!in_array($extra, ['--plain', '--novendor', '--full']))
+                        exit("Invalid pop command modifier {$extra}!");
+                } else $extra = '--full';
+
+
+                if(file_exists(PLUGIN_DIR . "/{$name}") || is_dir(PLUGIN_DIR . "/{$name}")){
+
+                    if(file_exists(PLUGIN_DIR . "/{$name}/{$name}.candy")){
+                        exit("Plugin {$name} already exists.\n");
+                    }
+                } else {
+                    @mkdir(PLUGIN_DIR . "/{$name}");
+                }
+
+                // Create plugin header file.
+                $a1 = @file_put_contents(PLUGIN_DIR . "/{$name}/{$name}.candy", "#name ". ucfirst($name) ."\n#version 1.0");
+
+                // Create the plugin index file.
+                $a2 = @file_put_contents(PLUGIN_DIR . "/{$name}/index.php", "<?php\n\n\n");
+
+                if(empty($extra) || $extra != '--plain') {
+
+                    // Create plugin files folder
+                    if (!file_exists(PLUGIN_DIR . "/{$name}/{$name}") || !is_dir(PLUGIN_DIR . "/{$name}/{$name}")) {
+                        $a3 = @mkdir(PLUGIN_DIR . "/{$name}/{$name}");
+                    } else $a3 = true;
+
+                    if($extra != '--novendor') {
+                        // Create vendors folder.
+                        if (!file_exists(PLUGIN_DIR . "/{$name}/vendor") || !is_dir(PLUGIN_DIR . "/{$name}/vendor")) {
+                            $a4 = @mkdir(PLUGIN_DIR . "/{$name}/vendor");
+                        } else $a4 = true;
+                    } else $a4 = true;
+                } else $a3 = $a4 = true;
+
+
+                if(!$a1 || !$a2 || !$a3 || !$a4){
+                    exit("Not all required files for plugin {$name} could be created.\n");
+                } else {
+                    exit("Plugin {$name} created successfully.\n");
+                }
+
+                break;
+
+            default:
+                // TODO: Handle user defined pop command.
+
+                do_action('candy_pop_new');
+
+                exit("Invalid pop command!\n");
+                break;
+        }
+
+        break;
+
+    default:
+        do_action('candy_pop');
+
+        exit("Invalid pop command\n");
+
+        break;
+}
+
+
+
