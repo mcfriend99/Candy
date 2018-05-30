@@ -1,6 +1,6 @@
-## Welcome to GitHub Pages
+## Candy - The PHP functional MVT framework
 
-You can use the [editor on GitHub](https://github.com/mcfriend99/Candy/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+If you need a simple lightweight solution that just works out of the box without all those bloated dependencies and still does everything you need, or you just need a solution that does what those giant framewroks do with a light footpath, or you are new to PHP developments and want to use PHP the simplier way, then Candy is for you
 
 Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
 
