@@ -1,8 +1,30 @@
 ## Candy - The PHP functional MVT framework
 
-If you need a simple lightweight solution that just works out of the box without all those bloated dependencies and still does everything you need, or you just need a solution that does what those giant framewroks do with a light footpath, or you are new to PHP developments and want to use PHP the simplier way, then Candy is for you
+If you need a simple lightweight solution that just works out of the box without all those bloated dependencies and still does everything you need, or you just need a solution that does what those giant framewroks do with a light footprint, or you are new to PHP developments and want to use PHP the simplier way, then Candy is for you
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+Candy has everything you need to develop a full functional professional website and scale along.
+
+### Features
+
+- Inbuilt development server
+- Chocolate - A simple blade-like advanced template engine with device specific override ability.
+- Simple and flexible model based system
+- Routing
+- Flexile form and validation api
+- Extensible and localizeable directive based configuration
+- Flibe based view system
+- File processing
+- Plugin and hook system
+- Simple Session, Post, Get, Put
+- File upload management
+- Cookie management
+- Multiple database support via PDO
+- Form management
+- Advanced regular expression libaray
+- Device identification with support for custom UI's for popular devices
+- HTTP management
+- Image manipulation
+- Location management
 
 ### Markdown
 
