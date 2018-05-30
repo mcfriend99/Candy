@@ -28,7 +28,11 @@ Candy has everything you need to develop a full functional professional website 
 - Image manipulation
 - Location management
 
-### Markdown
+### Installation
+
+```
+git clone https://github.com/mcfriend99/Candy.git
+```
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
 
