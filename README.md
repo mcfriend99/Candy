@@ -32,6 +32,8 @@ Candy has everything you need to develop a full functional professional website 
 
 ```
 git clone https://github.com/mcfriend99/Candy.git
+
+php pop server
 ```
 
 Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
