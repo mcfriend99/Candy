@@ -6,6 +6,7 @@ Candy has everything you need to develop a full functional professional website 
 
 ### Features
 
+- Light weight
 - Inbuilt development server
 - Chocolate - A simple blade-like advanced template engine with device specific override ability.
 - Simple and flexible model based system
@@ -13,6 +14,7 @@ Candy has everything you need to develop a full functional professional website 
 - Flexile form and validation api
 - Extensible and localizeable directive based configuration
 - Flibe based view system
+- Advanced language translation system.
 - File processing
 - Plugin and hook system
 - Simple Session, Post, Get, Put
