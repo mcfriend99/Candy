@@ -13,15 +13,14 @@ Candy has everything you need to develop a full functional professional website 
 - Routing
 - Flexile form and validation api
 - Extensible and localizeable directive based configuration
-- Flibe based view system
-- Advanced language translation system.
+- File based view system
+- Advanced language translation system
 - File processing
 - Plugin and hook system
-- Simple Session, Post, Get, Put
+- Simple Session, Post, Get, Put, Files etc.
 - File upload management
 - Cookie management
 - Multiple database support via PDO
-- Form management
 - Advanced regular expression libaray
 - Device identification with support for custom UI's for popular devices
 - HTTP management
