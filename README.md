@@ -1,6 +1,6 @@
 ## Candy - The PHP functional MVT framework
 
-If you need a simple lightweight solution that just works out of the box without all those bloated dependencies and still does everything you need, or you just need a solution that does what those giant framewroks do with a light footprint, or you are new to PHP developments and want to use PHP the simplier way, then Candy is for you
+If you need a simple lightweight solution that just works out of the box without all those bloated dependencies and still does everything you need, or you just need a solution that does what those giant frameworks do with a light footprint, or you are new to PHP developments and want to use PHP the simpler way, then Candy is for you
 
 Candy has everything you need to develop a full functional professional website and scale along.
 
@@ -16,7 +16,7 @@ Candy has everything you need to develop a full functional professional website 
 - File based view system
 - Advanced language translation system.
 - File processing
-- Plugin and hook system
+- Plug-in and hook system
 - Simple Session, Post, Get, Put
 - File upload management
 - Cookie management
@@ -33,7 +33,7 @@ Candy has everything you need to develop a full functional professional website 
 git clone https://github.com/mcfriend99/Candy.git
 ```
 
-# Starting the serverr
+# Starting the server
 
 ```
 php pop server
