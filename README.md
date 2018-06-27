@@ -11,9 +11,9 @@ Candy has everything you need to develop a full functional professional website 
 - Chocolate - A simple blade-like advanced template engine with device specific override ability.
 - Simple and flexible model based system
 - Routing
-- Flexile form and validation api
-- Extensible and localizeable directive based configuration
-- Flibe based view system
+- Flexible form and validation API
+- Extensible and localized directive based configuration
+- File based view system
 - Advanced language translation system.
 - File processing
 - Plugin and hook system
@@ -21,8 +21,7 @@ Candy has everything you need to develop a full functional professional website 
 - File upload management
 - Cookie management
 - Multiple database support via PDO
-- Form management
-- Advanced regular expression libaray
+- Advanced regular expression library
 - Device identification with support for custom UI's for popular devices
 - HTTP management
 - Image manipulation
@@ -41,14 +40,6 @@ php pop server
 ```
 
 ```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
 
 1. Numbered
 2. List
@@ -57,13 +48,3 @@ Syntax highlighted code block
 
 [Link](url) and ![Image](src)
 ```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/mcfriend99/Candy/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
