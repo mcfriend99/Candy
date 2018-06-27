@@ -96,11 +96,8 @@ function load_configs($file, $is_global = true){
         if ($is_global) {
             if(!file_exists(CACHE_DIR .'/configs') || !is_dir(CACHE_DIR . '/configs'))
                 mkdir(CACHE_DIR . '/configs');
-            $ur = substr(str_replace('":"', '"=>"', stripslashes(json_encode($hash_matches))), 1, -1);
-            $ur = preg_replace('~""([^,\s]+)~', '"\"$1', $ur);
-            $ur = preg_replace('~(?<!\>)"\s*"([^,\s]+)~', '" \"$1', $ur);
-            $ur = preg_replace('~(?<!\>)"\s*"\s*,~', '\"",', $ur);
-            file_put_contents($gfile, "<?php \$GLOBALS['__CONFIG__{$fname}__'] = [{$ur}]; ?>");
+			$ur = addslashes(json_encode($hash_matches));
+            file_put_contents($gfile, "<?php \$GLOBALS['__CONFIG__{$fname}__'] = json_decode(stripslashes(\"{$ur}\"), true); ?>");
             include $gfile;
         } else return $hash_matches;
     } else {
@@ -185,15 +182,13 @@ function load_texts($file){
 
         if(!file_exists(CACHE_DIR . '/langs') || !is_dir(CACHE_DIR . '/langs'))
             mkdir(CACHE_DIR . '/langs');
-        $ur = substr(str_replace('":"', '"=>"', stripslashes(json_encode($hash_matches))), 1, -1);
-        $ur = preg_replace('~""([^,\s]+)~', '"\"$1', $ur);
-        $ur = preg_replace('~(?<!\>)"\s*"([^,\s]+)~', '" \"$1', $ur);
-        $ur = preg_replace('~(?<!\>)"\s*"\s*,~', '\"",', $ur);
-        file_put_contents($gfile, "<?php \$GLOBALS['__LANGUAGE__{$fname}__'] = [{$ur}]; ?>");
+		$ur = addslashes(serialize($hash_matches));
+        file_put_contents($gfile, "<?php \$GLOBALS['__LANGUAGE__{$fname}__'] = @unserialize(stripslashes(\"{$ur}\")); ?>");
 
         include $gfile;
     } else {
-        (include $gfile);
+		
+        include $gfile;
     }
 }
 
@@ -211,16 +206,17 @@ function get_text($id, $language = '', $default = ''){
     
     if(empty($language))
         $language = get_config('language', 'main');
+	
     $__langs__ = $GLOBALS["__LANGUAGE__{$language}__"];
-    
+	
     return isset($__langs__[strtolower($id)]) ? __replace_cfgs($__langs__[strtolower($id)], 0, $language) : $default;
 }
 
 // Removes comments from configs and text files using syntax: {This is a comment}.
 function __clear_configs_comments($value){
-    return trim(preg_replace_callback('~(?<!{){[^}]+}\s*(\r?\n)?~', function(){
+    return addslashes(trim(preg_replace_callback('~(?<!{){[^}]+}\s*(\r?\n)?~', function(){
         return '';
-    }, $value));
+    }, $value)));
 }
 
 // Allows the include of a text or config within another text or config respectively using syntax:  [another]

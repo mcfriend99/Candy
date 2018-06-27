@@ -173,15 +173,18 @@ class Form {
      */
     function addControls($controls = []){
 
-        foreach($controls as $key => $value){
+		foreach($controls as $control){
+			
+			foreach($control as $key => $value){
 
-            $name = $key;
-            $type = $value['type'];
-            $default = $value['default'];
-            $options = $value['options'];
+				$name = $key;
+				$type = $value['type'];
+				$default = $value['default'];
+				$options = $value['options'];
 
-            $this->addControl($name, $type, $default, $options);
-        }
+				$this->addControl($name, $type, $default, $options);
+			}
+		}
     }
 
     /**
@@ -230,7 +233,6 @@ class Form {
      * @return array
      */
     static function createControl($name, $type = 'text', $attr = [], $default = '', $options = []){
-
         return [
             $name => [
                 'type'      => $type,
