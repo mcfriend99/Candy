@@ -2,6 +2,11 @@
 
 if(!defined('CANDY')) exit(404);
 
+if(file_exists('.hide')){
+    require_once 'closed.html';
+    exit;
+}
+
 // Initate sessions.
 if(!isset($_SESSION))
     session_start();

@@ -143,6 +143,19 @@ unset($template_files);
 
 switch(strtolower($actions[1])){
 
+    case 'hide':
+
+        @file_put_contents('.hide', '');
+        echo "Candy maintenance mode activated.";
+        break;
+
+    case 'lick':
+
+        @unlink('.hide');
+        echo "Candy maintenance mode deactivated.";
+
+        break;
+
     case 'server':
 
         $host = 'localhost';
