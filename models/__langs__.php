@@ -6,12 +6,14 @@ if(!defined('CANDY')){
 
 /*
 
-Create language specific arrays and objects here.
+Create localized arrays and objects here.
 
 */
 
-$_LANG = [
-    'candy' => 'Candy',
+$_LANGS = [
+    'en' => [
+        'candy' => 'Candy',
+    ],
 ];
 
 

@@ -7,12 +7,12 @@ if(!isset($_SESSION))
     session_start();
 
 // Basic requirement for loading Candy.
-require 'app/functions/file.php';
-require 'app/functions/configs.php';
+require 'system/functions/file.php';
+require 'system/functions/configs.php';
 
 // Define global configuration directory.
-define('CONFIG_DIR', 'app/configs');
-define('CACHE_DIR', 'app/cache');
+define('CONFIG_DIR', 'system/configs');
+define('CACHE_DIR', 'system/cache');
 
 
 // Global error wrapper.
@@ -59,16 +59,16 @@ unset($lang_files);
 
 
 // Load classes.
-$app_files = get_directory('app/classes', CANDY_SCAN_FILES, '.php');
+$app_files = get_directory('system/classes', CANDY_SCAN_FILES, '.php');
 foreach($app_files as $file){
     require $file;
 }
 unset($app_files);
 
 // Load functions.
-$app_files = get_directory('app/functions', CANDY_SCAN_FILES, '.php');
+$app_files = get_directory('system/functions', CANDY_SCAN_FILES, '.php');
 foreach($app_files as $file){
-    $dont_loads = ['app/functions/configs.php', 'app/functions/file.php'];
+    $dont_loads = ['system/functions/configs.php', 'system/functions/file.php'];
 
     if(!in_array($file, $dont_loads)){
         require $file;
@@ -92,7 +92,7 @@ set_exception_handler($candy_error);
 
 
 // load User custom functions.
-$app_files = get_directory('app/user', CANDY_SCAN_FILES, '.php');
+$app_files = get_directory('app', CANDY_SCAN_FILES, '.php');
 foreach($app_files as $file){
 
     require $file;

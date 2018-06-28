@@ -94,16 +94,16 @@ $extra = isset($actions[4]) ? strtolower($actions[4]) : '';
 $__configs__ = [];
 
 // Basic requirement for loading Candy.
-require 'app/functions/file.php';
-require 'app/functions/configs.php';
-require 'app/classes/hook.php';
-require 'app/functions/hook.php';
-require 'app/functions/main.php';
-require 'app/classes/chocolate.php';
+require 'system/functions/file.php';
+require 'system/functions/configs.php';
+require 'system/classes/hook.php';
+require 'system/functions/hook.php';
+require 'system/functions/main.php';
+require 'system/classes/chocolate.php';
 
 // Define global configuration directory.
-define('CONFIG_DIR', 'app/configs');
-define('CACHE_DIR', 'app/cache');
+define('CONFIG_DIR', 'system/configs');
+define('CACHE_DIR', 'system/cache');
 
 // Load Configs.
 $config_files = get_directory(CONFIG_DIR, CANDY_SCAN_FILES, '.candy');
@@ -130,7 +130,10 @@ define('SITE_DIR', get_config('site_dir', 'main'));
 // Load Templates.
 $template_files = get_directory(get_config('template_dir', 'main'), CANDY_SCAN_FILES);
 foreach($template_files as $file){
-    $s = new Chocolate(CACHE_DIR . '/template');
+    $crname = pathinfo($file, PATHINFO_BASENAME);
+    if(starts_with($crname, '.')) continue;
+    
+	$s = new Chocolate(CACHE_DIR . '/templates');
     $s->set_file($file);
     $s->render(false);
 }
@@ -200,6 +203,9 @@ switch(strtolower($actions[1])){
         } else $type = $sr = 'cache';
 
         if($type == 'cache') $sr = CACHE_DIR;
+        elseif($type == 'templates') $sr = CACHE_DIR . '/templates';
+        elseif($type == 'languages') $sr = CACHE_DIR . '/langs';
+        elseif($type == 'config') $sr = CACHE_DIR . '/configs';
         elseif($type == 'plugins') $sr = PLUGIN_DIR;
         elseif($type == 'plugin'){
             if(empty($name)) exit("Invalid pop command!\n");
@@ -222,6 +228,9 @@ You are now good to go.
             try {
 
                 foreach (get_directory($sr, ($type == 'cache' ? CANDY_SCAN_FILES : CANDY_SCAN_ALL), '', -1, false, CANDY_SORT_FILES_FIRST) as $file) {
+                    $crname = pathinfo($file, PATHINFO_BASENAME);
+                    if(starts_with($crname, '.')) continue;
+
                     echo "Removing " . $file . "...\n";
                     @unlink($file);
                     @rmdir($file);
