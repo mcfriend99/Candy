@@ -74,7 +74,7 @@ function to_object($s){
  */
 function to_array($s){
     if(is_object($s))
-        return json_encode($s);
+        return json_decode(json_encode($s), true);
     if(is_string($s) || is_resource($s))
         return (array)$s;
     else return [];
