@@ -9,6 +9,7 @@
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
     RewriteRule ^closed.html$ / [L,R=301]
+    RewriteRule ^pop$ / [L,R=301]
 
     RewriteCond %{REQUEST_FILENAME} !-f
     #RewriteCond %{REQUEST_FILENAME} !-d
