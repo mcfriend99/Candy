@@ -302,7 +302,8 @@ get_template(\"{$name}.html\");
 ";
 
                 $view_content2 =
-"<html lang=\"@config('language', 'main')\">
+"<!DOCTYPE html>
+<html lang=\"@config('language', 'main')\">
 <head>
     <meta charset=\"utf-8\">
     <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">

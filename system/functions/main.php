@@ -368,7 +368,16 @@ function get_resource($s = ''){
  */
 function get_template($s, $return = false){
 
-    if(strtolower(get_config('show_error', 'main', 'yes')) == 'yes'){
+    if(strtolower(get_config('dev_mode', 'main', 'yes')) == 'yes'){
+
+        // Clean templates.
+        foreach (get_directory(CACHE_DIR . '/templates', CANDY_SCAN_FILES, '', -1, false, CANDY_SORT_FILES_FIRST) as $file) {
+            $crname = pathinfo($file, PATHINFO_BASENAME);
+            if(starts_with($crname, '.')) continue;
+
+            @unlink($file);
+        }
+
         // Load Templates.
         $template_files = get_directory(get_config('template_dir', 'main'), CANDY_SCAN_FILES);
         foreach($template_files as $file){

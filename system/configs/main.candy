@@ -18,6 +18,7 @@
 #cookie_secret "1gp@TMPS|+$78sfpMJFe-92s" {The quotes are part of our key not necessarily yours. Changing this value may render previous cookies set invalid.}
 
 #show_error yes {yes: Shows error, no: don't show error.}
+#dev_mode yes
 
 #encrypt_passwords yes {yes: Makes password secure for database entry, no: Puts password as is in database.}
 
