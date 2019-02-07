@@ -478,7 +478,7 @@ function get_template_file($s){
  * @return string
  */
 function e($s, $language = ''){
-	global $_LANG;
+	global $_LANGS;
 
 	if(empty($language))
 		$language = get_config('language', 'main');
