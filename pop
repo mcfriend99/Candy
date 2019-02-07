@@ -243,8 +243,7 @@ You are now good to go.
                 foreach (get_directory($sr, ($type == 'cache' ? CANDY_SCAN_FILES : CANDY_SCAN_ALL), '', -1, false, CANDY_SORT_FILES_FIRST) as $file) {
                     $crname = pathinfo($file, PATHINFO_BASENAME);
                     if(starts_with($crname, '.')) continue;
-
-                    echo "Removing " . $file . "...\n";
+					
                     @unlink($file);
                     @rmdir($file);
                 }
