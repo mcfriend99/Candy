@@ -82,10 +82,18 @@ function add_form_controls($form_name, $controls = []){
     else __form_error__($form_name);
 }
 
-function remove_form_control($form_name, $name){
+function remove_form_control($form_name, $names){
     global $__forms__;
-    if(isset( $__forms__[$form_name]))
-        $__forms__[$form_name]->removeControl($name);
+    if(isset( $__forms__[$form_name])) {
+        if (!is_array($names) && !is_object($names)) {
+            $__forms__[$form_name]->removeControl($names);
+        } else {
+            $names = to_array($names);
+            foreach($names as $name){
+                $__forms__[$form_name]->removeControl($name);
+            }
+        }
+    }
     else __form_error__($form_name);
 }
 
