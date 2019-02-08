@@ -146,10 +146,10 @@ function form_submit($name, $function = null){
     else __form_error__($name);
 }
 
-function form_to_db($name, $table = '', $unique_column = '', $exceptions = []){
+function form_to_db($name, $table = '', $unique_column = '', $exceptions = [], $should_update = true){
     global $__forms__;
     if(isset($__forms__[$name])) {
-        return $__forms__[$name]->toDb($table, $unique_column, $exceptions);
+        return $__forms__[$name]->toDb($table, $unique_column, $exceptions, $should_update);
     }
     else __form_error__($name);
 }

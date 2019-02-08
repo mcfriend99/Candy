@@ -151,10 +151,11 @@ class Form {
 		if(!$options['no_csrf']){
 			if(!session_set('CSRF_' . $this->csrf_name)){
 				$this->csrf_value = randomize(32);
+				session('CSRF_' . $this->csrf_name, $this->csrf_value);
 			} else {
 				$this->csrf_value = session('CSRF_' . $this->csrf_name);
 			}
-		}
+		} else $this->no_csrf = true;
 
         $inline = '';
         foreach($attr as $key => $value){
@@ -1289,9 +1290,10 @@ class Form {
      * @param string $table
      * @param string $unique_column
      * @param array $exceptions
+     * @param bool $should_update
      * @return bool|int|mixed
      */
-    function toDb($table = '', $unique_column = '', $exceptions = []){
+    function toDb($table = '', $unique_column = '', $exceptions = [], $should_update = true){
 
         $insert = [];
 
@@ -1340,7 +1342,7 @@ class Form {
         if(empty($unique_column))
             $unique_column = $this->name . '_id';
 
-        $result = db_insert_update($table, $unique_column, $insert);
+        $result = $should_update ? db_insert_update($table, $unique_column, $insert) : false;
 
         if(!$result){
 

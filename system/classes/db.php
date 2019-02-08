@@ -305,7 +305,7 @@ class DB {
 		  $test = $this->select($table, null, $data2);
         else $test = null;
 		if(empty($test)){
-			return $this->insert($table, $data);
+			return $this->insert($table, $data2);
 		} else {
 			return -1;
 		}
@@ -322,7 +322,7 @@ class DB {
      * @return bool                 True if inserted or updated, false otherwise.
      */
     public function insertUpdate($table, $id, $data){
-		$keyval; $keyfound = false;
+		$keyval = null; $keyfound = false;
 		foreach($data as $key => $val){
 			if($key == $id){
 				$keyval = $val;
