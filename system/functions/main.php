@@ -61,8 +61,9 @@ function to_string($s){
 function to_object($s){
     if(is_array($s) || is_resource($s))
         return @json_decode(@json_encode($s));
-    if(is_string($s))
+    elseif(is_string($s))
         return (object)$s;
+    elseif(is_object($s)) return $s;
     return json_encode([]);
 }
 
@@ -75,8 +76,9 @@ function to_object($s){
 function to_array($s){
     if(is_object($s))
         return json_decode(json_encode($s), true);
-    if(is_string($s) || is_resource($s))
+    elseif(is_string($s) || is_resource($s))
         return (array)$s;
+    elseif(is_array($s)) return $s;
     else return [];
 }
 
