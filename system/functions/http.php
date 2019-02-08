@@ -43,6 +43,8 @@ if(!defined('CANDY')){
 /**
  *
  * Redirects to a url.
+ * [Set a site config redirect_parameter to enable auto-detection of redirect urls.]
+ * [Set a site config no_redirect to 'yes' to disable redirection in the entire app.]
  *
  * @param null $url                 Url (relative or absolute) to redirect to.
  * @param bool $allow_redirect      An override for should_redirect.
@@ -51,10 +53,10 @@ if(!defined('CANDY')){
 function redirect($url = null, $allow_redirect = false, $use_js = false) {
 
     // Shortcut to disable all redirection.
-	if(defined('NO_REDIRECT')) return;
+	if(strtolower(get_config('no_redirect')) == 'yes') return;
 	
 	if($url == null || $allow_redirect == true) {
-        if(should_redirect()) $url = $_GET['_ref'];
+        if(should_redirect()) $url = $_GET[get_config('redirect_parameter', 'site', '_ref')];
         elseif($url == null) $url = '/';
     }
 	if (headers_sent() || $use_js) {
@@ -73,7 +75,7 @@ function redirect($url = null, $allow_redirect = false, $use_js = false) {
  */
 function should_redirect(){
 
-    return (isset($_GET['_ref']) && !defined('NO_REDIRECT'));
+    return (isset($_GET[get_config('redirect_parameter', 'site', '_ref')]) && strtolower(get_config('no_redirect')) != 'yes');
 }
 
 
@@ -244,6 +246,18 @@ function get_api_url($s = '', $api = null){
 function get_resource_url($s = ''){
     
     return get_url(ASSETS_DIR . '/' . $s);
+}
+
+/**
+ *
+ * Gets the url to an uploaded file.
+ *
+ * @param string $s
+ * @return string
+ */
+function get_upload_url($s = ''){
+
+    return get_url(UPLOADS_DIR . '/' . $s);
 }
 
 /**

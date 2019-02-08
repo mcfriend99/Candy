@@ -232,6 +232,7 @@ class _{$grs} {$extend} {
     /**
      * Raizes a proper framework error.
      * @param $err      The error message
+     * @throws Exception
      */
     protected function error($err){
         throw new Exception('CHOCOLATE_ERROR: ' . $err);
@@ -261,6 +262,7 @@ class _{$grs} {$extend} {
             $this->parseCsrfs();
             $this->parseForms();
             $this->parseResources();
+            $this->parseUploads();
             $this->parseUrls();
             $this->parseScripts();
             $this->parseStyles();
@@ -740,7 +742,7 @@ class _{$grs} {$extend} {
     }
 
     /**
-     * Parses file resource request.
+     * Parses file resources url.
      *
      * @file('resource/path')
      */
@@ -749,6 +751,19 @@ class _{$grs} {$extend} {
 
         $str = preg_replace_callback('~(?<!@)@file\s*\(([^()]+)\)~x', function($match){
             return "<?=get_resource_url({$match[1]});?>";
+        }, $str);
+    }
+
+    /**
+     * Parses uploaded files url.
+     *
+     * @file('resource/path')
+     */
+    protected function parseUploads(){
+        $str = &$this->str;
+
+        $str = preg_replace_callback('~(?<!@)@upload\s*\(([^()]+)\)~x', function($match){
+            return "<?=get_upload_url({$match[1]});?>";
         }, $str);
     }
 
