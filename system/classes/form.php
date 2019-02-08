@@ -1123,7 +1123,7 @@ class Form {
                     if(isset($rules['unique_without'])){
                         $id = $rules['unique_without'];
                         $db_ret = to_array($db_ret[0]);
-                        if($db_ret[id] == call($this->method, $id))
+                        if($db_ret[$id] == call($this->method, $id))
                             $unique_failed = false;
                     }
                     if($unique_failed)
