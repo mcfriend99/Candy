@@ -1,5 +1,5 @@
 #validation_required_fail %s is required.
-#validation_required_with_fail %s and %s are both required.
+#validation_required_with_fail %s is required when %s has a value.
 #validation_required_without_fail %s is required only if %s is empty.
 #validation_pattern_fail %s did not match the expected pattern.
 #validation_disabled_fail %s has malformed values.

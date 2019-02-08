@@ -1023,7 +1023,7 @@ class Form {
             if(( isset($attrs['required']) || isset($rules['required']) || in_array($name, $this->requireds) ) && empty($control_value)) // Require that this must not be empty.
                 return ($this->_validation_error('validation_required_fail', [$this->getControlText($name)], $default_error));
 
-            if( isset($rules['required_with']) && !empty($control_value) ){ // Require that this field is required when any of the other fields are present.
+            if( isset($rules['required_with']) && empty($control_value) ){ // Require that this field is required when any of the other fields are present.
                 foreach($rules['required_with'] as $req){
 
                     $cval = call($this->method, $req);
@@ -1032,7 +1032,7 @@ class Form {
                         $psk = true;
                     }
 
-                    if(!$psk)
+                    if($psk)
                         return ($this->_validation_error('validation_required_with_fail', [$this->getControlText($name), $this->getControlText($req)], $default_error));
                 }
             }
