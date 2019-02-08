@@ -877,12 +877,12 @@ function do_upload($name, $target_name = ''){
 
     $options = $__uploaders__[$name]['options'];
 
-    return _do_upload($name2, $options, $target_name);
+    return _do_upload($name2, $name, $options, $target_name);
 
 }
 
 
-function _do_upload($name, $options, $target_name = ''){
+function _do_upload($name, $name2, $options, $target_name = ''){
 
     global $__uploaders__;
 
@@ -890,7 +890,8 @@ function _do_upload($name, $options, $target_name = ''){
         $options['max'] = real_file_size(ini_get('upload_max_filesize'));
     else $options['max'] = real_file_size($options['max']);
 
-	$_files = re_array_files(files($name));
+    $_fname = files($name);
+	$_files = re_array_files($_fname);
 
 	foreach($_files as $_file){
 		if(is_array($_file)){
@@ -913,7 +914,7 @@ function _do_upload($name, $options, $target_name = ''){
 		}
     }
 
-	foreach($_files as $_file){
+	foreach($_files as &$_file){
 	    if($_file['size'] > $options['max']){
 	        delete($_file['tmp_name']);
 
@@ -923,20 +924,22 @@ function _do_upload($name, $options, $target_name = ''){
 
 	$return_arr = [];
 
-	foreach($_files as $_file){
+	foreach($_files as &$_file){
 	    if(empty($target_name))
 	        $target_name = clean_filename($_file['name']);
 
-		$filename = get_config('uploads_dir', 'main') . '/' . trim($__uploaders__[$name]['target_dir'], '/') . '/' . $target_name;
+	    $ext = pathinfo($_file['name'], PATHINFO_EXTENSION);
+	    if(!ends_with($target_name, '.' . $ext)) $target_name .= '.' .$ext;
+
+		$filename = trim($__uploaders__[$name2]['target_dir'], '/') . '/' . $target_name;
 
 	    if(move_uploaded_file($_file['tmp_name'], $filename)){
 
 			// Set proper file permission.
 			chmod($filename, 0777);
 
-
 			if(count($_files) == 1){
-				return $filename;
+				return [$filename];
 			} else {
 
 				array_push($return_arr, $filename);
