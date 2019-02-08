@@ -373,7 +373,7 @@ class Form {
         if($this->no_csrf)
             return true;
 
-        return ( $this->csrf_value == post($this->csrf_name) );
+        return ( $this->csrf_value == call($this->method, $this->csrf_name) );
     }
 
     /**
@@ -1116,10 +1116,19 @@ class Form {
             if( isset($rules['unique']) && isset($rules['required']) ){
 
                 list($utable, $ufield) = string_to_array($rules['unique'], '.');
-                $db_ret = db_select($utable, ['COUNT(*) as `count`'], [$ufield => $control_value])[0]->count;
+                $db_ret = db_select($utable, null, [$ufield => $control_value]);
 
-                if($db_ret > 0)
-                    return ($this->_validation_error('validation_unique_fail', [$this->getControlText($name)], $default_error));
+                if(!empty($db_ret)) {
+                    $unique_failed = true;
+                    if(isset($rules['unique_without'])){
+                        $id = $rules['unique_without'];
+                        $db_ret = to_array($db_ret[0]);
+                        if($db_ret[id] == call($this->method, $id))
+                            $unique_failed = false;
+                    }
+                    if($unique_failed)
+                        return ($this->_validation_error('validation_unique_fail', [$this->getControlText($name)], $default_error));
+                }
 
             } // Value must only exist once in the database.
 
