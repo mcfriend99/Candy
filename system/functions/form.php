@@ -61,6 +61,13 @@ function add_form($name, $method = 'post', $action = '', $has_files = true, $att
     $__forms__[$name] = new Form($name, $method, $action, $has_files, $attr, $options);
 }
 
+function copy_form($source, $destination){
+    global $__forms__;
+    if(isset($__forms__[$source]))
+        $__forms__[$destination] = $__forms__[$source];
+    else __form_error__($source);
+}
+
 function add_form_control($form_name, $name, $type = 'text', $attr = [], $options = [], $default = ''){
     global $__forms__;
     if(isset( $__forms__[$form_name]))
