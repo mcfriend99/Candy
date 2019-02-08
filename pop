@@ -243,7 +243,6 @@ You are now good to go.
                 foreach (get_directory($sr, ($type == 'cache' ? CANDY_SCAN_FILES : CANDY_SCAN_ALL), '', -1, false, CANDY_SORT_FILES_FIRST) as $file) {
                     $crname = pathinfo($file, PATHINFO_BASENAME);
                     if(starts_with($crname, '.')) continue;
-					
                     @unlink($file);
                     @rmdir($file);
                 }
@@ -280,6 +279,7 @@ You are now good to go.
 
                 break;
 
+            case 'www':
             case 'view':
                 $g = get_config('site_dir', 'main');
                 $n = $g . '/' . $name . '.php';
@@ -296,7 +296,7 @@ if(!defined('CANDY')){
 
 // Process view logic here...
 
-get_template(\"{$name}.html\");
+".(strtolower($actions[1]) == 'view' ? "get_template(\"{$name} . html\");" : '')."
 
 ";
 
@@ -317,18 +317,21 @@ get_template(\"{$name}.html\");
                 if(!file_exists($n)){
                     if(file_put_contents($n, $view_content)){
                         $p = false;
-                        if(!file_exists($n2)){
-                            if(file_put_contents($n2, $view_content2)){
-                                $p = true;
-                            }
-                        }
 
-                        exit("Created new view file {$name} in {$g} and an associated template file " .($p ? " was also created in {$g2}." : " could not be created either because you do not have permission to write into the directory or the template already exists."). "\n");
+                        if(strtolower($actions[1]) == 'view') {
+                            if (!file_exists($n2)) {
+                                if (file_put_contents($n2, $view_content2)) {
+                                    $p = true;
+                                }
+                            }
+                        } else $p = true;
+
+                        exit("Created new view file {$name} in {$g}" .(strtolower($actions[1]) == 'view' ? " and an associated template file " .($p ? " was also created in {$g2}." : " could not be created either because you do not have permission to write into the directory or the template already exists.") : ''). "\n");
                     } else {
                         exit("Could not create view file {$name} in {$g}. Please check that you have permission to write into the directory.\n");
                     }
                 } else {
-                    exit("View {$name} already exists.\n");
+                    exit(ucfirst($actions[1]) . " {$name} already exists.\n");
                 }
 
                 break;
