@@ -329,6 +329,7 @@ class DB {
 				$keyfound = true;
 			}
 		}
+
 		if($keyfound){
 			$test = $this->select($table, null, [$id => $keyval]);
 			if(empty($test)){
@@ -371,6 +372,7 @@ class DB {
 			$_cls = " WHERE ".substr($_cls, 1);
 		}
 		$sql = $this->con->prepare("UPDATE `{$table}`  SET {$_cols} {$_cls}");
+
 		foreach($data as $key => $value){
 			$sql->bindValue(":{$key}", $value, PDO::PARAM_STR);
 		}
