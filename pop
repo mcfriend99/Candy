@@ -140,8 +140,8 @@ foreach($template_files as $file){
 // Free variable name for use.
 unset($template_files);
 
-
-switch(strtolower($actions[1])){
+$act = strtolower($actions[1]);
+switch($act){
 
     case 'hide':
 
@@ -296,7 +296,7 @@ if(!defined('CANDY')){
 
 // Process view logic here...
 
-".(strtolower($actions[1]) == 'view' ? "get_template(\"{$name} . html\");" : '')."
+".($type == 'view' ? "get_template(\"{$name} . html\");" : '')."
 
 ";
 
@@ -318,7 +318,7 @@ if(!defined('CANDY')){
                     if(file_put_contents($n, $view_content)){
                         $p = false;
 
-                        if(strtolower($actions[1]) == 'view') {
+                        if($type == 'view') {
                             if (!file_exists($n2)) {
                                 if (file_put_contents($n2, $view_content2)) {
                                     $p = true;
@@ -326,7 +326,7 @@ if(!defined('CANDY')){
                             }
                         } else $p = true;
 
-                        exit("Created new view file {$name} in {$g}" .(strtolower($actions[1]) == 'view' ? " and an associated template file " .($p ? " was also created in {$g2}." : " could not be created either because you do not have permission to write into the directory or the template already exists.") : ''). "\n");
+                        exit("Created new view file {$name} in {$g}" .($type == 'view' ? " and an associated template file " .($p ? " was also created in {$g2}." : " could not be created either because you do not have permission to write into the directory or the template already exists.") : ''). "\n");
                     } else {
                         exit("Could not create view file {$name} in {$g}. Please check that you have permission to write into the directory.\n");
                     }
