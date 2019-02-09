@@ -126,14 +126,24 @@ class DB {
 						$is_and = true;
 					}
 
-                    if(strpos($key, '!') > -1){
+                    if(strpos($key, '=') > -1){
+                        $p = "=";
+                    } else if(strpos($key, '!') > -1){
                         $p = "!=";
+                    } else if(strpos($key, '>') > -1){
+                        $p = ">";
+                    }  else if(strpos($key, '>=') > -1){
+                        $p = ">=";
+                    }  else if(strpos($key, '<') > -1){
+                        $p = "<";
+                    }  else if(strpos($key, '<=') > -1){
+                        $p = "<=";
                     } else if(strpos($key, '%') > -1){
                         $value = $this->escape('%' . $value . '%');
                         $is_liked = true;
                     }
 
-                    $key = preg_replace('~[%?!()]+~', '', $key);
+                    $key = preg_replace('~[%?!()<>=]+~', '', $key);
 
 					if(!$is_liked){
                         $_cls .= " " .($is_and ? "AND" : " OR "). " {$_pr} `$key` {$p} :{$key} {$_pe}";
@@ -151,7 +161,7 @@ class DB {
 			if($where != null){
 				foreach($where as $key => $value){
 					$is_liked = preg_match('~[%]+~', $key) ? true : false;
-					$key = preg_replace('~[%?!()]+~', '', $key);
+					$key = preg_replace('~[%?!()<>=]+~', '', $key);
 					if(!$is_liked)
 						$sql->bindValue(":{$key}", $value, PDO::PARAM_STR);
 				}
