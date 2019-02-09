@@ -296,7 +296,7 @@ if(!defined('CANDY')){
 
 // Process view logic here...
 
-".($type == 'view' ? "get_template(\"{$name} . html\");" : '')."
+".($type == 'view' ? "get_template(\"{$name}.html\");" : '')."
 
 ";
 
