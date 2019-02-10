@@ -62,6 +62,8 @@ $candy_error = function ($s){
             }
             foreach($ft as &$bt)
             {
+                if(!is_array($bt))
+                    $bt = print_r($bt, true);
                 if(!isset($bt["file"]))
                     $ur .= ("[PHP core called function]<br />");
                 else
