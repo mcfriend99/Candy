@@ -196,12 +196,44 @@ class DB {
 			}
 			if($where != null){
 				foreach($where as $key => $value){
-					$p = "=";
-					if($key[0] == "!"){
-						$p = "!=";
-						$key = substr($key, 1);
-					}
-					$_cls .= " OR `$key` {$p} :{$key}";
+                    $p = "=";
+
+                    $is_liked = false;
+
+                    if($key[0] == '('){
+                        $_pr = '(';
+                    } else $_pr = '';
+                    if($key[strlen($key) -1] == ')'){
+                        $_pe = ')';
+                    } else $_pe = '';
+
+                    if(strpos($key, '?') > -1){
+                        $is_and = false;
+                    } else {
+                        $is_and = true;
+                    }
+
+                    if(strpos($key, '=') > -1){
+                        $p = "=";
+                    } else if(strpos($key, '!') > -1){
+                        $p = "!=";
+                    } else if(strpos($key, '>') > -1){
+                        $p = ">";
+                    }  else if(strpos($key, '>=') > -1){
+                        $p = ">=";
+                    }  else if(strpos($key, '<') > -1){
+                        $p = "<";
+                    }  else if(strpos($key, '<=') > -1){
+                        $p = "<=";
+                    } else if(strpos($key, '%') > -1){
+                        $value = $this->escape('%' . $value . '%');
+                        $is_liked = true;
+                    }
+
+                    $key = preg_replace('~[%?!()<>=]+~', '', $key);
+
+                    if($is_liked) $_cls .= " OR `$key` LIKE {$value}";
+                    else $_cls .= " OR `$key` {$p} :{$key}";
 				}
 				$_cls = " WHERE ".substr($_cls, 4);
 			}
@@ -211,8 +243,10 @@ class DB {
 			$sql = $this->con->prepare("SELECT {$_cols} FROM `{$table}`{$_cls} {$order} {$limit}");
 			if($where != null){
 				foreach($where as $key => $value){
-					if($key[0] == "!") $key = substr($key, 1);
-					$sql->bindValue(":{$key}", $value, PDO::PARAM_STR);
+                    $is_liked = preg_match('~[%]+~', $key) ? true : false;
+                    $key = preg_replace('~[%?!()<>=]+~', '', $key);
+                    if(!$is_liked)
+					    $sql->bindValue(":{$key}", $value, PDO::PARAM_STR);
 				}
 			}
 			$sql->execute();
