@@ -13,6 +13,8 @@
 #site_dir www
 #uploads_dir uploads
 
+#public_dir public_html
+
 #cookie_life 1209600 {2 Weeks.}
 #cookie_domain .127.0.0.1 {Note: This doesn't mean localhost. You are advised not to change this if you don't know what you are doing}
 #cookie_secret "1gp@TMPS|+$78sfpMJFe-92s" {The quotes are part of our key not necessarily yours. Changing this value may render previous cookies set invalid.}
@@ -23,5 +25,9 @@
 #encrypt_passwords yes {yes: Makes password secure for database entry, no: Puts password as is in database.}
 
 #email_from Candy <no-reply@candy.com>
+
+#use_smtp no
+#smtp_mail_address
+#smtp_mail_password
 
 #country ng

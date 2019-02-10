@@ -83,7 +83,7 @@ function show_html(){
         implementation_error('Html &quot;' . $name . '&quot;', 'correctly');
 
     //$args = array_delete($args, $args[0]);
-    $args[0] = $__htmls__[$name][0];
+    $args[0] = preg_replace('/\%(?!=s)/', '%%', $__htmls__[$name][0]);
 
 	$return = $__htmls__[$name][1];
 
@@ -93,13 +93,27 @@ function show_html(){
 }
 
 /**
+ * Returns the value of an html model.
+ *
+ * @param $name
+ * @return string
+ */
+function get_html($name){
+    global $__htmls__;
+
+    if(!isset($__htmls__[$name]))
+        return '';
+    else return $__htmls__[$name][0];
+}
+
+/**
  *
  * Shorthand for show_html().
  *
  */
 function html(){
 
-    call('show_html', func_get_args());
+    return call('show_html', func_get_args());
 }
 
 

@@ -111,13 +111,13 @@ function url($c){
  */
 function send_email($to_add, $subject, $body, $from_add = '', $reply_to = ''){
 
-    if(empty($from_add))
+    if (empty($from_add))
         $from_add = get_config('email_from', 'main');
 
-    if(empty($reply_to))
+    if (empty($reply_to))
         $reply_to = $from_add;
 
-	$message = "
+    $message = "
 		<!DOCTYPE html>
 		<html>
 			<head>
@@ -129,14 +129,71 @@ function send_email($to_add, $subject, $body, $from_add = '', $reply_to = ''){
 			</body>
 		</html>
 	";
-	$headers = "From: $from_add \r\n";
-	$headers .= "Reply-To: $reply_to \r\n";
-	$headers .= "MIME-Version: 1.0\n";
-	$headers .= "Content-type: text/html; charset=utf-8\n";
-	$headers .= "Return-Path: $from_add\r\n";
-	$headers .= "X-Mailer: CandyPHP \r\n";
 
-	if(@mail($to_add,$subject,$message,$headers)) { do_action('email_sent'); return true; } else { do_action('email_failed'); return false; }
+    $headers = [
+        'From' => $from_add,
+        'To' => $to_add,
+        'Reply-To' => $reply_to,
+        'MIME-Version' => 1.0,
+        'Content-type' => 'text/html; charset=utf-8',
+        'Return-Path' => $from_add,
+        'X-Mailer' => 'Candy'
+    ];
+
+
+    $username = get_config('smtp_mail_address', 'main', '');
+    $password = get_config('smtp_mail_password', 'main', '');
+
+    $use_smtp = strtolower(get_config('use_smtp', 'main', 'no')) == 'yes';
+
+    if(!$use_smtp && function_exists('mail')) {
+
+        $headers_str = '';
+
+        foreach ($headers as $key => $value){
+            $headers_str .= "{$key}: {$value} \r\n";
+        }
+        $headers_str .= "\r\n";
+
+        if (@mail($to_add, $subject, $message, $headers_str)) {
+            do_action('email_sent');
+            return true;
+        } else {
+            do_action('email_failed');
+            return false;
+        }
+    } elseif($use_smtp && !empty($username) && !empty($password)) {
+
+        require_once "Mail.php"; // PEAR Mail package
+        require_once ('Mail/mime.php'); // PEAR Mail_Mime packge
+
+        $text = strip_tags(str_replace('<br>', "\n", $message));
+
+        $mime = new Mail_mime("\n");
+        $mime->setTXTBody($text);
+        $mime->setHTMLBody($message);
+
+        //do not ever try to call these lines in reverse order
+        $body = $mime->get();
+        $headers = $mime->headers($headers);
+
+        $host = "localhost"; // all scripts must use localhost
+
+        $smtp = Mail::factory('smtp', array ('host' => $host, 'auth' => true,
+            'username' => $username,'password' => $password));
+
+        $mail = $smtp->send($to_add, $headers, $body);
+
+        if(!PEAR::isError($mail)){
+            do_action('email_failed');
+            return false;
+        } else {
+            do_action('email_sent');
+            return true;
+        }
+    } else {
+        return false;
+    }
 
 }
 
