@@ -83,7 +83,7 @@ function show_html(){
         implementation_error('Html &quot;' . $name . '&quot;', 'correctly');
 
     //$args = array_delete($args, $args[0]);
-    $args[0] = preg_replace('/\%(?!=s)/', '%%', $__htmls__[$name][0]);
+    $args[0] = preg_replace('/\%(?!s)/', '%%', $__htmls__[$name][0]);
 
 	$return = $__htmls__[$name][1];
 
