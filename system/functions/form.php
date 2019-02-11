@@ -64,7 +64,7 @@ function add_form($name, $method = 'post', $action = '', $has_files = true, $att
 function copy_form($source, $destination){
     global $__forms__;
     if(isset($__forms__[$source]))
-        $__forms__[$destination] = $__forms__[$source];
+        $__forms__[$destination] = clone $__forms__[$source];
     else __form_error__($source);
 }
 
