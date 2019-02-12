@@ -339,10 +339,10 @@ class Form {
 
             if($this->controls[$name]['type'] != 'password'){
 
-                //if( !empty(call($this->method,$this->submit_name)) || !empty(call($this->method,$this->csrf_name)) ){
-                if( !empty(call($this->method, $name)) ){
+                //if( !empty($this->getControlValue($this->submit_name)) || !empty($this->getControlValue($this->csrf_name)) ){
+                if( !empty($this->getControlValue($name)) ){
 
-                    $this->controls[$name]['default'] = call($this->method, $name);
+                    $this->controls[$name]['default'] = $this->getControlValue($name);
                 }
             }
 
@@ -373,7 +373,7 @@ class Form {
         if($this->no_csrf)
             return true;
 
-        return ( $this->csrf_value == call($this->method, $this->csrf_name) );
+        return ( $this->csrf_value == $this->getControlValue($this->csrf_name) );
     }
 
     /**
@@ -429,6 +429,20 @@ class Form {
         return isset($this->getControl($name)['options']['nicename'])
             ? $this->getControl($name)['options']['nicename']
             : $this->getControl($name)['options']['text'];
+    }
+
+    /**
+     * 
+     * Gets the value of data in the control.
+     *
+     * @param $name
+     * @return mixed
+     */
+    private function getControlValue($name){
+        $val = call($this->method, $name);
+        if(empty($val))
+            $val = $this->getControl($name)['default'];
+        return $val;
     }
 
     /**
@@ -1010,7 +1024,7 @@ class Form {
                 unset($rules[$i]);
             }
 
-            $control_value = call($this->method, $name);
+            $control_value = $this->getControlValue($name);
 
             if(isset($rules['error']))
                 $default_error = get_text($rules['error']);
@@ -1026,7 +1040,7 @@ class Form {
             if( isset($rules['required_with']) && empty($control_value) ){ // Require that this field is required when any of the other fields are present.
                 foreach($rules['required_with'] as $req){
 
-                    $cval = call($this->method, $req);
+                    $cval = $this->getControlValue($req);
                     $psk = false;
                     if(!empty($cval)){
                         $psk = true;
@@ -1040,14 +1054,14 @@ class Form {
             if( isset($rules['required_without']) && !empty($control_value) ){ // Require that this field is required when all of the other fields are not present.
                 foreach($rules['required_without'] as $req){
 
-                    $cval = call($this->method, $req);
+                    $cval = $this->getControlValue($req);
                     if( (empty($control_value) && empty($cval)) || (!empty($control_value) && !empty($cval)) )
                         return ($this->_validation_error('validation_required_without_fail', [$this->getControlText($name), $this->getControlText($req)], $default_error));
                 }
             }
 
             if( isset($rules['same_as']) && isset($rules['required']) ){ // Require that this field must contain the same value with the specified field..
-                $cval = call($this->method, $rules['same_as']);
+                $cval = $this->getControlValue($rules['same_as']);
                 if( $cval != $control_value )
                         return ($this->_validation_error('validation_same_as_fail', [$this->getControlText($name), $this->getControlText($rules['same_as'])], $default_error));
             }
@@ -1123,7 +1137,7 @@ class Form {
                     if(isset($rules['unique_without'])){
                         $id = $rules['unique_without'];
                         $db_ret = to_array($db_ret[0]);
-                        if($db_ret[$id] == call($this->method, $id))
+                        if($db_ret[$id] == $this->getControlValue($id))
                             $unique_failed = false;
                     }
                     if($unique_failed)
@@ -1134,14 +1148,14 @@ class Form {
 
             if( isset($rules['similar']) && isset($rules['required']) ){
 
-                $sm = call($this->method, $rules['similar']);
+                $sm = $this->getControlValue($rules['similar']);
                 if(!similar_text($control_value, $sm))
                     return ($this->_validation_error('validation_similar_fail', [$this->getControlText($rules['similar']), $this->getControlText($name)], $default_error));
             } // Value must be similar to the value of another field.
 
             if( isset($rules['not_similar']) && isset($rules['required']) ){
 
-                $sm = call($this->method, $rules['not_similar']);
+                $sm = $this->getControlValue($rules['not_similar']);
                 if(similar_text($control_value, $sm))
                     return ($this->_validation_error('validation_not_similar_fail', [$this->getControlText($rules['not_similar']), $this->getControlText($name)], $default_error));
             } // Value must be similar to the value of another field.
@@ -1163,7 +1177,7 @@ class Form {
                     return $this->_validation_error('validation_fail', [], $default_error);
                 } else {
 
-                    call($this->method, $name, $cvr);
+                    $this->getControlValue($name, $cvr);
                 }
             }
 
@@ -1260,9 +1274,9 @@ class Form {
 
         // Make our CSRF field our default form submit test.
         if($this->no_csrf)
-            $posted = call($this->method, $this->submit_name);
+            $posted = $this->getControlValue($this->submit_name);
         else
-           $posted = call($this->method, $this->csrf_name);
+           $posted = $this->getControlValue($this->csrf_name);
 
         if(!$this->no_submit && !empty($posted)){
 
@@ -1312,7 +1326,7 @@ class Form {
         foreach($this->controls as $name => $values){
 
             if(!in_array($name, $exceptions)){
-                $insert[$name] = call($this->method, $name);
+                $insert[$name] = $this->getControlValue($name);
 
                 if($values['type'] == 'password' && strtolower(get_config('encrypt_passwords', 'main')) == 'yes'){
 
