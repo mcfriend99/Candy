@@ -155,7 +155,7 @@ function get_resized_image($imgSrc, $width, $height = 0) { //$imgSrc can be a fi
     } catch(Exception $e){
 
     }
-    return $thumb;
+    return apply_filters('resized_image', $thumb);
 }
 
 /**
@@ -219,7 +219,7 @@ function get_thumbnail($imgSrc, $width, $height = 0){
     } catch(Exception $e){
 
     }
-    return $thumb;
+    return apply_filters('thumbnail', $thumb);
 }
 
 /**
@@ -277,7 +277,7 @@ function get_cropped_image($imgSrc, $thumbnail_width, $thumbnail_height = 0, $le
     } catch(Exception $e){
 
     }
-    return $process;
+    return apply_filters('cropped_image', $process);
 }
 
 /**
@@ -339,6 +339,8 @@ function reduce_image_quality($img, $percentage = 20, $type = 'jpeg'){
     
     if(!is_resource($myImage) || (!$resource && !@getimagesize($img)))
         throw new Exception('The image supplied to <strong>reduce_image_quality</strong> is not valid.');
+
+    $myImage = apply_filters('reduced_image', $myImage);
     
     switch($type){
         case 'png': 

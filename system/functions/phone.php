@@ -83,7 +83,7 @@ function format_phone($phone, $country = ''){
             foreach($f as $r){
                 $g .= $r;
             }
-            return '0' . $g;
+            return apply_filters('format_phone', '0' . $g);
             break;
     }
 }
@@ -114,7 +114,7 @@ function conceal_phone($phone, $country = ''){
             foreach($f as $r){
                 $g .= $r;
             }
-            return $g;
+            return apply_filters('conceal_phone', $g);
             break;
     }
 }

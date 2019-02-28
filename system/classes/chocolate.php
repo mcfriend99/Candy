@@ -183,6 +183,8 @@ class Chocolate
             include "{$this->cache_file}";
             $grs = '_' . pathinfo($this->cache_file, PATHINFO_FILENAME);
             new $grs();
+
+            do_action('on_chocolate_render');
         }
     }
 

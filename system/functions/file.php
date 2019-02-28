@@ -124,7 +124,9 @@ function get_directory($dir = '/', $type = 1, $extension = '', $depth = 0, $show
 	} else {
 
 		$result = array_merge($dirs, $files);
-	}
+    }
+    
+    do_action('on_get_directory', $result);
 
 	return $result;
 }
@@ -174,7 +176,7 @@ function format_file_size($bytes) {
         return sprintf('0.2%f', ($bytes / 1000)) . 'KB';
     }
 
-    return sprintf('0.2%f', ($bytes)) . 'B';
+    return apply_filters('format_file_size', sprintf('0.2%f', ($bytes)) . 'B');
 }
 
 /**
@@ -201,9 +203,9 @@ function real_file_size($s){
     }
 
     if(is_numeric($s))
-        return $s;
+        return apply_filters('real_file_size', $s);
 
-    return 0;
+    return apply_filters('real_file_size', 0);
 
 }
 
@@ -464,7 +466,7 @@ function get_inline_scripts($s = null){
 
     }
     
-    return $result;
+    return apply_filters('get_inline_scripts', $result, $s);
 }
 
 /**
@@ -641,7 +643,7 @@ function get_styles($s = null){
 
 	}
     
-    return $result;
+    return apply_filters('get_styles', $result);
 }
 
 /**
@@ -754,7 +756,7 @@ function get_inline_styles($s = null){
 
     }
     
-    return $result;
+    return apply_filters('get_inline_styles', $result);
 }
 
 /**
@@ -795,8 +797,10 @@ function get_inline_style($s){ return get_inline_styles($s); }
  */
 function delete($file){
 
-    if(file_exists($file))
+    if(file_exists($file)){
         unlink($file);
+        do_action('on_file_deleted', $file);
+    }
 }
 
 /**
@@ -808,7 +812,7 @@ function delete($file){
  */
 function clean_filename($s){
 
-    return preg_replace('~[^a-zA-Z0-9\-_.]+~', '', $s);
+    return apply_filters('clean_filename', preg_replace('~[^a-zA-Z0-9\-_.]+~', '', $s));
 }
 
 
@@ -894,8 +898,8 @@ function _do_upload($name, $name2, $options, $target_name = ''){
 	$_files = re_array_files($_fname);
 
 	foreach($_files as $_file){
-		if(is_array($_file)){
-
+		if(!is_array($_file)){
+            bad_implementation_error('Uploader &quot;' . $name . '&quot; contains invalid files and');
 		}
 	}
 
@@ -948,8 +952,11 @@ function _do_upload($name, $name2, $options, $target_name = ''){
 
 	}
 
-	if(!empty($return_arr))
-		return $return_arr;
+	if(!empty($return_arr)){
+
+        do_action('on_file_uploaded', $return_arr); // Return an array of uploaded filename to event handlers.
+        return $return_arr;
+    }
 
     return CANDY_UPLOAD_FAIL;
 }

@@ -59,6 +59,8 @@ function redirect($url = null, $allow_redirect = false, $use_js = false) {
         if(should_redirect()) $url = $_GET[get_config('redirect_parameter', 'site', '_ref')];
         elseif($url == null) $url = '/';
     }
+
+    do_action('redirecting');
 	if (headers_sent() || $use_js) {
 		echo "<script type='text/javascript'>document.location= {$url} + window.location.hash;</script>";
 	} else {
@@ -94,7 +96,7 @@ function _make_url_clickable_cb($matches) {
         $ret = substr($url, -1);
         $url = substr($url, 0, strlen($url)-1);
     }
-    return $matches[1] . "<a href=\"$url\" rel=\"nofollow\">$url</a>" . $ret;
+    return apply_filters('clickable_url', $matches[1] . "<a href=\"$url\" rel=\"nofollow\">$url</a>" . $ret);
 }
 
 function _make_web_ftp_clickable_cb($matches) {
@@ -109,12 +111,12 @@ function _make_web_ftp_clickable_cb($matches) {
         $ret = substr($dest, -1);
         $dest = substr($dest, 0, strlen($dest)-1);
     }
-    return $matches[1] . "<a href=\"$dest\" rel=\"nofollow\">$dest</a>" . $ret;
+    return apply_filters('clickable_ftp', $matches[1] . "<a href=\"$dest\" rel=\"nofollow\">$dest</a>" . $ret);
 }
 
 function _make_email_clickable_cb($matches) {
     $email = $matches[2] . '@' . $matches[3];
-    return $matches[1] . "<a href=\"mailto:$email\">$email</a>";
+    return apply_filters('clickable_email', $matches[1] . "<a href=\"mailto:$email\">$email</a>");
 }
 
 /**
@@ -134,7 +136,7 @@ function make_clickable($ret) {
     # this one is not in an array because we need it to run last, for cleanup of accidental links within links
     $ret = preg_replace("#(<a( [^>]+?>|>))<a [^>]+?>([^>]+?)</a></a>#i", "$1$3</a>", $ret);
     $ret = trim($ret);
-    return $ret;
+    return apply_filters('clickable', $ret);
 }
 
 #--------- End of make clickable ----------------------------#
@@ -166,16 +168,16 @@ function real_ip(){
 	else
 		$ipaddress = '';
 	
-	return $ipaddress;
+	return apply_filters('real_ip', $ipaddress);
 }
 
 
 function is_ajax_request(){
-	return (
+	return apply_filters('is_ajax_request', (
 		isset($_SERVER['HTTP_X_FORWARDED_FOR']) ||
 		isset($_SERVER['HTTP_X_REAL_IP']) ||
 		isset($_SERVER['HTTP_X_FORWARDED'])
-	);
+	));
 }
 
 /**
@@ -198,10 +200,17 @@ function get_url_content($url){
         $data = curl_exec($ch);
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-        return ($httpcode >= 200 && $httpcode < 300) ? $data : false;
+
+        return to_object([
+            'status' => $httpcode,
+            'content' => $data
+        ]);
     } else {
 
-        return file_get_contents($url);
+        return to_object([
+            'status' => 200,
+            'content' => file_get_contents($url)
+        ]);
     }
 }
 
@@ -217,7 +226,9 @@ function get_url($s = ''){
     if(!empty($s) && $s[0] == '/')
 		$s = substr($s, 1);
 	
-	return (isset($_SERVER['REQUEST_SCHEME']) ? $_SERVER['REQUEST_SCHEME'] : 'http') . '://' . $_SERVER['HTTP_HOST'] . REWRITE_BASE . $s; 
+    return apply_filters('get_url', (isset($_SERVER['REQUEST_SCHEME']) ? 
+        $_SERVER['REQUEST_SCHEME'] : 'http') . '://' . $_SERVER['HTTP_HOST'] 
+            . REWRITE_BASE . $s); 
 }
 
 /**
@@ -233,7 +244,7 @@ function get_api_url($s = '', $api = null){
 		global $api_mode;
 		$api = $api_mode;
 	}
-	return get_url('api/' . $api . '/' . $s); 
+	return apply_filters('get_api_url', get_url('api/' . $api . '/' . $s)); 
 }
 
 /**
@@ -332,7 +343,7 @@ function stripped_query($s = ''){
 
     }
 
-    return $query;
+    return apply_filters('stripped_query', $query);
 }
 
 #-------- End of is mobile -------------------#
@@ -347,7 +358,7 @@ function visitor_ip_details() {
     $fallback = @json_encode(['country' => get_config('language', 'main')]);
     try {
 
-        $json = @get_url_content("http://ipinfo.io/" . real_ip());
+        $json = @get_url_content("http://ipinfo.io/" . real_ip())->content;
         if(!empty($json))
             $details = @json_decode($json);
         else $details = @json_decode($fallback);

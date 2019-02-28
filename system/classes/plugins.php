@@ -126,7 +126,8 @@ class Plugin {
 		
 		foreach($this->plugins_available as $plugin){
 			
-			require_once PLUGIN_DIR . '/' . trim($plugin) . '/index.php';
+            require_once PLUGIN_DIR . '/' . trim($plugin) . '/index.php';
+            do_action('on_plugin_load', trim($plugin));
 		}
 	}
 
@@ -144,6 +145,7 @@ class Plugin {
             if(in_array($plg, $this->plugins_available)){
 
                 require_once PLUGIN_DIR . '/' . trim($plg) . '/index.php';
+                do_action('on_plugin_load', trim($plg));
             } else {
                 throw new Exception("Error loading unknown plugin {$plg}.");
             }
@@ -158,8 +160,11 @@ class Plugin {
      */
     function headers($plugin_name){
         if(in_array($plugin_name, $this->plugins_available))
-            return $this->get_plugin_headers(PLUGIN_DIR . "/{$plugin_name}/{$plugin_name}.candy");
-        return [];
+            $result = $this->get_plugin_headers(PLUGIN_DIR . "/{$plugin_name}/{$plugin_name}.candy");
+        else $result = [];
+
+        $result = apply_filters('plugin_header', $result, $name);
+        return $result;
     }
 }
 

@@ -137,10 +137,10 @@ class Form {
         }
 
         $this->name = $name;
-        $this->method = $method;
-        $this->action = $action;
+        $this->method = apply_filters('form_method', $method, $name);
+        $this->action = apply_filters('form_action', $action, $name);
         $this->has_files = $has_files;
-        $this->options = $options;
+        $this->options = apply_filters('form_options', $options, $name);
         $this->no_validation = !$options['validate'];
 
 
@@ -297,6 +297,8 @@ class Form {
      */
     function draw($return = false){
 
+        do_action('before_form_draw', $return);
+
         $options = $this->options;
 
         $result = $this->form_open;
@@ -356,10 +358,15 @@ class Form {
 
         $result .= '</form>';
 
-        if(!$return)
-            echo sprintf($wrap, $result);
-        else
-            return sprintf($wrap, $result);
+        $result = apply_filters('form_draw_html', sprintf($wrap, $result));
+
+        do_action('after_form_draw', $result);
+
+        if(!$return){
+            echo $result;
+        } else {
+            return $result;
+        }            
     }
 
     /**
@@ -371,9 +378,9 @@ class Form {
     function verifyCsrf(){
 
         if($this->no_csrf)
-            return true;
+            return apply_filters('csrf_validation', true, $this->name);
 
-        return ( $this->csrf_value == $this->getControlValue($this->csrf_name) );
+        return apply_filters('csrf_validation', $this->csrf_value == $this->getControlValue($this->csrf_name), $this->name);
     }
 
     /**
@@ -389,20 +396,23 @@ class Form {
         if(!isset($this->controls[$name]))
             bad_implementation_error('Form control &quot;' . $name . '&quot;');
 
+        $control = $this->_parseControl($name);
+
+        do_action('before_draw_form_control', $this->name, $control);
+
 		$text = '';
 
 		$text .= isset($control_options['before']) ? $control_options['before'] : (isset($options['before']) ? $options['before'] : '');
 
         $text .= isset($control_options['hint']) ? '<span>' . $control_options['hint'] . '</span>' : '';
 
-		$control = $this->_parseControl($name);
-
 		$text .= $control;
 
         $text .= isset($control_options['after']) ? $control_options['after'] : (isset($options['after']) ? $options['after'] : '');
 
+        do_action('after_draw_form_control', $this->name, $control);
 
-        return sprintf($control_options['wrap'], $text);
+        return apply_filters('draw_form_control', sprintf($control_options['wrap'], $text), $this->name, $control);
     }
 
     /**
@@ -426,9 +436,9 @@ class Form {
      */
     private function getControlText($name){
 
-        return isset($this->getControl($name)['options']['nicename'])
-            ? $this->getControl($name)['options']['nicename']
-            : $this->getControl($name)['options']['text'];
+        return apply_filters('form_control_text', isset($this->getControl($name)['options']['nicename'])
+        ? $this->getControl($name)['options']['nicename']
+        : $this->getControl($name)['options']['text'], $this->name, $name);
     }
 
     /**
@@ -442,7 +452,7 @@ class Form {
         $val = call($this->method, $name);
         if(empty($val))
             $val = $this->getControl($name)['default'];
-        return $val;
+        return apply_filters('form_control_value', $val, $this->name, $name);
     }
 
     /**
@@ -532,7 +542,7 @@ class Form {
         } elseif(is_resource($default))
             $default = to_string($default);
 
-        return $default;
+        return apply_filters('parse_form_control_default', $default, $this->name);
     }
 
     /**
@@ -557,7 +567,7 @@ class Form {
             $inline .= ' required';
         }
 
-        return $inline;
+        return apply_filters('get_form_control_attrs', $inline, $this->name, $name);
     }
 
     /**
@@ -978,6 +988,8 @@ class Form {
      */
     function validate(){
 
+        do_action('before_form_validate', $this->name);
+
         if($this->no_validate)
             return VALIDATION_SUCCESS;
 
@@ -996,7 +1008,7 @@ class Form {
 
             $global = $this->method;
 
-            $rules = string_to_array($options['rules'], '|'); // E.g. required|max:50|min:35|email|required_with[password,email]|in[male,female]|unique:users.userId|function:example_function
+            $rules = apply_filters('form_control_rules', string_to_array($options['rules'], '|'), $this->name, $name); // E.g. required|max:50|min:35|email|required_with[password,email]|in[male,female]|unique:users.userId|function:example_function
 
             $_ccount = count($rules);
 
@@ -1029,6 +1041,8 @@ class Form {
             if(isset($rules['error']))
                 $default_error = get_text($rules['error']);
             else $default_error = '';
+
+            $default_error = apply_filters('form_control_default_error', $default_error, $this->name, $name);
 
 
             if(!$this->verifyCsrf())
@@ -1229,10 +1243,12 @@ class Form {
             }
 
             // Allow custom validations to be added.
-            do_action('validation', $name, $control_value);
+            do_action('form_control_validated', $this->name, $name, $control_value);
 
 
         }
+
+        do_action('after_form_validate', $this->name);
 
         return VALIDATION_SUCCESS;
     }
@@ -1247,18 +1263,21 @@ class Form {
      * @return mixed|string
      */
     protected function _validation_error($text, $args, $default = ''){
+        $res = '';
         if(!empty($default)) {
             $default = ucwords(str_replace('_', ' ', $default));
-            return $default;
-        }
-        $text = get_config($text, 'validation');
-        if(!empty($args)){
-            $args = array_merge([$text], $args);
-            return call('sprintf', $args);
+            $res = $default;
         } else {
-
-            return $text;
+            $text = get_config($text, 'validation');
+            if(!empty($args)){
+                $args = array_merge([$text], $args);
+                $res = call('sprintf', $args);
+            } else {
+                $res = $text;
+            }
         }
+
+        return apply_filters('validation_error_text', $res, $default);
     }
 
     /**
@@ -1280,18 +1299,25 @@ class Form {
 
         if(!$this->no_submit && !empty($posted)){
 
-            if(!empty($function))
+            do_action('before_form_submit', $this->name);
+
+            if(!empty($function)){
                 call($function, $this->validate());
-            else {
+                do_action('after_form_submit', $this->name);
+            } else {
 
                 $result = $this->validate();
 
-                if($result == VALIDATION_SUCCESS)
+                if($result == VALIDATION_SUCCESS){
+                    do_action('after_form_submit', $this->name);
                     return true;
-                elseif(!$result)
+                } elseif(!$result){
+                    do_action('after_form_submit', $this->name);
                     return false;
-                else
+                } else
                     $this->validation_error = $result;
+
+                do_action('after_form_submit', $this->name);
             }
         } else if($this->no_submit){
 
@@ -1317,6 +1343,8 @@ class Form {
      * @return bool|int|mixed
      */
     function toDb($table = '', $unique_column = '', $exceptions = [], $should_update = true){
+
+        do_action('before_form_save', $this->name, $table, $unique_column, $exception, $should_update);
 
         $insert = [];
 
@@ -1376,6 +1404,8 @@ class Form {
 
             $result = db_insert_unique($table, $insert, $exception);
 
+            do_action('after_form_save', $this->name, $result);
+
             if($result == -1){
 
                 $this->validation_error = $this->_validation_error('validation_unique_fail', [$this->getControlText($unique_column), []]);
@@ -1386,6 +1416,7 @@ class Form {
             }
         } else {
 
+            do_action('after_form_save', $this->name, $result);
             return (int)$result;
         }
 

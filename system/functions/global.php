@@ -86,8 +86,11 @@ function ___global($type, $s, $new = '', $trim = false){
 
         if(empty($new))
             $p = isset($g[$s]) ? ($trim ? trim($g[$s]) : $g[$s]) : '';
-        else
+        else {
             $p = $g[$s] = $trim ? trim($new) : $new;
+            if(strtolower(trim($type)) == '_session')
+                do_action('on_session_set', $s);
+        }
 
         return $p;
     } else {
@@ -254,6 +257,7 @@ function session_set($name){
 function unsession($s = ''){
 
     ___unglobal('_SESSION', $s);
+    do_action('on_session_delete', $s);
 }
 
 /**
@@ -281,7 +285,7 @@ function unserver($s = ''){
  */
 function user_agent(){
 
-    return server('user_agent');
+    return apply_filters('user_agent', server('user_agent'));
 }
 
 /**

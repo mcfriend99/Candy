@@ -104,15 +104,20 @@ class Cookie {
      */
     function setCookie($name, $value, $location = "/"){
 
-		$this->random_token_string = hash('sha256', mt_rand());
+        $this->random_token_string = apply_filters('cookie_random_token_string', 
+            hash('sha256', mt_rand()));
 		$cookie_string_first_part = $this->random_token_string . ':' . $value;
-        $this->cookie_string_hash = hash('sha256', $cookie_string_first_part . COOKIE_SECRET_KEY);
-        $cookie_string = $cookie_string_first_part . ':' . $this->cookie_string_hash;
+        $this->cookie_string_hash = apply_filters('cookie_string_hash', 
+            hash('sha256', $cookie_string_first_part . COOKIE_SECRET_KEY));
+        $cookie_string =apply_filters('cookie_string', $cookie_string_first_part . ':' . $this->cookie_string_hash);
 
 		if(setcookie($name, $cookie_string, time() + COOKIE_RUNTIME, $location)){
-			return $this->random_token_string . ':' . $this->cookie_string_hash;
-		} else return false;
+			$result = $this->random_token_string . ':' . $this->cookie_string_hash;
+        } else $result = false;
+        
+        do_action('on_cookie_set', $result, $name);
 
+        return $result;
 	}
 
     /**
@@ -125,8 +130,9 @@ class Cookie {
      */
     function deleteCookie($name, $location = '/'){
 
-		return setcookie($name, false, time() - (3600 * 3650), $location);
-
+		$result = setcookie($name, false, time() - (3600 * 3650), $location);
+        do_action('on_cookie_delete', $result, $name);
+        return result;
 	}
 
 
@@ -165,11 +171,12 @@ class Cookie {
 
 			$this->random_token_string = $token;
 			$this->cookie_string_hash = $hash;
-			return $cookie_id;
+			$result = apply_filters('cookie_value', $cookie_id);
 		} else {
-			return false;
+			$result = apply_filters('cookie_value', false);
 		}
 
+        do_action('on_cookie_get', $result, $name);
 	}
 
 

@@ -49,6 +49,9 @@ if(!defined('CANDY')){
  */
 $candy_error = function($errno, $errstr='', $errfile='', $errline='')
 {
+
+    do_action('before_error_report', $errstr);
+
     // if error has been supressed with an @
     if (error_reporting() == 0) {
         return;
@@ -137,8 +140,10 @@ $candy_error = function($errno, $errstr='', $errfile='', $errline='')
 		$i++;
     }
 
+    $trace = apply_filters('candy_stack_trace', $trace);
+
     // display error msg, if debug is enabled
-    $result = "$errMsg\n\n<strong style='font-size:1.25em'>Trace:</strong>\n{$trace}\n";
+    $result = apply_filters('error', "$errMsg\n\n<strong style='font-size:1.25em'>Trace:</strong>\n{$trace}\n");
 
     // what to do
     switch ($errno) {
@@ -148,7 +153,14 @@ $candy_error = function($errno, $errstr='', $errfile='', $errline='')
             break;
 
         default:
-            die(CANDY_ERROR_PREPEND_STRING . $result . CANDY_ERROR_APPEND_STRING);
+            do_action('after_error_report', $result);
+            die(
+                apply_filters('candy_error_report', 
+                    CANDY_ERROR_PREPEND_STRING . 
+                    $result . 
+                    CANDY_ERROR_APPEND_STRING
+                )
+            );
             break;
 
     }
@@ -197,8 +209,12 @@ function __get_error_arg($arg)
  * @param string $append
  */
 function model_error($s, $append = ''){
+    $err = 'MODEL_ERROR: ' . $s . ' model is not found or is disabled' . (!empty($append) ? ' ' . $append : '') . '.';
 
-    throw new Exception('MODEL_ERROR: ' . $s . ' model is not found or is disabled' . (!empty($append) ? ' ' . $append : '') . '.');
+    $err = apply_filters('model_error', $err);
+    do_action('on_model_error', $err);
+
+    throw new Exception($err);
 }
 
 /**
@@ -208,7 +224,12 @@ function model_error($s, $append = ''){
  */
 function bad_model_error($s, $append = ''){
 
-    throw new Exception('MODEL_ERROR: ' . $s . ' model is not quite okay' . (!empty($append) ? ' ' . $append : '') . '.');
+    $err = 'MODEL_ERROR: ' . $s . ' model is not quite okay' . (!empty($append) ? ' ' . $append : '') . '.';
+
+    $err = apply_filters('bad_model_error', $err);
+    do_action('on_bad_model_error', $err);
+
+    throw new Exception($err);
 }
 
 /**
@@ -218,7 +239,12 @@ function bad_model_error($s, $append = ''){
  */
 function implementation_error($s, $append = ''){
 
-    throw new Exception('IMPLEMENTATION_ERROR: ' . $s . ' is not implemented' . (!empty($append) ? ' ' . $append : '') . '.');
+    $err = 'IMPLEMENTATION_ERROR: ' . $s . ' is not implemented' . (!empty($append) ? ' ' . $append : '') . '.';
+
+    $err = apply_filters('implementation_error', $err);
+    do_action('on_implementation_error', $err);
+
+    throw new Exception($err);
 }
 
 

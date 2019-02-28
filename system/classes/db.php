@@ -39,6 +39,12 @@ if(!defined('CANDY')){
 	header('Location: /');
 }
 
+define('CANDY_SQL_RESULT_UNKNOWN', -1);
+define('CANDY_SQL_RESULT_SELECT', 0);
+define('CANDY_SQL_RESULT_INSERT', 1);
+define('CANDY_SQL_RESULT_UPDATE', 2);
+define('CANDY_SQL_RESULT_DELETE', 3);
+
 /**
  * Class DB
  * 
@@ -71,7 +77,10 @@ class DB {
 		if($this->con != null) return true;
 		try {
             
-            $this->con = new PDO('mysql:host='. get_config('db_host', 'db') .';dbname='. get_config('db_name', 'db') . ';charset=utf8', get_config('db_user', 'db'), get_config('db_pass', 'db'));
+			$this->con = new PDO('mysql:host='. get_config('db_host', 'db') .';dbname='. get_config('db_name', 'db') . ';charset=utf8', get_config('db_user', 'db'), get_config('db_pass', 'db'));
+			
+			do_action('on_database_connect');
+
             return true;
         } catch (PDOException $e) {
             $this->errors[] .= $e->getMessage();
@@ -166,8 +175,15 @@ class DB {
 						$sql->bindValue(":{$key}", $value, PDO::PARAM_STR);
 				}
 			}
+
+			do_action('before_sql_select');
+
 			$sql->execute();
-			if($result = $sql->fetchAll(PDO::FETCH_OBJ)) return $result;
+			if($result = $sql->fetchAll(PDO::FETCH_OBJ)){
+				$result = apply_filters('sql_result', $result, CANDY_SQL_RESULT_SELECT);
+				do_action('on_sql_result', $result, CANDY_SQL_RESULT_SELECT);
+				return $result;
+			}
 		}
 		return false;
 	}
@@ -249,8 +265,15 @@ class DB {
 					    $sql->bindValue(":{$key}", $value, PDO::PARAM_STR);
 				}
 			}
+
+			do_action('before_sql_select');
+
 			$sql->execute();
-			if($result = $sql->fetchAll(PDO::FETCH_OBJ)) return $result;
+			if($result = $sql->fetchAll(PDO::FETCH_OBJ)){ 
+				$result = apply_filters('sql_result', $result, CANDY_SQL_RESULT_SELECT);
+				do_action('on_sql_result', $result, CANDY_SQL_RESULT_SELECT);
+				return $result;
+			}
 		}
 		return false;
 	}
@@ -294,8 +317,15 @@ class DB {
 					$sql->bindValue(":{$key}", $value."%", PDO::PARAM_STR);
 				}
 			}
+
+			do_action('before_sql_select');
+
 			$sql->execute();
-			if($result = $sql->fetchAll(PDO::FETCH_OBJ)) return $result;
+			if($result = $sql->fetchAll(PDO::FETCH_OBJ)){ 
+				$result = apply_filters('sql_result', $result, CANDY_SQL_RESULT_SELECT);
+				do_action('on_sql_result', $result, CANDY_SQL_RESULT_SELECT);
+				return $result;
+			}
 		}
 		return false;
 	}
@@ -310,22 +340,28 @@ class DB {
      */
     public function insert($table, $data){
 		if($this->connect()){
-		$_cols = ""; $_vals = "";
-		foreach($data as $key => $value){
-			$_cols .= ",`{$key}`";
-			$_vals .= ",:{$key}";
-		}
-		$_cols = substr($_cols, 1);
-		$_vals = substr($_vals, 1);
-		$sql = $this->con->prepare("INSERT INTO `{$table}` ({$_cols}) VALUES ({$_vals})");
+			$_cols = ""; $_vals = "";
+			foreach($data as $key => $value){
+				$_cols .= ",`{$key}`";
+				$_vals .= ",:{$key}";
+			}
+			$_cols = substr($_cols, 1);
+			$_vals = substr($_vals, 1);
+			$sql = $this->con->prepare("INSERT INTO `{$table}` ({$_cols}) VALUES ({$_vals})");
 
-		foreach($data as $key => $value){
-			$sql->bindValue(":{$key}", $value, PDO::PARAM_STR);
-		}
+			foreach($data as $key => $value){
+				$sql->bindValue(":{$key}", $value, PDO::PARAM_STR);
+			}
 
-		$sql->execute();
-		$id = $this->con->lastInsertId();
-		return $id;
+			do_action('before_sql_insert');
+
+			$sql->execute();
+			$id = $this->con->lastInsertId();
+
+			$result = apply_filters('sql_result', $result, CANDY_SQL_RESULT_INSERT);
+			do_action('on_sql_result', $result, CANDY_SQL_RESULT_INSERT);
+
+			return $id;
 		}
 	}
 
@@ -399,34 +435,41 @@ class DB {
      */
     public function update($table, $data, $where = null){
 		if($this->connect()){
-		$_cols = ""; $_cls = "";
-		foreach($data as $key => $value){
-			$_cols .= ",`{$key}` = :{$key}";
-		}
-		$_cols = substr($_cols, 1);
-		if(!empty($where)){
-			foreach($where as $key => $value){
-				$p = "=";
-				if($key[0] == "!"){
-					$p = "!=";
-					$key = substr($key, 1);
+			$_cols = ""; $_cls = "";
+			foreach($data as $key => $value){
+				$_cols .= ",`{$key}` = :{$key}";
+			}
+			$_cols = substr($_cols, 1);
+			if(!empty($where)){
+				foreach($where as $key => $value){
+					$p = "=";
+					if($key[0] == "!"){
+						$p = "!=";
+						$key = substr($key, 1);
+					}
+					$_cls .= ",`$key` {$p} :_{$key}";
 				}
-				$_cls .= ",`$key` {$p} :_{$key}";
+				$_cls = " WHERE ".substr($_cls, 1);
 			}
-			$_cls = " WHERE ".substr($_cls, 1);
-		}
-		$sql = $this->con->prepare("UPDATE `{$table}`  SET {$_cols} {$_cls}");
+			$sql = $this->con->prepare("UPDATE `{$table}`  SET {$_cols} {$_cls}");
 
-		foreach($data as $key => $value){
-			$sql->bindValue(":{$key}", $value, PDO::PARAM_STR);
-		}
-		if(!empty($where)){
-			foreach($where as $key => $value){
-				if($key[0] == "!") $key = substr($key, 1);
-				$sql->bindValue(":_{$key}", $value, PDO::PARAM_STR);
+			foreach($data as $key => $value){
+				$sql->bindValue(":{$key}", $value, PDO::PARAM_STR);
 			}
-		}
-		return $sql->execute();
+			if(!empty($where)){
+				foreach($where as $key => $value){
+					if($key[0] == "!") $key = substr($key, 1);
+					$sql->bindValue(":_{$key}", $value, PDO::PARAM_STR);
+				}
+			}
+
+			do_action('before_sql_update');
+
+			$result = $sql->execute();
+
+			$result = apply_filters('sql_result', $result, CANDY_SQL_RESULT_UPDATE);
+			do_action('on_sql_result', $result, CANDY_SQL_RESULT_UPDATE);
+
 		}
         return false;
 	}
@@ -441,28 +484,35 @@ class DB {
      */
     public function delete($table, $where){
 		if($this->connect()){
-		$_cols = "";
-		foreach($where as $key => $value){
-			$p = "=";
-			if($key[0] == "!"){
-				$p = "!=";
-				$key = substr($key, 1);
+			$_cols = "";
+			foreach($where as $key => $value){
+				$p = "=";
+				if($key[0] == "!"){
+					$p = "!=";
+					$key = substr($key, 1);
+				}
+				$_cols .= ",`{$key}` {$p} :{$key}";
 			}
-			$_cols .= ",`{$key}` {$p} :{$key}";
-		}
 
-		// Trashing before removing row
-		$sqr = $this->select($table, null, $where);
-		$this->insert("trash", ["content" => @json_encode($sqr), 'trash_time' => time(), 'trash_type' => $table]);
+			// Trashing before removing row
+			$sqr = $this->select($table, null, $where);
+			$this->insert("trash", ["content" => @json_encode($sqr), 'trash_time' => time(), 'trash_type' => $table]);
 
-		if(!empty($_cols)) $_cols = substr($_cols, 1);
+			if(!empty($_cols)) $_cols = substr($_cols, 1);
 
-		// Removing row.
-		$sql = $this->con->prepare("DELETE FROM `{$table}` WHERE {$_cols}");
-		foreach($where as $key => $value){
-			$sql->bindValue(":{$key}", $value, PDO::PARAM_STR);
-		}
-		$sql->execute();
+			// Removing row.
+			$sql = $this->con->prepare("DELETE FROM `{$table}` WHERE {$_cols}");
+			foreach($where as $key => $value){
+				$sql->bindValue(":{$key}", $value, PDO::PARAM_STR);
+			}
+
+			do_action('before_sql_delete');
+
+			$result = $sql->execute();
+
+			$result = apply_filters('sql_result', $result, CANDY_SQL_RESULT_DELETE);
+			do_action('on_sql_result', $result, CANDY_SQL_RESULT_DELETE);
+			
 		}
 	}
 
@@ -475,6 +525,10 @@ class DB {
      */
     function query($str){
 		if($this->connect()){
+
+			$result = false;
+			$act = -1;
+
 			$sql = $this->con->prepare($str);
 			// print_r($this->con->errorInfo());
 
@@ -483,12 +537,22 @@ class DB {
 			if(preg_match('~^insert\s+int~sim', $str)){
 
                 $sql->execute();
-			    return $this->con->lastInsertId();
+				$result = $this->con->lastInsertId();
+				$act = CANDY_SQL_RESULT_INSERT;
 			} elseif(preg_match('~^select~sim', $str)){
 
                 $sql->execute();
-                return $sql->fetchAll(PDO::FETCH_OBJ);
-			} else return $sql->execute();
+                $result = $sql->fetchAll(PDO::FETCH_OBJ);
+				$act = CANDY_SQL_RESULT_SELECT;
+			} else { 
+				$result = $sql->execute();
+				$act = CANDY_SQL_RESULT_UNKNOWN;
+			}
+
+			do_action('on_sql_query');
+
+			$result = apply_filters('sql_result', $result, $act);
+			do_action('on_sql_result', $result, $act);
 		}
 		return false;
 	}
@@ -503,7 +567,7 @@ class DB {
      */
     function escape($str){
 		if($this->connect()){
-			$str = $this->con->quote($str);
+			$str = apply_filters('on_sql_escape', $this->con->quote($str));
 		}
 		return $str;
 	}
@@ -513,8 +577,10 @@ class DB {
      */
     function close(){
 		if($this->con != null){
-		$this->con->close();
-		$this->con = null;
+			$this->con->close();
+			$this->con = null;
+
+			do_action('on_database_close');
 		}
 	}
 
