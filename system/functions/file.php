@@ -126,7 +126,8 @@ function get_directory($dir = '/', $type = 1, $extension = '', $depth = 0, $show
 		$result = array_merge($dirs, $files);
     }
     
-    do_action('on_get_directory', $result);
+	if(function_exists('do_action'))
+		do_action('on_get_directory', $result);
 
 	return $result;
 }
