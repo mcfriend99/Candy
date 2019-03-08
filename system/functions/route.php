@@ -47,8 +47,9 @@ if(!defined('CANDY')){
  * @param $route        Route (Regex or plain string)
  * @param $www          #site_dir file without the .php or .html extension.
  */
-function add_route($route, $www){
-   global $__routes__; 
+function add_route($route, $www = null){
+    global $__routes__; 
+    if(empty($www)) $www = $route;
     $__routes__ = array_merge($__routes__, [$route => $www]);
 }
 
