@@ -6,7 +6,7 @@
 #language en {Default language is English.}
 
 #plugin_dir system/plugins
-#assets_dir resources
+#assets_dir assets
 #template_dir templates
 #language_dir langs
 #models_dir models

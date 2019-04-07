@@ -77,7 +77,7 @@ class DB {
 		if($this->con != null) return true;
 		try {
             
-			$this->con = new PDO('mysql:host='. get_config('db_host', 'db') .';dbname='. get_config('db_name', 'db') . ';charset=utf8', get_config('db_user', 'db'), get_config('db_pass', 'db'));
+			$this->con = new PDO(get_config('db_engine', 'db') . ':host='. get_config('db_host', 'db') .';dbname='. get_config('db_name', 'db') . ';charset=utf8', get_config('db_user', 'db'), get_config('db_pass', 'db'));
 			
 			do_action('on_database_connect');
 

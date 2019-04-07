@@ -2,8 +2,8 @@
 
 if(!defined('CANDY')) exit(404);
 
-if(file_exists('.hide')){
-    require_once 'closed.html';
+if(file_exists(__DIR__ . '/.hide')){
+    require_once __DIR__ . '/closed.html';
     exit;
 }
 
@@ -16,8 +16,8 @@ require 'system/functions/file.php';
 require 'system/functions/configs.php';
 
 // Define global configuration directory.
-define('CONFIG_DIR', 'system/configs');
-define('CACHE_DIR', 'system/cache');
+define('CONFIG_DIR', __DIR__ . '/' . 'configs');
+define('CACHE_DIR', __DIR__ . '/' . 'system/cache');
 
 
 // Global error wrapper.
@@ -54,7 +54,7 @@ if(strtolower(get_config('show_error', 'main', 'yes')) == 'yes'){
 
 
 // Load Languages.
-$langs_files = get_directory(get_config('language_dir', 'main'), CANDY_SCAN_FILES, '.candy');
+$langs_files = get_directory(__DIR__ . '/' . get_config('language_dir', 'main'), CANDY_SCAN_FILES, '.candy');
 foreach($langs_files as $file){
     load_texts($file);
 }
@@ -64,16 +64,17 @@ unset($lang_files);
 
 
 // Load classes.
-$app_files = get_directory('system/classes', CANDY_SCAN_FILES, '.php');
+$app_files = get_directory(__DIR__ . '/system/classes', CANDY_SCAN_FILES, '.php');
 foreach($app_files as $file){
     require $file;
 }
 unset($app_files);
 
 // Load functions.
-$app_files = get_directory('system/functions', CANDY_SCAN_FILES, '.php');
+$app_files = get_directory(__DIR__ . '/system/functions', CANDY_SCAN_FILES, '.php');
 foreach($app_files as $file){
-    $dont_loads = ['system/functions/configs.php', 'system/functions/file.php'];
+    $dont_loads = [__DIR__ . '/system/functions/configs.php', 
+      __DIR__ . '/system/functions/file.php'];
 
     if(!in_array($file, $dont_loads)){
         require $file;
@@ -84,12 +85,12 @@ unset($app_files);
 
 // Create global definition for directories configuration.
 define('REWRITE_BASE', get_config('rewrite_base', 'main'));
-define('ROOT', $_SERVER['DOCUMENT_ROOT']);
-define('PLUGIN_DIR', get_config('plugin_dir', 'main'));
-define('ASSETS_DIR', get_config('assets_dir', 'main'));
-define('THEME_DIR', get_config('template_dir', 'main'));
-define('SITE_DIR', get_config('site_dir', 'main'));
-define('UPLOADS_DIR', get_config('uploads_dir', 'main'));
+define('ROOT', __DIR__ . '/');
+define('PLUGIN_DIR', __DIR__ . '/' . get_config('plugin_dir', 'main'));
+define('ASSETS_DIR', __DIR__ . '/' . get_config('assets_dir', 'main'));
+define('THEME_DIR', __DIR__ . '/' . get_config('template_dir', 'main'));
+define('SITE_DIR', __DIR__ . '/' . get_config('site_dir', 'main'));
+define('UPLOADS_DIR', __DIR__ . '/' . get_config('uploads_dir', 'main'));
 
 
 set_error_handler($candy_error, E_ALL | E_STRICT);
@@ -97,7 +98,7 @@ set_exception_handler($candy_error);
 
 
 // load User custom functions.
-$app_files = get_directory('app', CANDY_SCAN_FILES, '.php');
+$app_files = get_directory(__DIR__ . '/app', CANDY_SCAN_FILES, '.php');
 foreach($app_files as $file){
 
     require $file;

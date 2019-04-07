@@ -102,7 +102,7 @@ require 'system/functions/main.php';
 require 'system/classes/chocolate.php';
 
 // Define global configuration directory.
-define('CONFIG_DIR', 'system/configs');
+define('CONFIG_DIR', 'configs');
 define('CACHE_DIR', 'system/cache');
 
 // Load Configs.
@@ -186,10 +186,11 @@ switch($act){
         }
 
         $line = "Candy development server started at http://{$host}:{$port}\n\n";
-        $command = sprintf('%s -S %s:%s',
+        $command = sprintf('%s -S %s:%s -t %s',
             escapeshellarg(find_php(false)), // Php executable path.
             $host,
-            $port
+            $port,
+            get_config('public_dir', 'main')
         );
 
         try {

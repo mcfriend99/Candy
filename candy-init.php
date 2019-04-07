@@ -33,7 +33,7 @@ $__uploaders__ = [];
 $__flashsessions__ = [];
 
 // Initialize Concepts.
-$app_files = get_directory(get_config('models_dir', 'main'), CANDY_SCAN_FILES, '.php');
+$app_files = get_directory(__DIR__ . '/' . get_config('models_dir', 'main'), CANDY_SCAN_FILES, '.php');
 foreach($app_files as $file){
     $dont_loads = [];
 

@@ -438,7 +438,7 @@ function get_template($s, $return = false){
         }
 
         // Load Templates.
-        $template_files = get_directory(get_config('template_dir', 'main'), CANDY_SCAN_FILES);
+        $template_files = get_directory(ROOT . '/' . get_config('template_dir', 'main'), CANDY_SCAN_FILES);
         foreach($template_files as $file){
             $crname = pathinfo($file, PATHINFO_BASENAME);
             if(starts_with($crname, '.')) continue;

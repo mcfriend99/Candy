@@ -829,8 +829,11 @@ function clean_filename($s){
 function add_uploader($name, $assoc = 'file', $target_dir = '', $options = []){
     global $__uploaders__;
     if(empty($target_dir))
-        $target_dir = get_config('uploads_dir', 'main');
-    $__uploaders__[$name] = ['name' => $assoc, 'target_dir' => get_config('upload_dir', 'main') . $target_dir, 'options' => $options];
+        $target_dir = ROOT . '/' . get_config('public_dir', 'main') . '/' . get_config('uploads_dir', 'main');
+    else
+        $target_dir = ROOT . '/' . get_config('public_dir', 'main') . '/' . $target_dir;
+      
+    $__uploaders__[$name] = ['name' => $assoc, 'target_dir' => $target_dir, 'options' => $options];
 
 }
 

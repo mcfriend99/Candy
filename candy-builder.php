@@ -4,9 +4,9 @@ if(!defined('CANDY')) exit(404);
 
 // Creating country. We want country to always be available for use.
 // E.g. Feching default zipcode etc...
-if(!isset($_SESSION['country'])){
+if(!isset($_SERVER['HTTP_USER_COUNTRY'])){
 	$__CXY__ = @visitor_ip_details()->country;
-	$_SESSION['country'] = !empty($__CXY__) ? $__CXY__ : get_config('country', 'main');
+	$_SERVER['HTTP_USER_COUNTRY'] = !empty($__CXY__) ? $__CXY__ : get_config('country', 'main');
 }
 
 // Set API auto target mode. m => mobile, web => Desktop.

@@ -1,0 +1,5 @@
+#db_engine mysql {This may be any of the engines supported by PHP PDO e.g. mysql, pgsql, sqlite, oracle, mongodb etc... Note that both mariadb and mysql use the 'mysql' engine.}
+#db_host localhost
+#db_user root
+#db_pass 
+#db_name

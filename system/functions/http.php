@@ -255,8 +255,7 @@ function get_api_url($s = '', $api = null){
  * @return string
  */
 function get_resource_url($s = ''){
-    
-    return get_url(ASSETS_DIR . '/' . $s);
+    return get_url(preg_replace('~^' .str_replace('\\', '\\\\', ROOT). '~', '', ASSETS_DIR) . '/' . $s);
 }
 
 /**
@@ -267,8 +266,7 @@ function get_resource_url($s = ''){
  * @return string
  */
 function get_upload_url($s = ''){
-
-    return get_url(UPLOADS_DIR . '/' . $s);
+    return get_url(preg_replace('~^' .str_replace('\\', '\\\\', ROOT). '~', '', UPLOADS_DIR) . '/' . $s);
 }
 
 /**
@@ -292,6 +290,7 @@ function http_status($status_code, $status_text = '' ){
 		if (!function_exists('http_response_code') || headers_sent()){
 			
 			header('Candy-Response-Code: ' . $status_code, true, $status_code);
+			header('Response-Code: ' . $status_code, true, $status_code);
 		} else {
 			
 			http_response_code($status_code);
@@ -355,7 +354,7 @@ function stripped_query($s = ''){
  * @return mixed
  */
 function visitor_ip_details() {
-    $fallback = @json_encode(['country' => get_config('language', 'main')]);
+    $fallback = @json_encode(['country' => get_config('country', 'main')]);
     try {
 
         $json = @get_url_content("http://ipinfo.io/" . real_ip())->content;
