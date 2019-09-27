@@ -16,8 +16,8 @@ require 'system/functions/file.php';
 require 'system/functions/configs.php';
 
 // Define global configuration directory.
-define('CONFIG_DIR', __DIR__ . '/' . 'configs');
-define('CACHE_DIR', __DIR__ . '/' . 'system/cache');
+define('CONFIG_DIR', str_replace('\\', '/', __DIR__) . '/' . 'configs');
+define('CACHE_DIR', str_replace('\\', '/', __DIR__) . '/' . 'system/cache');
 
 
 // Global error wrapper.
@@ -85,12 +85,12 @@ unset($app_files);
 
 // Create global definition for directories configuration.
 define('REWRITE_BASE', get_config('rewrite_base', 'main'));
-define('ROOT', __DIR__ . '/');
-define('PLUGIN_DIR', __DIR__ . '/' . get_config('plugin_dir', 'main'));
-define('ASSETS_DIR', __DIR__ . '/' . get_config('assets_dir', 'main'));
-define('THEME_DIR', __DIR__ . '/' . get_config('template_dir', 'main'));
-define('SITE_DIR', __DIR__ . '/' . get_config('site_dir', 'main'));
-define('UPLOADS_DIR', __DIR__ . '/' . get_config('uploads_dir', 'main'));
+define('ROOT', str_replace('\\', '/', __DIR__) . '/');
+define('PLUGIN_DIR', str_replace('\\', '/', __DIR__) . '/' . get_config('plugin_dir', 'main'));
+define('ASSETS_DIR', str_replace('\\', '/', __DIR__) . '/' . get_config('assets_dir', 'main'));
+define('THEME_DIR', str_replace('\\', '/', __DIR__) . '/' . get_config('template_dir', 'main'));
+define('SITE_DIR', str_replace('\\', '/', __DIR__) . '/' . get_config('site_dir', 'main'));
+define('UPLOADS_DIR', str_replace('\\', '/', __DIR__) . '/' . get_config('uploads_dir', 'main'));
 
 
 set_error_handler($candy_error, E_ALL | E_STRICT);

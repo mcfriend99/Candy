@@ -1,0 +1,1 @@
+<?php $GLOBALS['__CONFIG__site__'] = json_decode(stripslashes("[]"), true); ?>
