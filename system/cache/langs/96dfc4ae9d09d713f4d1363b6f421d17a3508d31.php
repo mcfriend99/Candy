@@ -1,1 +1,0 @@
-<?php $GLOBALS['__LANGUAGE__en__'] = @unserialize(stripslashes("a:3:{s:9:\"site_name\";s:5:\"Candy\";s:7:\"welcome\";s:35:\"[site_name] - Code the simpler way.\";s:12:\"welcome_desc\";s:124:\"I know what you are thinking &mdash; This page isn\\\'t exactly impressive.<br> What you heard about [site_name] isn\\\'t a lie.\";}")); ?>
