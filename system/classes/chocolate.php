@@ -585,7 +585,7 @@ class _{$grs} {$extend} {
                     $t->set_file(THEME_DIR . '/' . $file);
                     $t->render(false);
 
-                    return "<?php include \"{$t->cache_file}\"; new _" .(preg_replace('~([^/]+/)|(.php)~x', '', $t->cache_file)). "(); ?>";
+                    return "<?php include \"{$t->cache_file}\"; new _" .(pathinfo($t->cache_file, PATHINFO_FILENAME)). "(); ?>";
 
                 } else {
 
