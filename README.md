@@ -9,6 +9,7 @@ Candy has everything you need to develop a full functional professional website 
 - Light weight
 - Inbuilt development server
 - Easily deploy to shared a server
+- Device identification with support for custom UI's for popular devices
 - Chocolate - A simple blade-like advanced template engine with device specific override ability.
 - Simple and flexible model based system
 - Routing
@@ -24,7 +25,6 @@ Candy has everything you need to develop a full functional professional website 
 - Cookie management
 - Multiple database support via PDO
 - Advanced regular expression library
-- Device identification with support for custom UI's for popular devices
 - HTTP management
 - Image manipulation
 - Automatic detection and management
@@ -37,28 +37,18 @@ git clone https://github.com/mcfriend99/Candy.git
 
 ### Starting the server
 
-```
+```bash
 php pop server
 ```
 
 ### Activating maintenance mode
 
-```
+```bash
 php pop hide
 ```
 
 ### Deactivating maintenance mode
 
-```
+```bash
 php pop lick
-```
-
-```markdown
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
 ```
