@@ -1,8 +1,8 @@
 <?php
 
-if(!defined('CANDY')) exit(404);
+if (!defined('CANDY')) exit(404);
 
-if(file_exists(__DIR__ . '/.hide')){
+if (file_exists(__DIR__ . '/.hide')) {
     require_once __DIR__ . '/closed.html';
     exit;
 }
@@ -10,7 +10,7 @@ if(file_exists(__DIR__ . '/.hide')){
 define('CANDY_PATH', str_replace('\\', '/', __DIR__));
 
 // Initate sessions.
-if(!isset($_SESSION))
+if (!isset($_SESSION))
     session_start();
 
 // Basic requirement for loading Candy.
@@ -35,15 +35,14 @@ ini_set('expose_php', 'Off');
 
 
 // Load Configs.
-$config_files = get_directory(CONFIG_DIR, CANDY_SCAN_FILES, '.candy');
-foreach($config_files as $file){
+$config_files = get_directory(CONFIG_DIR, CANDY_SCAN_FILES, '.json');
+foreach ($config_files as $file) {
     load_configs($file);
 }
 unset($config_files);
-
 // Enable/Disable error reporting as defined in configuration.
 // Do not change this option here. Rather change the show_error config value to yes or no as required.
-if(strtolower(get_config('show_error', 'main', 'yes')) == 'yes'){
+if (get_config('show_error', 'main', true) === true) {
 
     error_reporting(E_ALL);
 } else {
@@ -54,10 +53,9 @@ if(strtolower(get_config('show_error', 'main', 'yes')) == 'yes'){
     error_reporting(0);
 }
 
-
 // Load Languages.
-$langs_files = get_directory(__DIR__ . '/' . get_config('language_dir', 'main'), CANDY_SCAN_FILES, '.candy');
-foreach($langs_files as $file){
+$langs_files = get_directory(__DIR__ . '/' . get_config('language_dir', 'main'), CANDY_SCAN_FILES, '.json');
+foreach ($langs_files as $file) {
     load_texts($file);
 }
 // Free variable name for use.
@@ -67,23 +65,24 @@ unset($lang_files);
 
 // Load classes.
 $app_files = get_directory(__DIR__ . '/system/classes', CANDY_SCAN_FILES, '.php');
-foreach($app_files as $file){
+foreach ($app_files as $file) {
     require $file;
 }
 unset($app_files);
 
 // Load functions.
 $app_files = get_directory(__DIR__ . '/system/functions', CANDY_SCAN_FILES, '.php');
-foreach($app_files as $file){
-    $dont_loads = [__DIR__ . '/system/functions/configs.php', 
-      __DIR__ . '/system/functions/file.php'];
+foreach ($app_files as $file) {
+    $dont_loads = [
+        __DIR__ . '/system/functions/configs.php',
+        __DIR__ . '/system/functions/file.php'
+    ];
 
-    if(!in_array($file, $dont_loads)){
+    if (!in_array($file, $dont_loads)) {
         require $file;
     }
 }
 unset($app_files);
-
 
 // Create global definition for directories configuration.
 define('REWRITE_BASE', get_config('rewrite_base', 'main'));
@@ -101,7 +100,7 @@ set_exception_handler($candy_error);
 
 // load User custom functions.
 $app_files = get_directory(__DIR__ . '/app', CANDY_SCAN_FILES, '.php');
-foreach($app_files as $file){
+foreach ($app_files as $file) {
 
     require $file;
 }
