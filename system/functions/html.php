@@ -41,7 +41,6 @@ if (!defined('CANDY')) {
 
 
 /**
- *
  * Adds an html template concept.
  *
  * @param $name             Name of the concept.
@@ -50,9 +49,8 @@ if (!defined('CANDY')) {
  */
 function add_html($name, $html = '%s', $return = false)
 {
-    global $__htmls__;
-    $__htmls__[$name][0] = $html;
-    $__htmls__[$name][1] = $return;
+    $GLOBALS['__htmls__'][$name][0] = $html;
+    $GLOBALS['__htmls__'][$name][1] = $return;
 }
 
 /**
@@ -63,8 +61,6 @@ function add_html($name, $html = '%s', $return = false)
  */
 function show_html()
 {
-    global $__htmls__;
-
     $args = func_get_args();
 
     if (count($args) < 1) {
@@ -74,18 +70,18 @@ function show_html()
 
     $name = $args[0];
 
-    if (!isset($__htmls__[$name]))
+    if (!isset($GLOBALS['__htmls__'][$name]))
         model_error('Html &quot;' . $name . '&quot;');
 
-    preg_match_all('/\%s/', $__htmls__[$name][0], $matches);
+    preg_match_all('/\%s/', $GLOBALS['__htmls__'][$name][0], $matches);
 
     if (count($matches[0]) != count($args) - 1)
         implementation_error('Html &quot;' . $name . '&quot;', 'correctly');
 
     //$args = array_delete($args, $args[0]);
-    $args[0] = preg_replace('/\%(?!s)/', '%%', $__htmls__[$name][0]);
+    $args[0] = preg_replace('/\%(?!s)/', '%%', $GLOBALS['__htmls__'][$name][0]);
 
-    $return = $__htmls__[$name][1];
+    $return = $GLOBALS['__htmls__'][$name][1];
 
     if (!$return)
         echo call('sprintf', $args);
@@ -100,11 +96,9 @@ function show_html()
  */
 function get_html($name)
 {
-    global $__htmls__;
-
-    if (!isset($__htmls__[$name]))
+    if (!isset($GLOBALS['__htmls__'][$name]))
         return '';
-    else return $__htmls__[$name][0];
+    else return $GLOBALS['__htmls__'][$name][0];
 }
 
 /**
@@ -112,6 +106,5 @@ function get_html($name)
  */
 function html()
 {
-
     return call('show_html', func_get_args());
 }

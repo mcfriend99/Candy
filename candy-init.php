@@ -20,8 +20,8 @@ $__plugins__->init(get_config('autoload_plugins', 'main', false));
 // Rather, access them via their respective functions.
 $__forms__ = [];
 $__dbs__ = [];
-$__htmls__ = [];
-$__routes__ = [];
+$GLOBALS['__htmls__'] = [];
+$GLOBALS['__routes__'] = [];
 
 $__scripts__ = [];
 $__styles__ = [];
