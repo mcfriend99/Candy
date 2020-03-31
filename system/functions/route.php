@@ -1,6 +1,6 @@
 <?php
 
-/**
+/** 
  * Candy-PHP - Code the simpler way.
  *
  * The open source PHP Model-View-Template framework.
@@ -35,85 +35,77 @@
  * @since	Version 1.0.0
  */
 
-if(!defined('CANDY')){
-	header('Location: /');
+if (!defined('CANDY')) {
+    header('Location: /');
 }
 
 
 /**
- *
  * Maps a URL route to a file in #site_dir.
  *
  * @param $route        Route (Regex or plain string)
  * @param $www          #site_dir file without the .php or .html extension.
  */
-function add_route($route, $www = null){
-    global $__routes__; 
-    if(empty($www)) $www = $route;
-    $__routes__ = array_merge($__routes__, [$route => $www]);
+function add_route($route, $www = null)
+{
+    if (empty($www)) $www = $route;
+    $GLOBALS['__routes__'] = array_merge($GLOBALS['__routes__'], [$route => $www]);
 }
 
 /**
- *
  * Gets the route for a specific URL.
  *
  * @param string $s
  * @return string
  */
-function get_route($s = ''){
-    
-    global $__routes__;
-    
+function get_route($s = '')
+{
+
     $return = get_config('404_page', 'main');
-    
-    if(empty($s))
+
+    if (empty($s))
         $s = ':index';
-    
-    foreach($__routes__  as $route => $page){
-        
-        if($route == $s){
-            
-            return _set_route($page);
 
+    foreach ($GLOBALS['__routes__']  as $route => $page) {
+
+        if ($route == $s) {
+
+            return _set_route($page);
         }
     }
-    
-    foreach($__routes__  as $route => $page){
-        
-        if(preg_match('~^' . str_replace(':any', '([^\n]*)', $route) . '$~', $s)){
-            
-            return _set_route($page);
 
+    foreach ($GLOBALS['__routes__']  as $route => $page) {
+
+        if (preg_match('~^' . str_replace(':any', '([^\n]*)', $route) . '$~', $s)) {
+
+            return _set_route($page);
         }
     }
-    
+
     return _set_route($return);
 }
 
 /**
- *
  * Gets the proper actual file target of a route.
  *
  * @param $return
  * @return string
  */
-function _set_route($return){
-    
-    if(file_exists(SITE_DIR . '/' . $return . '.php')){
-    
+function _set_route($return)
+{
+    if (file_exists(SITE_DIR . '/' . $return . '.php')) {
+
         $file = SITE_DIR . '/' . $return . '.php';
-    } else if(file_exists(SITE_DIR . '/' . $return . '.html')){
-    
+    } else if (file_exists(SITE_DIR . '/' . $return . '.html')) {
+
         $file = SITE_DIR . '/' . $return . '.html';
-    } else if(file_exists(SITE_DIR . '/' . $return)){
+    } else if (file_exists(SITE_DIR . '/' . $return)) {
 
         $file = SITE_DIR . '/' . $return;
     } else {
 
         $file = get_config('404_page', 'main');
     }
-    
+
     return $file;
 }
-
-

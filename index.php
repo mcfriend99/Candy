@@ -5,5 +5,3 @@ define('CANDY', true);
 
 // Load Candy components.
 require 'candy-loader.php';
-
-

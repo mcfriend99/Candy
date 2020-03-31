@@ -35,8 +35,8 @@
  * @since	Version 1.0.0
  */
 
-if(!defined('CANDY')){
-	header('Location: /');
+if (!defined('CANDY')) {
+    header('Location: /');
 }
 
 /**
@@ -44,11 +44,12 @@ if(!defined('CANDY')){
  */
 
 
-function __hook(){
-		
+function __hook()
+{
+
     static $hooks;
 
-    if(!isset($hooks)){
+    if (!isset($hooks)) {
 
         $hooks = new Hook();
     }
@@ -57,74 +58,91 @@ function __hook(){
 }
 
 /**
-Functions Implementation
-*/
+ * Functions Implementation
+ */
 
-function add_filter($tag, $function_to_add, $priority = 10, $accepted_args = 1){
+function add_filter($tag, $function_to_add, $priority = 10, $accepted_args = 1)
+{
     return __hook()->add_filter($tag, $function_to_add, $priority, $accepted_args);
 }
 
-function remove_filter($tag, $function_to_remove, $priority = 10){
+function remove_filter($tag, $function_to_remove, $priority = 10)
+{
     return __hook()->remove_filter($tag, $function_to_remove, $priority);
 }
 
-function remove_all_filters($tag, $priority = false){
+function remove_all_filters($tag, $priority = false)
+{
     return __hook()->remove_all_filters($tag, $priority);
 }
 
-function has_filter($tag, $function_to_check = false){
+function has_filter($tag, $function_to_check = false)
+{
     return __hook()->has_filter($tag, $function_to_check);
 }
 
-function apply_filters($tag, $value){
+function apply_filters($tag, $value)
+{
     return __hook()->apply_filters($tag, $value);
 }
 
-function apply_filters_ref_array($tag, $args){
+function apply_filters_ref_array($tag, $args)
+{
     return __hook()->apply_filters_ref_array($tag, $args);
 }
 
-function add_action($tag, $function_to_add, $priority = 10, $accepted_args = 1){
+function add_action($tag, $function_to_add, $priority = 10, $accepted_args = 1)
+{
     return __hook()->add_action($tag, $function_to_add, $priority, $accepted_args);
 }
 
-function remove_action($tag, $function_to_remove, $priority = 10){
+function remove_action($tag, $function_to_remove, $priority = 10)
+{
     return __hook()->remove_action($tag, $function_to_remove, $priority);
 }
 
-function remove_all_actions($tag, $priority = false){
+function remove_all_actions($tag, $priority = false)
+{
     return __hook()->remove_all_actions($tag, $priority);
 }
 
-function has_action($tag, $function_to_check = false){
+function has_action($tag, $function_to_check = false)
+{
     return __hook()->has_action($tag, $function_to_check);
 }
 
-function do_action($tag, $arg = ''){
+function do_action($tag, $arg = '')
+{
     __hook()->do_action($tag, $arg);
 }
 
-function do_action_ref_array($tag, $args){
+function do_action_ref_array($tag, $args)
+{
     __hook()->do_action_ref_array($tag, $args);
 }
 
-function did_action($tag){
+function did_action($tag)
+{
     return __hook()->did_action($tag);
 }
 
-function current_filter(){
+function current_filter()
+{
     return __hook()->current_filter();
 }
 
-function current_action(){
+function current_action()
+{
     return __hook()->current_action();
 }
 
-function doing_filter(){
+function doing_filter()
+{
     return __hook()->doing_filter();
 }
 
-function doing_action(){
+function doing_action()
+{
     return __hook()->doing_action();
 }
 
@@ -133,5 +151,3 @@ function doing_action(){
 
 // INIT ---
 do_action('After_Hook_Setup', __hook());
-
-

@@ -1,6 +1,6 @@
 <?php
 
-/**
+/** 
  * Candy-PHP - Code the simpler way.
  *
  * The open source PHP Model-View-Template framework.
@@ -41,7 +41,6 @@ if (!defined('CANDY')) {
 
 
 /**
- *
  * Convert almost anything in PHP to string.
  *
  * @param $s
@@ -53,7 +52,7 @@ function to_string($s)
 }
 
 
-/**
+/** 
  * Converts almost anything to an object
  *
  * @param $s
@@ -69,7 +68,7 @@ function to_object($s)
     return json_encode([]);
 }
 
-/**
+/** 
  * Converts almost anything into an array.
  *
  * @param $s
@@ -86,7 +85,6 @@ function to_array($s)
 }
 
 /**
- *
  * Returns an encoded URL string.
  *
  * @param $c
@@ -98,7 +96,6 @@ function url($c)
 }
 
 /**
- *
  * Sends an email using PHP's inbuilt mailer.
  *
  * Why use php mail?
@@ -170,7 +167,7 @@ function send_email($to_add, $subject, $body, $from_add = '', $reply_to = '')
     } elseif ($use_smtp && !empty($username) && !empty($password)) {
 
         require_once "Mail.php"; // PEAR Mail package
-        require_once('Mail/mime.php'); // PEAR Mail_Mime packge
+        require_once 'Mail/mime.php'; // PEAR Mail_Mime packge
 
         $text = strip_tags(str_replace('<br>', "\n", $message));
 
@@ -204,7 +201,6 @@ function send_email($to_add, $subject, $body, $from_add = '', $reply_to = '')
 }
 
 /**
- *
  * Gets the time difference between two times.
  *
  * @param string|int $firstDate				First datetime.
@@ -242,7 +238,6 @@ function get_date_diff($firstDate, $secondDate = null)
 #-------- Start of is mobile -------------------#
 
 /**
- *
  * Check if the broswer is mobile or not using class Mobile.
  *
  * @return bool
@@ -254,7 +249,6 @@ function is_mobile2()
 }
 
 /**
- *
  * Check if the broswer is mobile or not using RegEx.
  *
  * @return bool
@@ -274,7 +268,6 @@ function is_mobile()
 
 
 /**
- *
  * Deletes contents from an array.
  *
  * @param $array			The original array
@@ -301,7 +294,6 @@ function array_delete($array, $j)
 }
 
 /**
- *
  * Checks if two arrays as related i.e. one array contains some or all the elements of the other.
  *
  * @param $array
@@ -311,7 +303,6 @@ function array_delete($array, $j)
  */
 function array_associated($array, $array2, $strict = false)
 {
-
     if ((empty($array) && !empty($array2)) || (empty($array2) && !empty($array))) return false;
 
     foreach ($array2 as $ar) {
@@ -328,7 +319,6 @@ function array_associated($array, $array2, $strict = false)
 }
 
 /**
- *
  * Returns an array with all elements in it trimmed or starting and ending whitespaces.
  *
  * @param $data				The array to trim
@@ -348,7 +338,6 @@ function trim_assoc_data($data, $skips = [])
 }
 
 /**
- *
  * Cleans up a name of invalid characters.
  *
  * @param $s
@@ -360,7 +349,6 @@ function clean_name($s)
 }
 
 /**
- *
  * Creates random strings.
  *
  * Note:
@@ -400,7 +388,6 @@ function randomize($k = 0, $pr = false)
 
 
 /**
- *
  * 	Gets the url of a stylesheet.
  *
  * @param string $s		Name of stylesheet without .css extension.
@@ -412,7 +399,6 @@ function get_style($s = '')
 }
 
 /**
- *
  * Gets the url of a resource file.
  *
  * @param string $s
@@ -424,7 +410,6 @@ function get_resource($s = '')
 }
 
 /**
- *
  * Gets a template file.
  *
  * @param $s						Name of the template file to return.
@@ -471,7 +456,6 @@ function get_template($s, $return = false)
 }
 
 /**
- *
  * Gets the file of a template.
  *
  * @param $s
@@ -516,7 +500,6 @@ function get_template_file($s)
 
 
 /**
- *
  * Use this instead of get_text if you declared your language data in concepts/langs.php.
  *
  * Use concatenation (.) to access child items if the data is an array.
@@ -550,7 +533,7 @@ function e($s, $language = '')
     return '';
 }
 
-/**
+/** 
  * Returns a text that is an hybrid between the e() and the get_text() methods.
  * @param $s
  * @param string $lang
@@ -567,7 +550,6 @@ function e_text($s, $lang = '')
 }
 
 /**
- *
  * Creates pagination links.
  *
  * @param int $page				Current page.
@@ -626,7 +608,6 @@ function paginate($page = 0, $total = 0, $per_page = 0, $pager = 'p', $url = '')
 }
 
 /**
- *
  * Return the real dimension size from web format dimensions.
  *
  * Supported formats: px, em, rem, %.
@@ -664,7 +645,6 @@ function real_size($size, $real)
 }
 
 /**
- *
  * Returns the real time as a php time integer from a human readable time.
  *
  * Specs:
@@ -718,7 +698,6 @@ function real_time($time, $base_date = '')
 }
 
 /**
- *
  * Converts a comma delimited string to an array.
  *
  * @param $string
@@ -739,7 +718,6 @@ function string_to_array($string, $char = ',', $trim = true)
 
 
 /**
- *
  * Mimics the python range function.
  *
  * @param $x
@@ -775,7 +753,6 @@ function irange($x, $y = null)
 
 
 /**
- *
  * Calls a function with arguments passed in where applicable.
  *
  * @param $name
@@ -794,7 +771,6 @@ function call($name, $values = null)
 }
 
 /**
- *
  * Returns a secured password string.
  *
  * CAUTION
@@ -814,7 +790,6 @@ function secure_password($s, $strength = 10)
 }
 
 /**
- *
  * Verifies a secure password string against a string.
  *
  * @param $pass
@@ -829,7 +804,7 @@ function verify_password($pass, $real)
 }
 
 
-/**
+/** 
  * Checks if a string starts with another.
  *
  * @param $string           The parent string
@@ -856,7 +831,7 @@ function starts_with($string, $sub = '', $strict = true)
 }
 
 
-/**
+/** 
  * Checks if a string ends with another.
  *
  * @param $string           The parent string
@@ -883,7 +858,7 @@ function ends_with($string, $sub = '', $strict = true)
 }
 
 
-/**
+/** 
  * Return an object that can be safely echoed without verification.
  *
  * @param $obj              The object to safe

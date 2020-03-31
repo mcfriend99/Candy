@@ -35,8 +35,8 @@
  * @since	Version 1.0.0
  */
 
-if(!defined('CANDY')){
-	header('Location: /');
+if (!defined('CANDY')) {
+    header('Location: /');
 }
 
 
@@ -45,23 +45,26 @@ if(!defined('CANDY')){
  */
 
 
-function regex_find($string = null, $what = null){
+function regex_find($string = null, $what = null)
+{
     global $regex;
     return $regex::find($string, $what);
 }
 
-function regex_test($string, $what, $strict = false){
+function regex_test($string, $what, $strict = false)
+{
     global $regex;
     return $regex::test($string, $what, $strict);
 }
 
-function regex_match($string, $what, $strict = false){
+function regex_match($string, $what, $strict = false)
+{
     global $regex;
     return $regex::match($string, $what, $strict);
 }
 
-function regex_error(){
+function regex_error()
+{
     global $regex;
     return $regex::error();
 }
-
