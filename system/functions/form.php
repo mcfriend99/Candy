@@ -35,8 +35,8 @@
  * @since	Version 1.0.0
  */
 
-if(!defined('CANDY')){
-	header('Location: /');
+if (!defined('CANDY')) {
+    header('Location: /');
 }
 
 
@@ -56,55 +56,55 @@ if(!defined('CANDY')){
  * @param array $options
  * @param array $attr
  */
-function add_form($name, $method = 'post', $action = '', $has_files = true, $attr = [], $options = []){
-    global $__forms__;
-    $__forms__[$name] = new Form($name, $method, $action, $has_files, $attr, $options);
+function add_form($name, $method = 'post', $action = '', $has_files = true, $attr = [], $options = [])
+{
+    $GLOBALS['__forms__'][$name] = new Form($name, $method, $action, $has_files, $attr, $options);
 }
 
-function copy_form($source, $destination){
-    global $__forms__;
-    if(isset($__forms__[$source]))
-        $__forms__[$destination] = clone $__forms__[$source];
+function copy_form($source, $destination)
+{
+    if (isset($GLOBALS['__forms__'][$source]))
+        $GLOBALS['__forms__'][$destination] = clone $GLOBALS['__forms__'][$source];
     else __form_error__($source);
 }
 
-function add_form_control($form_name, $name, $type = 'text', $attr = [], $options = [], $default = ''){
-    global $__forms__;
-    if(isset( $__forms__[$form_name]))
-        $__forms__[$form_name]->addControl($name, $type, $attr, $default, $options);
+function add_form_control($form_name, $name, $type = 'text', $attr = [], $options = [], $default = '')
+{
+    if (isset($GLOBALS['__forms__'][$form_name]))
+        $GLOBALS['__forms__'][$form_name]->addControl($name, $type, $attr, $default, $options);
     else __form_error__($form_name);
 }
 
-function add_form_controls($form_name, $controls = []){
-    global $__forms__;
-    if(isset( $__forms__[$form_name]))
-        $__forms__[$form_name]->addControls($controls);
+function add_form_controls($form_name, $controls = [])
+{
+    if (isset($GLOBALS['__forms__'][$form_name]))
+        $GLOBALS['__forms__'][$form_name]->addControls($controls);
     else __form_error__($form_name);
 }
 
-function remove_form_control($form_name, $names){
-    global $__forms__;
-    if(isset( $__forms__[$form_name])) {
+function remove_form_control($form_name, $names)
+{
+    if (isset($GLOBALS['__forms__'][$form_name])) {
         if (!is_array($names) && !is_object($names)) {
-            $__forms__[$form_name]->removeControl($names);
+            $GLOBALS['__forms__'][$form_name]->removeControl($names);
         } else {
             $names = to_array($names);
-            foreach($names as $name){
-                $__forms__[$form_name]->removeControl($name);
+            foreach ($names as $name) {
+                $GLOBALS['__forms__'][$form_name]->removeControl($name);
             }
         }
-    }
+    } else __form_error__($form_name);
+}
+
+function add_required_form_controls($form_name, $controls = '')
+{
+    if (isset($GLOBALS['__forms__'][$form_name]))
+        $GLOBALS['__forms__'][$form_name]->addRequiredControls($controls);
     else __form_error__($form_name);
 }
 
-function add_required_form_controls($form_name, $controls = ''){
-     global $__forms__;
-    if(isset( $__forms__[$form_name]))
-        $__forms__[$form_name]->addRequiredControls($controls);
-    else __form_error__($form_name);
-}
-
-function create_form_control($name, $type = 'text', $attr = [], $default = '', $options = []){
+function create_form_control($name, $type = 'text', $attr = [], $default = '', $options = [])
+{
     $form = new Form($name);
     return $form::createControl($name, $type, $attr, $default, $options);
 }
@@ -119,59 +119,56 @@ function create_form_control($name, $type = 'text', $attr = [], $default = '', $
  * @param bool $return
  * @return mixed
  */
-function draw_form($name, $return = false){
-    global $__forms__;
-    if(isset( $__forms__[$name]))
-        return $__forms__[$name]->draw($return);
+function draw_form($name, $return = false)
+{
+    if (isset($GLOBALS['__forms__'][$name]))
+        return $GLOBALS['__forms__'][$name]->draw($return);
     else __form_error__($name);
 }
 
-function verify_csrf($name){
-    global $__forms__;
-    if(isset( $__forms__[$name]))
-        $__forms__[$name]->verifyCsrf();
+function verify_csrf($name)
+{
+    if (isset($GLOBALS['__forms__'][$name]))
+        $GLOBALS['__forms__'][$name]->verifyCsrf();
     else __form_error__($name);
 }
 
-function validate_form($name){
-    global $__forms__;
-    if(isset($__forms__[$name]))
-        return $__forms__[$name]->validate();
+function validate_form($name)
+{
+    if (isset($GLOBALS['__forms__'][$name]))
+        return $GLOBALS['__forms__'][$name]->validate();
     else __form_error__($name);
 }
 
-function form_csrf($name){
-    global $__forms__;
-    if(isset($__forms__[$name]))
-        return '<input type="hidden" name="' .$__forms__[$name]->csrf_name. '" value="' .$__forms__[$name]->csrf_value. '" />';
+function form_csrf($name)
+{
+    if (isset($GLOBALS['__forms__'][$name]))
+        return '<input type="hidden" name="' . $GLOBALS['__forms__'][$name]->csrf_name . '" value="' . $GLOBALS['__forms__'][$name]->csrf_value . '" />';
     else __form_error__($name);
 }
 
-function form_error($name){
-    global $__forms__;
-    if(isset($__forms__[$name]))
-        return $__forms__[$name]->validation_error;
+function form_error($name)
+{
+    if (isset($GLOBALS['__forms__'][$name]))
+        return $GLOBALS['__forms__'][$name]->validation_error;
     return null;
 }
 
-function form_submit($name, $function = null){
-    global $__forms__;
-    if(isset($__forms__[$name]))
-        return $__forms__[$name]->doSubmit($function);
+function form_submit($name, $function = null)
+{
+    if (isset($GLOBALS['__forms__'][$name]))
+        return $GLOBALS['__forms__'][$name]->doSubmit($function);
     else __form_error__($name);
 }
 
-function form_to_db($name, $table = '', $unique_column = '', $exceptions = [], $should_update = true){
-    global $__forms__;
-    if(isset($__forms__[$name])) {
-        return $__forms__[$name]->toDb($table, $unique_column, $exceptions, $should_update);
-    }
-    else __form_error__($name);
+function form_to_db($name, $table = '', $unique_column = '', $exceptions = [], $should_update = true)
+{
+    if (isset($GLOBALS['__forms__'][$name])) {
+        return $GLOBALS['__forms__'][$name]->toDb($table, $unique_column, $exceptions, $should_update);
+    } else __form_error__($name);
 }
 
-function __form_error__($name){
+function __form_error__($name)
+{
     model_error('Form &quot;' . $name . '&quot;');
 }
-
-
-
