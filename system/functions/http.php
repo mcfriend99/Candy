@@ -44,7 +44,7 @@ if (!defined('CANDY')) {
  *
  * Redirects to a url.
  * [Set a site config redirect_parameter to enable auto-detection of redirect urls.]
- * [Set a site config no_redirect to 'yes' to disable redirection in the entire app.]
+ * [Set a site config no_redirect to true to disable redirection in the entire app.]
  *
  * @param null $url                 Url (relative or absolute) to redirect to.
  * @param bool $allow_redirect      An override for should_redirect.
@@ -54,7 +54,7 @@ function redirect($url = null, $allow_redirect = false, $use_js = false)
 {
 
     // Shortcut to disable all redirection.
-    if (strtolower(get_config('no_redirect')) == 'yes') return;
+    if (get_config('no_redirect', 'site', false) === true) return;
 
     if ($url == null || $allow_redirect == true) {
         if (should_redirect()) $url = $_GET[get_config('redirect_parameter', 'site', '_ref')];
@@ -78,7 +78,7 @@ function redirect($url = null, $allow_redirect = false, $use_js = false)
 function should_redirect()
 {
 
-    return (isset($_GET[get_config('redirect_parameter', 'site', '_ref')]) && strtolower(get_config('no_redirect')) != 'yes');
+    return (isset($_GET[get_config('redirect_parameter', 'site', '_ref')]) && get_config('no_redirect', 'site', false) === true);
 }
 
 

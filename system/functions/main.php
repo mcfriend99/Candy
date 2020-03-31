@@ -146,7 +146,7 @@ function send_email($to_add, $subject, $body, $from_add = '', $reply_to = '')
     $username = get_config('smtp_mail_address', 'main', '');
     $password = get_config('smtp_mail_password', 'main', '');
 
-    $use_smtp = strtolower(get_config('use_smtp', 'main', 'no')) == 'yes';
+    $use_smtp = get_config('use_smtp', 'main', false) === true;
 
     if (!$use_smtp && function_exists('mail')) {
 
@@ -418,7 +418,7 @@ function get_resource($s = '')
  */
 function get_template($s, $return = false)
 {
-    if (strtolower(get_config('dev_mode', 'main', 'yes')) == 'yes') {
+    if (get_config('dev_mode', 'main', true) === true) {
 
         // Clean templates.
         foreach (get_directory(CACHE_DIR . '/templates', CANDY_SCAN_FILES, '', -1, false, CANDY_SORT_FILES_FIRST) as $file) {
