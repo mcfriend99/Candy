@@ -219,8 +219,6 @@ switch ($act) {
 
         if ($type == 'cache') $sr = CACHE_DIR;
         elseif ($type == 'templates') $sr = CACHE_DIR . '/templates';
-        elseif ($type == 'languages') $sr = CACHE_DIR . '/langs';
-        elseif ($type == 'config') $sr = CACHE_DIR . '/configs';
         elseif ($type == 'plugins') $sr = PLUGIN_DIR;
         elseif ($type == 'plugin') {
             if (empty($name)) exit("Invalid pop command!\n");
