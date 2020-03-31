@@ -107,9 +107,7 @@ class Plugin
      */
     function load_all_plugins()
     {
-
         foreach ($this->plugins_available as $plugin) {
-
             require_once PLUGIN_DIR . '/' . trim($plugin) . '/index.php';
             do_action('on_plugin_load', trim($plugin));
         }
@@ -121,14 +119,12 @@ class Plugin
      */
     function load_plugin($plugin)
     {
-
-        if (is_string($plugin))
+        if (is_string($plugin)) {
             $plugin = explode(',', $plugin);
+        }
 
         foreach ($plugin as $plg) {
-
             if (in_array($plg, $this->plugins_available)) {
-
                 require_once PLUGIN_DIR . '/' . trim($plg) . '/index.php';
                 do_action('on_plugin_load', trim($plg));
             } else {
@@ -145,9 +141,11 @@ class Plugin
      */
     function headers($plugin_name)
     {
-        if (in_array($plugin_name, $this->plugins_available))
+        if (in_array($plugin_name, $this->plugins_available)) {
             $result = $this->plugin_headers[$plugin_name];
-        else $result = [];
+        } else {
+            $result = [];
+        }
 
         $result = apply_filters('plugin_header', $plugin_name, $result);
         return $result;
