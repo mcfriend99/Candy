@@ -47,9 +47,6 @@ if (!defined('CANDY')) {
  */
 function load_plugins($s = '')
 {
-
-    global $__plugins__;
-
     if (!is_string($s) && !is_array($s))
         return;
 
@@ -60,7 +57,7 @@ function load_plugins($s = '')
 
     foreach ($s as $a) {
 
-        $__plugins__->load_plugin(trim($a));
+        $GLOBALS['__plugins__']->load_plugin(trim($a));
     }
 }
 
@@ -72,7 +69,5 @@ function load_plugins($s = '')
  */
 function plugin_headers($plugin_name)
 {
-
-    global $__plugins__;
-    return $__plugins__->headers($plugin_name);
+    return $GLOBALS['__plugins__']->headers($plugin_name);
 }

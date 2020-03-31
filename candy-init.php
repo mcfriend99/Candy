@@ -11,8 +11,8 @@ $mobile = new Mobile();
 $GLOBALS['__platform__'] = $mobile->matchedPlatformName;
 
 // Load Plugins.
-$__plugins__ = new Plugin();
-$__plugins__->init(get_config('autoload_plugins', 'main', false));
+$GLOBALS['__plugins__'] = new Plugin();
+$GLOBALS['__plugins__']->init(get_config('autoload_plugins', 'main', false));
 
 
 // Init global variables.
