@@ -35,8 +35,8 @@
  * @since	Version 1.0.0
  */
 
-if(!defined('CANDY')){
-	header('Location: /');
+if (!defined('CANDY')) {
+    header('Location: /');
 }
 
 
@@ -51,53 +51,54 @@ if(!defined('CANDY')){
  * @param bool $trim
  * @return string
  */
-function ___global($type, $s, $new = '', $trim = false){
+function ___global($type, $s, $new = '', $trim = false)
+{
 
     global $$type;
-	
-	switch(strtoupper($type)){
-		case '_GET':
-			$g = &$_GET;
-			break;
-		case '_POST':
-			$g = &$_POST;
-			break;
-		case '_PUT':
-			$g = &$_PUT;
-			break;
-		case '_REQUEST':
-			$g = &$_REQUEST;
-			break;
-		case '_FILES':
-			$g = &$_FILES;
-			break;
-		case '_SESSION':
-			$g = &$_SESSION;
-			break;
-		case '_SERVER':
-			$g = &$_SERVER;
-			break;
-		default:
-			$g = &$$type;
-			break;
-	}
 
-    if(!empty($s)){
+    switch (strtoupper($type)) {
+        case '_GET':
+            $g = &$_GET;
+            break;
+        case '_POST':
+            $g = &$_POST;
+            break;
+        case '_PUT':
+            $g = &$_PUT;
+            break;
+        case '_REQUEST':
+            $g = &$_REQUEST;
+            break;
+        case '_FILES':
+            $g = &$_FILES;
+            break;
+        case '_SESSION':
+            $g = &$_SESSION;
+            break;
+        case '_SERVER':
+            $g = &$_SERVER;
+            break;
+        default:
+            $g = &$$type;
+            break;
+    }
 
-        if(empty($new))
+    if (!empty($s)) {
+
+        if (empty($new))
             $p = isset($g[$s]) ? ($trim ? trim($g[$s]) : $g[$s]) : '';
         else {
             $p = $g[$s] = $trim ? trim($new) : $new;
-            if(strtolower(trim($type)) == '_session')
+            if (strtolower(trim($type)) == '_session')
                 do_action('on_session_set', $s);
         }
 
         return $p;
     } else {
 
-        if($trim){
+        if ($trim) {
 
-            foreach($g as $m => $n){
+            foreach ($g as $m => $n) {
 
                 $g[$m] = empty($new) ? trim($n) : $new;
             }
@@ -105,7 +106,6 @@ function ___global($type, $s, $new = '', $trim = false){
 
         return $g;
     }
-
 }
 
 /**
@@ -116,15 +116,16 @@ function ___global($type, $s, $new = '', $trim = false){
  * @param $type
  * @param string $name
  */
-function ___unglobal($type, $name = ''){
+function ___unglobal($type, $name = '')
+{
 
     global $$type;
 
-    if(!empty($name)){
-        if(!empty(___global($type, $name)))
+    if (!empty($name)) {
+        if (!empty(___global($type, $name)))
             unset($$type[$name]);
     } else {
-        if($type == '_SESSION')
+        if ($type == '_SESSION')
             session_destroy();
         unset($$type);
     }
@@ -136,16 +137,17 @@ function ___unglobal($type, $name = ''){
  * @param bool $trim
  * @return string
  */
-function get($s = '', $new = '', $trim = false){
+function get($s = '', $new = '', $trim = false)
+{
 
     return ___global('_GET', $s, $new, $trim);
-
 }
 
 /**
  * @param string $s
  */
-function unget($s = ''){
+function unget($s = '')
+{
 
     ___unglobal('_GET', $s);
 }
@@ -156,16 +158,17 @@ function unget($s = ''){
  * @param bool $trim
  * @return string
  */
-function post($s = '', $new = '', $trim = false){
+function post($s = '', $new = '', $trim = false)
+{
 
     return ___global('_POST', $s, $new, $trim);
-
 }
 
 /**
  * @param string $s
  */
-function unpost($s = ''){
+function unpost($s = '')
+{
 
     ___unglobal('_POST', $s);
 }
@@ -176,16 +179,17 @@ function unpost($s = ''){
  * @param bool $trim
  * @return string
  */
-function files($s = '', $new = '', $trim = false){
+function files($s = '', $new = '', $trim = false)
+{
 
     return ___global('_FILES', $s, $new, $trim);
-
 }
 
 /**
  * @param string $s
  */
-function unfiles($s = ''){
+function unfiles($s = '')
+{
 
     ___unglobal('_FILES', $s);
 }
@@ -196,16 +200,17 @@ function unfiles($s = ''){
  * @param bool $trim
  * @return string
  */
-function put($s = '', $new = '', $trim = false){
+function put($s = '', $new = '', $trim = false)
+{
 
     return ___global('_PUT', $s, $new, $trim);
-
 }
 
 /**
  * @param string $s
  */
-function unput($s = ''){
+function unput($s = '')
+{
 
     ___unglobal('_PUT', $s);
 }
@@ -216,16 +221,17 @@ function unput($s = ''){
  * @param bool $trim
  * @return string
  */
-function request($s = '', $new = '', $trim = false){
+function request($s = '', $new = '', $trim = false)
+{
 
     return ___global('_REQUEST', $s, $new, $trim);
-
 }
 
 /**
  * @param string $s
  */
-function unrequest($s = ''){
+function unrequest($s = '')
+{
 
     ___unglobal('_REQUEST', $s);
 }
@@ -236,17 +242,18 @@ function unrequest($s = ''){
  * @param bool $trim
  * @return string
  */
-function session($s = '', $new = '', $trim = false){
+function session($s = '', $new = '', $trim = false)
+{
 
     return ___global('_SESSION', $s, $new, $trim);
-
 }
 
 /**
  * @param $name
  * @return bool
  */
-function session_set($name){
+function session_set($name)
+{
 
     return isset($_SESSION[$name]);
 }
@@ -254,7 +261,8 @@ function session_set($name){
 /**
  * @param string $s
  */
-function unsession($s = ''){
+function unsession($s = '')
+{
 
     ___unglobal('_SESSION', $s);
     do_action('on_session_delete', $s);
@@ -266,16 +274,17 @@ function unsession($s = ''){
  * @param bool $trim
  * @return string
  */
-function server($s = '', $new = '', $trim = false){
+function server($s = '', $new = '', $trim = false)
+{
 
     return ___global('_SERVER', strtoupper($s), $new, $trim);
-
 }
 
 /**
  * @param string $s
  */
-function unserver($s = ''){
+function unserver($s = '')
+{
 
     ___unglobal('_SERVER', $s);
 }
@@ -283,7 +292,8 @@ function unserver($s = ''){
 /**
  * @return string
  */
-function user_agent(){
+function user_agent()
+{
 
     return apply_filters('user_agent', server('user_agent'));
 }
@@ -295,12 +305,13 @@ function user_agent(){
  * @param string $s
  * @return string
  */
-function get_session_key($s = ''){
+function get_session_key($s = '')
+{
 
-	if(!empty(session($s)))
-		session($s, apply_filters('session_key', randomize(32)));
+    if (!empty(session($s)))
+        session($s, apply_filters('session_key', randomize(32)));
 
-	return session($s);
+    return session($s);
 }
 
 /**
@@ -309,9 +320,10 @@ function get_session_key($s = ''){
  *
  * @param string $s
  */
-function delete_session_key($s = ''){
+function delete_session_key($s = '')
+{
 
-	unsession($s);
+    unsession($s);
 }
 
 /**
@@ -321,10 +333,9 @@ function delete_session_key($s = ''){
  * @param $name
  * @param string $expire
  */
-function add_flash_session($name, $expire = '1m'){
-    global $__flashsessions__;
-
-    $__flashsessions__[$name] = real_time($expire);
+function add_flash_session($name, $expire = '1m')
+{
+    $GLOBALS['__flashsessions__'][$name] = real_time($expire);
 }
 
 /**
@@ -335,11 +346,11 @@ function add_flash_session($name, $expire = '1m'){
  * @param string $value
  * @return string
  */
-function flash_session($name, $value = ''){
-    global $__flashsessions__;
-    if(!empty($value)){
-        if(isset($__flashsessions__[$name]) && !session_set('_CANDY_FLASH_SESSION_' . $name)){
-            session('_CANDY_FLASH_SESSION_' . $name, ['value' => $value, 'expire' => $__flashsessions__[$name]]);
+function flash_session($name, $value = '')
+{
+    if (!empty($value)) {
+        if (isset($GLOBALS['__flashsessions__'][$name]) && !session_set('_CANDY_FLASH_SESSION_' . $name)) {
+            session('_CANDY_FLASH_SESSION_' . $name, ['value' => $value, 'expire' => $GLOBALS['__flashsessions__'][$name]]);
         }
     } else return  session('_CANDY_FLASH_SESSION_' . $name);
 }
@@ -351,7 +362,8 @@ function flash_session($name, $value = ''){
  * @param $name
  * @return bool
  */
-function delete_flash_session($name){
+function delete_flash_session($name)
+{
     return  unsession('_CANDY_FLASH_SESSION_' . $name);
 }
 
@@ -362,9 +374,7 @@ function delete_flash_session($name){
  * @param $name
  * @return mixed
  */
-function flash_session_value($name){
+function flash_session_value($name)
+{
     return !empty(flash_session($name)) ? flash_session($name)['value'] : false;
 }
-
-
-

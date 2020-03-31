@@ -35,8 +35,8 @@
  * @since	Version 1.0.0
  */
 
-if(!defined('CANDY')){
-	header('Location: /');
+if (!defined('CANDY')) {
+    header('Location: /');
 }
 
 
@@ -47,29 +47,26 @@ if(!defined('CANDY')){
  * @param $errfile
  * @param $errline
  */
-$candy_error = function($errno, $errstr='', $errfile='', $errline='')
-{
-
+$candy_error = function ($errno, $errstr = '', $errfile = '', $errline = '') {
     do_action('before_error_report', $errstr);
 
     // if error has been supressed with an @
     if (error_reporting() == 0) {
         return;
-    } else if(strtolower(get_config('show_error', 'main')) == 'no'){
+    } else if (strtolower(get_config('show_error', 'main')) == 'no') {
         return;
     }
 
     $cfg = [];
 
     // check if function has been called by an exception
-    if(func_num_args() == 5) {
+    if (func_num_args() == 5) {
         // called by trigger_error()
         $exception = null;
         list($errno, $errstr, $errfile, $errline) = func_get_args();
 
         $backtrace = array_reverse(debug_backtrace());
-
-    }else {
+    } else {
         // caught exception
         $exc = func_get_arg(0);
         $errno = $exc->getCode();
@@ -80,21 +77,21 @@ $candy_error = function($errno, $errstr='', $errfile='', $errline='')
         $backtrace = $exc->getTrace();
     }
 
-    $errorType = array (
-               E_ERROR            => 'ERROR',
-               E_WARNING        => 'WARNING',
-               E_PARSE          => 'PARSING ERROR',
-               E_NOTICE         => 'NOTICE',
-               E_CORE_ERROR     => 'CORE ERROR',
-               E_CORE_WARNING   => 'CORE WARNING',
-               E_COMPILE_ERROR  => 'COMPILE ERROR',
-               E_COMPILE_WARNING => 'COMPILE WARNING',
-               E_USER_ERROR     => 'USER ERROR',
-               E_USER_WARNING   => 'USER WARNING',
-               E_USER_NOTICE    => 'USER NOTICE',
-               E_STRICT         => 'STRICT NOTICE',
-               E_RECOVERABLE_ERROR  => 'RECOVERABLE ERROR'
-               );
+    $errorType = array(
+        E_ERROR            => 'ERROR',
+        E_WARNING        => 'WARNING',
+        E_PARSE          => 'PARSING ERROR',
+        E_NOTICE         => 'NOTICE',
+        E_CORE_ERROR     => 'CORE ERROR',
+        E_CORE_WARNING   => 'CORE WARNING',
+        E_COMPILE_ERROR  => 'COMPILE ERROR',
+        E_COMPILE_WARNING => 'COMPILE WARNING',
+        E_USER_ERROR     => 'USER ERROR',
+        E_USER_WARNING   => 'USER WARNING',
+        E_USER_NOTICE    => 'USER NOTICE',
+        E_STRICT         => 'STRICT NOTICE',
+        E_RECOVERABLE_ERROR  => 'RECOVERABLE ERROR'
+    );
 
     // create error message
     if (array_key_exists($errno, $errorType)) {
@@ -105,39 +102,38 @@ $candy_error = function($errno, $errstr='', $errfile='', $errline='')
 
     $errMsg = "$err: $errstr in $errfile on line $errline\n";
 
-	$trace = '';
+    $trace = '';
     // start backtrace
-	$i = 0;
+    $i = 0;
     foreach ($backtrace as $v) {
-		
+
         if (isset($v['class'])) {
 
-		$trace .= "\n <strong>#{$i}</strong> Called Class: {$v['class']}::{$v['function']}(";
+            $trace .= "\n <strong>#{$i}</strong> Called Class: {$v['class']}::{$v['function']}(";
 
             if (isset($v['args'])) {
                 $separator = '';
 
-                foreach($v['args'] as $arg ) {
-                    $trace .= "$separator".__get_error_arg($arg);
+                foreach ($v['args'] as $arg) {
+                    $trace .= "$separator" . __get_error_arg($arg);
                     $separator = ', ';
                 }
             }
-			$trace .= ")" .(isset($v['file']) ? "\n   File: {$v['file']}" : ''). (isset($v['line']) ? "\n   Line: {$v['line']}" : '');
-        }
-        elseif (isset($v['function'])) {
+            $trace .= ")" . (isset($v['file']) ? "\n   File: {$v['file']}" : '') . (isset($v['line']) ? "\n   Line: {$v['line']}" : '');
+        } elseif (isset($v['function'])) {
             $trace .= "\n<strong>#{$i}</strong> Called Function: {$v['function']}(";
             if (!empty($v['args'])) {
 
                 $separator = '';
 
-                foreach($v['args'] as $arg ) {
-                    $trace .= "$separator".__get_error_arg($arg);
+                foreach ($v['args'] as $arg) {
+                    $trace .= "$separator" . __get_error_arg($arg);
                     $separator = ', ';
                 }
             }
-            $trace .= ")" .(isset($v['file']) ? "\n   File: {$v['file']}" : ''). (isset($v['line']) ? "\n   Line: {$v['line']}" : '');
+            $trace .= ")" . (isset($v['file']) ? "\n   File: {$v['file']}" : '') . (isset($v['line']) ? "\n   Line: {$v['line']}" : '');
         }
-		$i++;
+        $i++;
     }
 
     $trace = apply_filters('candy_stack_trace', $trace);
@@ -154,17 +150,14 @@ $candy_error = function($errno, $errstr='', $errfile='', $errline='')
 
         default:
             do_action('after_error_report', $result);
-            die(
-                apply_filters('candy_error_report', 
-                    CANDY_ERROR_PREPEND_STRING . 
-                    $result . 
+            die(apply_filters(
+                'candy_error_report',
+                CANDY_ERROR_PREPEND_STRING .
+                    $result .
                     CANDY_ERROR_APPEND_STRING
-                )
-            );
+            ));
             break;
-
     }
-
 };
 
 function __get_error_arg($arg)
@@ -172,13 +165,13 @@ function __get_error_arg($arg)
     switch (strtolower(gettype($arg))) {
 
         case 'string':
-            return( '"'.preg_replace( '/\\n/', '', $arg ).'"' );
+            return ('"' . preg_replace('/\\n/', '', $arg) . '"');
 
         case 'boolean':
-            return (bool)$arg;
+            return (bool) $arg;
 
         case 'object':
-            return "{".get_class($arg)."}";
+            return "{" . get_class($arg) . "}";
 
         case 'array':
             $ret = "\n   [\n     ";
@@ -186,8 +179,8 @@ function __get_error_arg($arg)
 
             foreach ($arg as $k => $v) {
                 //$ret .= $separtor.__get_error_arg($k).' => '.__get_error_arg($v);
-				$g = @var_export($v, true);
-				$ret .= "{$separtor}\${$k} => ".preg_replace('/\n+/', "\n     ", strip_tags($g));
+                $g = @var_export($v, true);
+                $ret .= "{$separtor}\${$k} => " . preg_replace('/\n+/', "\n     ", strip_tags($g));
                 $separtor = ",\n     ";
             }
             $ret .= "\n   ]";
@@ -195,7 +188,7 @@ function __get_error_arg($arg)
             return $ret;
 
         case 'resource':
-            return 'resource('.get_resource_type($arg).')';
+            return 'resource(' . get_resource_type($arg) . ')';
 
         default:
             return var_export($arg, true);
@@ -208,7 +201,8 @@ function __get_error_arg($arg)
  * @param $s
  * @param string $append
  */
-function model_error($s, $append = ''){
+function model_error($s, $append = '')
+{
     $err = 'MODEL_ERROR: ' . $s . ' model is not found or is disabled' . (!empty($append) ? ' ' . $append : '') . '.';
 
     $err = apply_filters('model_error', $err);
@@ -222,7 +216,8 @@ function model_error($s, $append = ''){
  * @param $s
  * @param string $append
  */
-function bad_model_error($s, $append = ''){
+function bad_model_error($s, $append = '')
+{
 
     $err = 'MODEL_ERROR: ' . $s . ' model is not quite okay' . (!empty($append) ? ' ' . $append : '') . '.';
 
@@ -237,7 +232,8 @@ function bad_model_error($s, $append = ''){
  * @param $s
  * @param string $append
  */
-function implementation_error($s, $append = ''){
+function implementation_error($s, $append = '')
+{
 
     $err = 'IMPLEMENTATION_ERROR: ' . $s . ' is not implemented' . (!empty($append) ? ' ' . $append : '') . '.';
 
@@ -246,6 +242,3 @@ function implementation_error($s, $append = ''){
 
     throw new Exception($err);
 }
-
-
-

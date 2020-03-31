@@ -1,6 +1,6 @@
 <?php
 
-/**
+/** 
  * Candy-PHP - Code the simpler way.
  *
  * The open source PHP Model-View-Template framework.
@@ -41,7 +41,6 @@ if (!defined('CANDY')) {
 
 
 /**
- *
  * Loads configuration data from a .candy file.
  *
  * @param $file             File to load configs from
@@ -61,7 +60,6 @@ function load_configs($file, $is_global = true)
 }
 
 /**
- *
  * Gets a configuration value.
  *
  * @param $conf                 The configuration required.
@@ -81,7 +79,6 @@ function get_config($conf, $type = 'site', $default = '')
 // Texts are also config files so we will be keeping their code in this file.
 
 /**
- *
  * Loads text/language/localization data from a file.
  * Texts are global.
  *
@@ -100,7 +97,6 @@ function load_texts($file)
 }
 
 /**
- *
  * Gets the value of a text/localization data for a language.
  * Default language: En.
  *
@@ -155,7 +151,6 @@ function __replace_cfgs($text, $type, $ul = 'main')
 
 
 /**
- *
  * Shorthand for get_config()
  *
  * @param $name
@@ -170,7 +165,6 @@ function c($name, $type = 'site', $default = '')
 
 
 /**
- *
  * Shorthand for get_text()
  *
  * @param $name

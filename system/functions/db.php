@@ -134,8 +134,6 @@ function db_errors()
  */
 function add_query()
 {
-    global $__dbs__;
-
     $args = func_get_args();
 
     if (count($args) < 3) {
@@ -149,7 +147,7 @@ function add_query()
     $args = array_delete($args, $args[0]);
     $args = array_delete($args, $args[0]);
 
-    $__dbs__[$name] = ['type' => $type, 'args' => $args];
+    $GLOBALS['__queries__'][$name] = ['type' => $type, 'args' => $args];
 }
 
 /**
@@ -162,14 +160,12 @@ function add_query()
  */
 function call_query($name, $unknowns = [])
 {
-    global $__dbs__;
-
-    if (isset($__dbs__[$name])) {
+    if (isset($GLOBALS['__queries__'][$name])) {
 
         try {
 
-            $type = $__dbs__[$name]['type'];
-            $args = $__dbs__[$name]['args'];
+            $type = $GLOBALS['__queries__'][$name]['type'];
+            $args = $GLOBALS['__queries__'][$name]['args'];
 
             $unknown_state = -1;
 

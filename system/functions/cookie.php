@@ -1,6 +1,6 @@
 <?php
 
-/**
+/** 
  * Candy-PHP - Code the simpler way.
  *
  * The open source PHP Model-View-Template framework.
@@ -35,32 +35,30 @@
  * @since	Version 1.0.0
  */
 
-if(!defined('CANDY')){
+if (!defined('CANDY')) {
     header('Location: /');
 }
 
 
 /**
- *
  * A functional accessor to the Cookie class.
  *
  */
 
 
 /**
- *
  * Checks if a cookie exist.
  *
  * @param $name     The name of the cookie.
  * @return bool     True if cookie is set, false otherwise.
  */
-function cookie_exists($name){
+function cookie_exists($name)
+{
     global $cook;
     return $cook->exists($name);
 }
 
 /**
- *
  * Sets a cookie.
  *
  * @param $name                 The name of the cookie
@@ -68,47 +66,45 @@ function cookie_exists($name){
  * @param string $location      The location of the cookie on the server. Default '/'
  * @return bool|string          The value of the cookie or false if cokkie cannot be set.
  */
-function cookie_set($name, $value, $location = "/"){
+function cookie_set($name, $value, $location = "/")
+{
     global $cook;
     return $cook->setCookie($name, $value, $location);
 }
 
 /**
- *
  * Deletes an instance of a cookie.
  *
  * @param $name                 The name of the cookie to delete.
  * @param string $location      The path from which to delete the cookie.
  * @return bool                 True if cookie is deleted, Otherwise, False.
  */
-function cookie_delete($name, $location = "/"){
+function cookie_delete($name, $location = "/")
+{
     global $cook;
     return $cook->deleteCookie($name, $location);
 }
 
 /**
- *
  * Gets the value of a cookie.
  *
  * @param $name             The name of the cookie.
  * @return bool|string      The cookie string or bool if it does not exists.
  */
-function cookie_value($name){
+function cookie_value($name)
+{
     global $cook;
     return $cook->getCookieValue($name);
 }
 
 /**
- *
  * Converts cookie to an object.
  *
  * @param string $name          The name of the cookie.
  * @return string               An object of the cookie (Not the Cookie class).
  */
-function cookie_json($name = ''){
+function cookie_json($name = '')
+{
     global $cook;
     return $cook->toJSON($name);
 }
-
-
-

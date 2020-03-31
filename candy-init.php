@@ -18,19 +18,19 @@ $__plugins__->init(get_config('autoload_plugins', 'main', false));
 // Init global variables.
 // Do not access them directly unless you know what you are doing.
 // Rather, access them via their respective functions.
-$__forms__ = [];
-$__dbs__ = [];
+$GLOBALS['__forms__'] = [];
+$GLOBALS['__queries__'] = [];
 $GLOBALS['__htmls__'] = [];
 $GLOBALS['__routes__'] = [];
 
-$__scripts__ = [];
-$__styles__ = [];
-$__descripted__ = [];
-$__destyled__ = [];
+$GLOBALS['__scripts__'] = [];
+$GLOBALS['__styles__'] = [];
+$GLOBALS['__descripted__'] = [];
+$GLOBALS['__destyled__'] = [];
 
-$__uploaders__ = [];
+$GLOBALS['__uploaders__'] = [];
 
-$__flashsessions__ = [];
+$GLOBALS['__flashsessions__'] = [];
 
 // Initialize Concepts.
 $app_files = get_directory(__DIR__ . '/' . get_config('models_dir', 'main'), CANDY_SCAN_FILES, '.php');

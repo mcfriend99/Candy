@@ -225,7 +225,6 @@ function get_url_content($url)
  */
 function get_url($s = '')
 {
-
     if (!empty($s) && $s[0] == '/')
         $s = substr($s, 1);
 
