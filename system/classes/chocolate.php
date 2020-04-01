@@ -158,14 +158,16 @@ class Chocolate
 
             $file = file($this->file);
 
-            preg_match('~(?<!@)@extend\s*\(([\'"])([^\'"]+)\\1\)\s*(\r?\n)?~x', trim($file[0]), $match);
-            if (!empty($match)) {
-                $this->parent = $match[2];
-                unset($file[0]);
-            }
+            if (count($file) > 0) {
+                preg_match('~(?<!@)@extend\s*\(([\'"])([^\'"]+)\\1\)\s*(\r?\n)?~x', trim($file[0]), $match);
+                if (!empty($match)) {
+                    $this->parent = $match[2];
+                    unset($file[0]);
+                }
 
-            foreach ($file as $f) {
-                $this->str .= $f;
+                foreach ($file as $f) {
+                    $this->str .= $f;
+                }
             }
         }
     }
@@ -596,7 +598,7 @@ class _{$grs} {$extend} {
                     $t->set_file(THEME_DIR . '/' . $file);
                     $t->render(false);
 
-                    return "<?php include \"{$t->cache_file}\"; new _" . (pathinfo($t->cache_file, PATHINFO_FILENAME)) . "(); ?>";
+                    return "<?php require_once \"{$t->cache_file}\"; new _" . (pathinfo($t->cache_file, PATHINFO_FILENAME)) . "(); ?>";
                 } else {
 
                     $this->error("Can't include a template file &quot;{$match[1]}&quot; that does not exist.");
