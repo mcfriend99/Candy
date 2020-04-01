@@ -599,7 +599,7 @@ class _{$grs} {$extend} {
                     return "<?php include \"{$t->cache_file}\"; new _" . (pathinfo($t->cache_file, PATHINFO_FILENAME)) . "(); ?>";
                 } else {
 
-                    $this->error("Can't extend a template file &quot;{$match[1]}&quot; that does not exist.");
+                    $this->error("Can't include a template file &quot;{$match[1]}&quot; that does not exist.");
                 }
             }
         }, $str);
