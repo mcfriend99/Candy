@@ -6,7 +6,7 @@
   "dev_mode": true,
   "encrypt_passwords": true,
   "autoload_plugins": false,
-  "plugin_dir": "system/plugins",
+  "plugin_dir": "plugins",
   "assets_dir": "assets",
   "template_dir": "templates",
   "language_dir": "langs",
