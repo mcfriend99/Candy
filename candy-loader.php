@@ -42,7 +42,7 @@ foreach ($config_files as $file) {
 unset($config_files);
 // Enable/Disable error reporting as defined in configuration.
 // Do not change this option here. Rather change the show_error config value to yes or no as required.
-if (get_config('show_error', 'main', true) === true) {
+if (get_config('show_error', 'main', true) == true) {
 
     error_reporting(E_ALL);
 } else {

@@ -54,7 +54,7 @@ function redirect($url = null, $allow_redirect = false, $use_js = false)
 {
 
     // Shortcut to disable all redirection.
-    if (get_config('no_redirect', 'site', false) === true) return;
+    if (get_config('no_redirect', 'site', false) == true) return;
 
     if ($url == null || $allow_redirect == true) {
         if (should_redirect()) $url = $_GET[get_config('redirect_parameter', 'site', '_ref')];
@@ -78,7 +78,7 @@ function redirect($url = null, $allow_redirect = false, $use_js = false)
 function should_redirect()
 {
 
-    return (isset($_GET[get_config('redirect_parameter', 'site', '_ref')]) && get_config('no_redirect', 'site', false) === true);
+    return (isset($_GET[get_config('redirect_parameter', 'site', '_ref')]) && get_config('no_redirect', 'site', false) == true);
 }
 
 

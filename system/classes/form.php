@@ -1338,7 +1338,7 @@ class Form
             if (!in_array($name, $exceptions)) {
                 $insert[$name] = $this->getControlValue($name);
 
-                if ($values['type'] == 'password' && get_config('encrypt_passwords', 'main', true) === true) {
+                if ($values['type'] == 'password' && get_config('encrypt_passwords', 'main', true) == true) {
 
                     $insert[$name] = secure_password($insert[$name]);
                 } elseif ($values['type'] == 'file') {
