@@ -35,8 +35,8 @@
  * @since	Version 1.0.0
  */
 
-if(!defined('CANDY')){
-	header('Location: /');
+if (!defined('CANDY')) {
+    header('Location: /');
 }
 
 
@@ -118,7 +118,7 @@ class Chocolate
      */
     public function __construct($dir, $auto_escape = true)
     {
-        if(!file_exists($dir) || !is_dir($dir)) {
+        if (!file_exists($dir) || !is_dir($dir)) {
             if (file_exists(CACHE_DIR) && is_dir(CACHE_DIR)) {
                 @mkdir($dir);
             } else {
@@ -134,8 +134,9 @@ class Chocolate
      * Sets the template file to be processed.
      * @param string $file      The full path to the file.
      */
-    public function set_file($file = ''){
-        if(!file_exists($file)){
+    public function set_file($file = '')
+    {
+        if (!file_exists($file)) {
             $this->error('Chocolate file not found.');
         }
 
@@ -150,36 +151,36 @@ class Chocolate
             . '/' . pathinfo($this->cache_file, PATHINFO_FILENAME) . '.'
             . pathinfo($this->cache_file, PATHINFO_EXTENSION);
 
-        if(file_exists($this->cache_file)){
+        if (file_exists($this->cache_file)) {
             $this->cached = true;
         } else {
             $this->cached = false;
 
             $file = file($this->file);
-            
+
             preg_match('~(?<!@)@extend\s*\(([\'"])([^\'"]+)\\1\)\s*(\r?\n)?~x', trim($file[0]), $match);
-            if(!empty($match)){
+            if (!empty($match)) {
                 $this->parent = $match[2];
                 unset($file[0]);
             }
 
-            foreach($file as $f){
+            foreach ($file as $f) {
                 $this->str .= $f;
             }
         }
-
     }
 
     /**
      * Renders the template to the browser.
      */
-    public function render($show = true){
+    public function render($show = true)
+    {
 
-        if(!$this->cached){
+        if (!$this->cached) {
             $this->parse();
             $this->save();
         }
-        if($show) {
+        if ($show) {
             include "{$this->cache_file}";
             $grs = '_' . pathinfo($this->cache_file, PATHINFO_FILENAME);
             new $grs();
@@ -191,7 +192,8 @@ class Chocolate
     /**
      *  Saves the processed template to file.
      */
-    protected function save(){
+    protected function save()
+    {
 
         $grs = pathinfo($this->cache_file, PATHINFO_FILENAME);
         $gry = !empty($this->parent) ? pathinfo($this->parent, PATHINFO_FILENAME) : '';
@@ -199,36 +201,36 @@ class Chocolate
         $extend = !empty($this->parent) ? " extends _{$gry}" : '';
 
         $sects = '';
-        if(!empty($this->sections)){
+        if (!empty($this->sections)) {
             foreach ($this->sections as $key => $value) {
                 $sects .=
-    "/**###<{$key}>###**/public function {$key}(){
+                    "/**###<{$key}>###**/public function {$key}(){
      foreach(\$GLOBALS as \$v => \$s) if(!isset($\$v) && \$v != '_{$grs}') $\$v = \$s;
      ?>";
-$sects .= $value;
-$sects .=
-    "<?php }";
+                $sects .= $value;
+                $sects .=
+                    "<?php }";
             }
         }
 
         $yvstr = '';
-        foreach ($this->parent_sections as $key){
+        foreach ($this->parent_sections as $key) {
             $yvstr .= "/**###<{$key}>###**/\n";
         }
 
         $str =
             "<?php //CACHE-FOR: {$this->file}\n" . $yvstr
-            .(!empty($this->parent) ? "include \"{$this->parent}\";" : ''). "
+            . (!empty($this->parent) ? "include \"{$this->parent}\";" : '') . "
 class _{$grs} {$extend} {
-    function __construct(){ " .(!empty($this->parent) ? "parent::__construct();" : ''). "
+    function __construct(){ " . (!empty($this->parent) ? "parent::__construct();" : '') . "
         foreach(\$GLOBALS as \$v => \$s) if(!isset($\$v) && \$v != '_{$grs}') $\$v = \$s;
     ?>
-" .trim($this->str). "
+" . trim($this->str) . "
     <?php } {$sects}
 }
 ?>";
 
-        file_put_contents($this->cache_file, $str );
+        file_put_contents($this->cache_file, $str);
     }
 
     /**
@@ -236,45 +238,47 @@ class _{$grs} {$extend} {
      * @param $err      The error message
      * @throws Exception
      */
-    protected function error($err){
+    protected function error($err)
+    {
         throw new Exception('CHOCOLATE_ERROR: ' . $err);
     }
 
     /**
      * Converts the source template to php codes.
      */
-    protected function parse(){
+    protected function parse()
+    {
 
-            // Parse @extend commands before any other command. Else, it might not work as expected...
-            $this->parseExtensions();
+        // Parse @extend commands before any other command. Else, it might not work as expected...
+        $this->parseExtensions();
 
-            $this->parseComments();
-            $this->parseIncludes();
+        $this->parseComments();
+        $this->parseIncludes();
 
-            $this->parseEchoes();
-            $this->parseJson();
-            $this->parseConditionals();
-            $this->parseLoops();
-            $this->parsePhp();
-            $this->parseDate();
-
-
-            // Parse Candy-PHP specific directives...
-            $this->parseConfigurations();
-            $this->parseCsrfs();
-            $this->parseForms();
-            $this->parseResources();
-            $this->parseUploads();
-            $this->parseUrls();
-            $this->parseScripts();
-            $this->parseStyles();
-            $this->parseTexts();
+        $this->parseEchoes();
+        $this->parseJson();
+        $this->parseConditionals();
+        $this->parseLoops();
+        $this->parsePhp();
+        $this->parseDate();
 
 
+        // Parse Candy-PHP specific directives...
+        $this->parseConfigurations();
+        $this->parseCsrfs();
+        $this->parseForms();
+        $this->parseResources();
+        $this->parseUploads();
+        $this->parseUrls();
+        $this->parseScripts();
+        $this->parseStyles();
+        $this->parseTexts();
 
-            $this->str = apply_filters('on_chocolate_compile', $this->str);
-            // ADD CUSTOM DIRECTIVES AS FOLLOWS:
-            /*
+
+
+        $this->str = apply_filters('on_chocolate_compile', $this->str);
+        // ADD CUSTOM DIRECTIVES AS FOLLOWS:
+        /*
              * function function_name($str){
              *
              *      return preg_replace_callback('pcre_compliance_regex', function($match){
@@ -287,19 +291,20 @@ class _{$grs} {$extend} {
              * */
 
 
-            // Parse sections and section calls lastly. This is the only way I know they can work for now.
-            $this->parseSections();
-            $this->parseShows();
+        // Parse sections and section calls lastly. This is the only way I know they can work for now.
+        $this->parseSections();
+        $this->parseShows();
     }
 
     /**
      * Sets the parent of the template if any.
      */
-    protected function parseExtensions(){
+    protected function parseExtensions()
+    {
 
-        if(!empty($this->parent)){
+        if (!empty($this->parent)) {
 
-            if($file = get_template_file($this->parent)) {
+            if ($file = get_template_file($this->parent)) {
 
                 if (file_exists(THEME_DIR . '/' . $file)) {
 
@@ -310,8 +315,8 @@ class _{$grs} {$extend} {
                     $this->parent = $t->cache_file;
                     $this->parent_str = file_get_contents($this->parent);
 
-                    preg_replace_callback('~\/\*\*###<([a-zA-Z0-9_]+)>###\*\*\/~', function($s){
-                        if(!in_array($s[1], $this->parent_sections))
+                    preg_replace_callback('~\/\*\*###<([a-zA-Z0-9_]+)>###\*\*\/~', function ($s) {
+                        if (!in_array($s[1], $this->parent_sections))
                             $this->parent_sections[] .= $s[1];
                     }, $this->parent_str);
                 } else {
@@ -328,7 +333,8 @@ class _{$grs} {$extend} {
      * Parses comments in the template.
      * <!-- Comment -->
      */
-    protected function parseComments(){
+    protected function parseComments()
+    {
         $str = &$this->str;
 
         $str = preg_replace('~<\!\-\-(.+?)\-\->~is', '', $str);
@@ -340,14 +346,15 @@ class _{$grs} {$extend} {
      * Escaped echoes... {# object #}
      * Unescaped echoes... {{ object }}
      */
-    protected function parseEchoes(){
+    protected function parseEchoes()
+    {
         $str = &$this->str;
 
-        $str = preg_replace_callback('~{#\s*(.*?)\s*#}~', function($match) {
+        $str = preg_replace_callback('~{#\s*(.*?)\s*#}~', function ($match) {
             return "<?=htmlspecialchars(safe_echo({$match[1]}));?>";
         }, $str);
 
-        $str = preg_replace_callback('~{{\s*(.*?)\s*}}~', function($match) {
+        $str = preg_replace_callback('~{{\s*(.*?)\s*}}~', function ($match) {
             return "<?=safe_echo({$match[1]});?>";
         }, $str);
     }
@@ -358,10 +365,11 @@ class _{$grs} {$extend} {
      *
      * @json(object)
      */
-    protected function parseJson(){
+    protected function parseJson()
+    {
         $str = &$this->str;
 
-        $str = preg_replace_callback('~(?<!@)@json\((.*?)\)\s*(\r?\n)?~x', function($match) {
+        $str = preg_replace_callback('~(?<!@)@json\((.*?)\)\s*(\r?\n)?~x', function ($match) {
             $white = isset($match[2]) ? $match[2] : '';
             return "<?=isset({$match[1]}) ? @json_encode({$match[1]}) : @json_encode([]);?>{$white}";
         }, $str);
@@ -379,86 +387,87 @@ class _{$grs} {$extend} {
      * @continue(condition)
      * @break(condition)
      */
-    protected function parseConditionals(){
+    protected function parseConditionals()
+    {
         $str = &$this->str;
 
         //// Handle @if...@elseif...@else...@endif conditions...
 
         // If...
-        $str = preg_replace_callback('~(?<!@)@if\s*(\([^()]+\))(\r?\n)?~x', function($match){
+        $str = preg_replace_callback('~(?<!@)@if\s*(\([^()]+\))(\r?\n)?~x', function ($match) {
             $white = isset($match[2]) ? $match[2] : '';
             return "<?php if{$match[1]}: ?>{$white}";
         }, $str);
 
         // Else if...
-        $str = preg_replace_callback('~(?<!@)@elseif\s*(\([^()]+\))(\r?\n)?~x', function($match){
+        $str = preg_replace_callback('~(?<!@)@elseif\s*(\([^()]+\))(\r?\n)?~x', function ($match) {
             $white = isset($match[2]) ? $match[2] : '';
             return "<?php elseif{$match[1]}: ?>{$white}";
         }, $str);
 
         // Else...
-        $str = preg_replace_callback('~(?<!@)@else\s*(\r?\n)?~x', function($match){
+        $str = preg_replace_callback('~(?<!@)@else\s*(\r?\n)?~x', function ($match) {
             $white = isset($match[2]) ? $match[2] : '';
             return "<?php else: ?>{$white}";
         }, $str);
 
         // End if...
-        $str = preg_replace_callback('~(?<!@)@endif~x', function(){
+        $str = preg_replace_callback('~(?<!@)@endif~x', function () {
             return "<?php endif; ?>";
         }, $str);
 
 
         //// Handle if not (@not...@endnot) conditions...
-        $str = preg_replace_callback('~(?<!@)@not\s*(\([^()]+\))(\r?\n)?~x', function($match){
+        $str = preg_replace_callback('~(?<!@)@not\s*(\([^()]+\))(\r?\n)?~x', function ($match) {
             $white = isset($match[2]) ? $match[2] : '';
             return "<?php if(!{$match[1]}): ?>{$white}";
         }, $str);
 
         // End if not...
-        $str = preg_replace_callback('~(?<!@)@endnot~x', function(){
+        $str = preg_replace_callback('~(?<!@)@endnot~x', function () {
             return "<?php endif; ?>";
         }, $str);
 
 
         //// Handle isset (@set...@endset) conditions...
-        $str = preg_replace_callback('~(?<!@)@set\s*(\([^()]+\))(\r?\n)?~x', function($match){
+        $str = preg_replace_callback('~(?<!@)@set\s*(\([^()]+\))(\r?\n)?~x', function ($match) {
             $white = isset($match[2]) ? $match[2] : '';
             return "<?php if(isset{$match[1]}): ?>{$white}";
         }, $str);
 
         // End isset...
-        $str = preg_replace_callback('~(?<!@)@endset~x', function(){
+        $str = preg_replace_callback('~(?<!@)@endset~x', function () {
             return "<?php endif; ?>";
         }, $str);
 
 
         //// Handle isset (@notset...@endnotset) conditions...
-        $str = preg_replace_callback('~(?<!@)@notset\s*(\([^()]+\))(\r?\n)?~x', function($match){
+        $str = preg_replace_callback('~(?<!@)@notset\s*(\([^()]+\))(\r?\n)?~x', function ($match) {
             $white = isset($match[2]) ? $match[2] : '';
             return "<?php if(!isset{$match[1]}): ?>{$white}";
         }, $str);
 
         // End isset...
-        $str = preg_replace_callback('~(?<!@)@endnotset~x', function(){
+        $str = preg_replace_callback('~(?<!@)@endnotset~x', function () {
             return "<?php endif; ?>";
         }, $str);
 
 
         //// Handle empty iterable check (@empty...@endempty) conditions...
-        $str = preg_replace_callback('~(?<!@)@empty\s*(\([^()]+\))(\r?\n)?~x', function($match){
+        $str = preg_replace_callback('~(?<!@)@empty\s*(\([^()]+\))(\r?\n)?~x', function ($match) {
             $white = isset($match[2]) ? $match[2] : '';
             return "<?php if(empty{$match[1]}): ?>{$white}";
         }, $str);
 
         // End empty...
-        $str = preg_replace_callback('~(?<!@)@endempty~x', function(){
+        $str = preg_replace_callback('~(?<!@)@endempty~x', function () {
             return "<?php endif; ?>";
         }, $str);
 
 
         //// Handle switch statement block conditions... @switch...{@case...@break}...@endswitch
-        $str = preg_replace_callback('~(?<!@)@switch\s*(\([^()]+\))(.+?)@endswitch~s', function($match){
-            if(!isset($match[2])) {
+        $str = preg_replace_callback('~(?<!@)@switch\s*(\([^()]+\))(.+?)@endswitch~s', function ($match) {
+            if (!isset($match[2])) {
                 $this->error("Invalid @switch directive in &quot;{$this->sfile}&quot;.");
             } else {
                 $match[2] = preg_replace_callback('~(?<!@)@case\s*\(([^()]+)\)(\r?\n)?~x', function ($p) {
@@ -472,18 +481,18 @@ class _{$grs} {$extend} {
                 }, $match[2]);
             }
             return "<?php switch{$match[1]}:"
-                .substr(trim($match[2]), 5)
-                ."<?php endswitch; ?>";
+                . substr(trim($match[2]), 5)
+                . "<?php endswitch; ?>";
         }, $str);
 
 
         //// Handle loop exit conditions... @continue(condition), @break(condition)
-        $str = preg_replace_callback('~(?<!@)@continue\s*(\([^()]+\))(\r?\n)?~x', function($match){
+        $str = preg_replace_callback('~(?<!@)@continue\s*(\([^()]+\))(\r?\n)?~x', function ($match) {
             $white = isset($match[2]) ? $match[2] : '';
             return "<?php if{$match[1]} continue; ?>{$white}";
         }, $str);
 
-        $str = preg_replace_callback('~(?<!@)@break\s*(\([^()]+\))(\r?\n)?~x', function($match){
+        $str = preg_replace_callback('~(?<!@)@break\s*(\([^()]+\))(\r?\n)?~x', function ($match) {
             $white = isset($match[2]) ? $match[2] : '';
             return "<?php if{$match[1]} break; ?>{$white}";
         }, $str);
@@ -496,30 +505,31 @@ class _{$grs} {$extend} {
      * @each...[@empty...]@endeach
      * @while...@endwhile
      */
-    protected function parseLoops(){
+    protected function parseLoops()
+    {
         $str = &$this->str;
 
 
         //// Handle for loops (@for...@endfor)...
-        $str = preg_replace_callback('~(?<!@)@for\s*(\([^()]+\))(\r?\n)?~x', function($match){
+        $str = preg_replace_callback('~(?<!@)@for\s*(\([^()]+\))(\r?\n)?~x', function ($match) {
             $white = isset($match[2]) ? $match[2] : '';
             return "<?php for{$match[1]}: ?>{$white}";
         }, $str);
 
         // End for...
-        $str = preg_replace_callback('~(?<!@)@endfor~x', function(){
+        $str = preg_replace_callback('~(?<!@)@endfor~x', function () {
             return "<?php endfor; ?>";
         }, $str);
 
 
         //// Handle foreach loops (@each...[@empty...]@endeach)...
-        $str = preg_replace_callback('~(?<!@)@each\s*\(([^()]+)\)(\r?\n)?~x', function($match){
+        $str = preg_replace_callback('~(?<!@)@each\s*\(([^()]+)\)(\r?\n)?~x', function ($match) {
             $white = isset($match[2]) ? $match[2] : '';
 
             $matches = preg_split('~\s+in\s+~', $match[1]);
-            if(count($matches) > 1) {
+            if (count($matches) > 1) {
                 $mark = preg_split('~\s+as\s+~', $matches[0]);
-                if(count($mark) > 1) $mark = "{$mark[0]} => {$mark[1]}";
+                if (count($mark) > 1) $mark = "{$mark[0]} => {$mark[1]}";
                 else $mark = $mark[0];
 
                 $loop_condition = "{$matches[1]} as {$mark}";
@@ -531,27 +541,26 @@ class _{$grs} {$extend} {
         }, $str);
 
         // Empty foreach...
-        $str = preg_replace_callback('~(?<!@)@empty~x', function(){
+        $str = preg_replace_callback('~(?<!@)@empty~x', function () {
             return '<?php $__counter__++; endforeach; else: foreach($__f0each__ as $_F): ?>';
         }, $str);
 
         // End foreach...
-        $str = preg_replace_callback('~(?<!@)@endeach~x', function(){
+        $str = preg_replace_callback('~(?<!@)@endeach~x', function () {
             return "<?php  \$__counter__++; endforeach; endif; unset(\$__counter__); unset(\$__f0each__); ?>";
         }, $str);
 
 
         //// Handle while loops (@while...@endwhile)...
-        $str = preg_replace_callback('~(?<!@)@while\s*(\([^()]+\))(\r?\n)?~x', function($match){
+        $str = preg_replace_callback('~(?<!@)@while\s*(\([^()]+\))(\r?\n)?~x', function ($match) {
             $white = isset($match[2]) ? $match[2] : '';
             return "<?php while{$match[1]}: ?>{$white}";
         }, $str);
 
         // End for...
-        $str = preg_replace_callback('~(?<!@)@endwhile~x', function(){
+        $str = preg_replace_callback('~(?<!@)@endwhile~x', function () {
             return "<?php endwhile; ?>";
         }, $str);
-
     }
 
     /**
@@ -559,7 +568,8 @@ class _{$grs} {$extend} {
      *
      * @php...@endphp
      */
-    protected function parsePhp(){
+    protected function parsePhp()
+    {
         $str = &$this->str;
         $str = preg_replace_callback('/(?<!@)@php(.*?)@endphp/s', function ($matches) {
             return "<?php{$matches[1]}?>";
@@ -571,13 +581,14 @@ class _{$grs} {$extend} {
      *
      * @include(object_path)
      */
-    protected function parseIncludes(){
+    protected function parseIncludes()
+    {
         $str = &$this->str;
-        $str = preg_replace_callback('~(?<!@)@include\s*\(([^()]+)\)~x', function($match){
-            if($match[1][0] == '"' || $match[1][0] == "'")
+        $str = preg_replace_callback('~(?<!@)@include\s*\(([^()]+)\)~x', function ($match) {
+            if ($match[1][0] == '"' || $match[1][0] == "'")
                 $match[1] = substr($match[1], 1, -1);
 
-            if($file = get_template_file($match[1])) {
+            if ($file = get_template_file($match[1])) {
 
                 if (file_exists(THEME_DIR . '/' . $file)) {
 
@@ -585,8 +596,7 @@ class _{$grs} {$extend} {
                     $t->set_file(THEME_DIR . '/' . $file);
                     $t->render(false);
 
-                    return "<?php include \"{$t->cache_file}\"; new _" .(pathinfo($t->cache_file, PATHINFO_FILENAME)). "(); ?>";
-
+                    return "<?php include \"{$t->cache_file}\"; new _" . (pathinfo($t->cache_file, PATHINFO_FILENAME)) . "(); ?>";
                 } else {
 
                     $this->error("Can't extend a template file &quot;{$match[1]}&quot; that does not exist.");
@@ -601,11 +611,12 @@ class _{$grs} {$extend} {
      * @date            # Current date in the format F d, Y g:i: A e.g. February 20, 2017 8:40 AM
      * @date(format)    # Formatted date.
      */
-    protected function parseDate(){
+    protected function parseDate()
+    {
         $str = &$this->str;
-        $str = preg_replace_callback('~(?<!@)@date\s*(\([^()]+\))?(\r?\n)?~x', function($match){
+        $str = preg_replace_callback('~(?<!@)@date\s*(\([^()]+\))?(\r?\n)?~x', function ($match) {
             $white = isset($match[2]) ? $match[2] : '';
-            return "<?php echo date(" .(isset($match[1]) ? $match[1] : '"F d, Y g:i A"'). "); ?>{$white}";
+            return "<?php echo date(" . (isset($match[1]) ? $match[1] : '"F d, Y g:i A"') . "); ?>{$white}";
         }, $str);
     }
 
@@ -614,41 +625,40 @@ class _{$grs} {$extend} {
      *
      * @section('section_name')...@endsection
      */
-    protected function parseSections(){
+    protected function parseSections()
+    {
         $str = &$this->str;
 
-        $str = preg_replace_callback('~(?<!@)@section\s*\(([\'"])([a-zA-Z0-9_]+)\\1\s*(,\s*false\s*)?\)\s*(.*?)(?<!@)@endsection~s', function($match){
+        $str = preg_replace_callback('~(?<!@)@section\s*\(([\'"])([a-zA-Z0-9_]+)\\1\s*(,\s*false\s*)?\)\s*(.*?)(?<!@)@endsection~s', function ($match) {
 
-            if(isset($this->sections[$match[2]]))
+            if (isset($this->sections[$match[2]]))
                 $this->error("Section &quot;{$match[2]}&quot; is already defined in {$this->sfile}");
-            elseif(strtolower($match[2]) == '__construct')
+            elseif (strtolower($match[2]) == '__construct')
                 $this->error("Invalid section name &quot;{$match[2]}&quot; in {$this->sfile}");
 
-            $match[4] = preg_replace_callback('~(?<!@)@parent(\r?\n)?~', function() use ($match){
+            $match[4] = preg_replace_callback('~(?<!@)@parent(\r?\n)?~', function () use ($match) {
                 return "<?php parent::{$match[2]}(); ?>";
             }, $match[4]);
 
-            $match[4] = preg_replace_callback('~(?<!@)@endsection(\r?\n)?~', function() use ($match){
+            $match[4] = preg_replace_callback('~(?<!@)@endsection(\r?\n)?~', function () use ($match) {
                 return "";
             }, $match[4]);
 
             $this->sections = array_merge($this->sections, [$match[2] => trim($match[4])]);
 
-            $this->sections[$match[2]] = preg_replace_callback('~(?<!@)@show\s*\(([\'"])([a-zA-Z0-9_]+)\\1\)~x', function($p){
-                if(isset($this->sections[$p[2]]) || in_array($p[2], $this->parent_sections)) {
+            $this->sections[$match[2]] = preg_replace_callback('~(?<!@)@show\s*\(([\'"])([a-zA-Z0-9_]+)\\1\)~x', function ($p) {
+                if (isset($this->sections[$p[2]]) || in_array($p[2], $this->parent_sections)) {
                     return "<?php \$this->{$p[2]}(); ?>";
                 } else {
                     $this->error("Calling @show directive on a non-existing section &quot;{$p[2]}&quot;.");
                 }
             }, $this->sections[$match[2]]);
 
-            if(empty($this->parent) || !in_array($match[2], $this->parent_sections))
-                if(!isset($match[3]) || empty($match[3]))
+            if (empty($this->parent) || !in_array($match[2], $this->parent_sections))
+                if (!isset($match[3]) || empty($match[3]))
                     return "<?php \$this->{$match[2]}(); ?>";
-            else return '';
+                else return '';
         }, $str);
-
-
     }
 
     /**
@@ -656,11 +666,12 @@ class _{$grs} {$extend} {
      *
      * @show('section_name')
      */
-    protected function parseShows(){
+    protected function parseShows()
+    {
         $str = &$this->str;
 
-        $str = preg_replace_callback('~(?<!@)@show\s*\(([\'"])([a-zA-Z0-9_]+)\\1\)~x', function($match){
-            if(isset($this->sections[$match[2]]) || in_array($match[2], $this->parent_sections)) {
+        $str = preg_replace_callback('~(?<!@)@show\s*\(([\'"])([a-zA-Z0-9_]+)\\1\)~x', function ($match) {
+            if (isset($this->sections[$match[2]]) || in_array($match[2], $this->parent_sections)) {
                 return "<?php \$this->{$match[2]}(); ?>";
             } else {
                 $this->error("Calling @show directive on a non-existing section &quot;{$match[2]}&quot;.");
@@ -677,10 +688,11 @@ class _{$grs} {$extend} {
      * @e('text_name')          # Or --->
      * @text('text_name')       # Or <--
      */
-    protected function parseTexts(){
+    protected function parseTexts()
+    {
         $str = &$this->str;
 
-        $str = preg_replace_callback('~(?<!@)@(e|text)\s*\(([^()]+)\)~x', function($match){
+        $str = preg_replace_callback('~(?<!@)@(e|text)\s*\(([^()]+)\)~x', function ($match) {
             return "<?=e_text({$match[2]});?>";
         }, $str);
     }
@@ -690,10 +702,11 @@ class _{$grs} {$extend} {
      *
      * @form('form_name')
      */
-    protected function parseForms(){
+    protected function parseForms()
+    {
         $str = &$this->str;
 
-        $str = preg_replace_callback('~(?<!@)@form\s*\(([^()]+)\)~x', function($match){
+        $str = preg_replace_callback('~(?<!@)@form\s*\(([^()]+)\)~x', function ($match) {
             return "<?php draw_form({$match[1]}); ?>";
         }, $str);
     }
@@ -703,10 +716,11 @@ class _{$grs} {$extend} {
      *
      * @csrf('form_name')
      */
-    protected function parseCsrfs(){
+    protected function parseCsrfs()
+    {
         $str = &$this->str;
 
-        $str = preg_replace_callback('~(?<!@)@csrf\s*\(([^()]+)\)~x', function($match){
+        $str = preg_replace_callback('~(?<!@)@csrf\s*\(([^()]+)\)~x', function ($match) {
             return "<?=form_csrf({$match[1]});?>";
         }, $str);
     }
@@ -717,11 +731,12 @@ class _{$grs} {$extend} {
      * @style('style,names')            # include stylesheets
      * @style('style,names', true)      # inline stylesheets
      */
-    protected function parseStyles(){
+    protected function parseStyles()
+    {
         $str = &$this->str;
 
-        $str = preg_replace_callback('~(?<!@)@style\s*\(([\'"])([^\'"]+)\\1(\s*,\s*true\s*)?\)~x', function($match){
-            if(isset($match[3])) {
+        $str = preg_replace_callback('~(?<!@)@style\s*\(([\'"])([^\'"]+)\\1(\s*,\s*true\s*)?\)~x', function ($match) {
+            if (isset($match[3])) {
                 return "<?php inline_styles(\"{$match[2]}\"); ?>";
             } else return "<?php include_styles(\"{$match[2]}\"); ?>";
         }, $str);
@@ -733,11 +748,12 @@ class _{$grs} {$extend} {
      * @script('script,names')            # include scripts
      * @script('script,names', true)      # inline scripts
      */
-    protected function parseScripts(){
+    protected function parseScripts()
+    {
         $str = &$this->str;
 
-        $str = preg_replace_callback('~(?<!@)@script\s*\(([\'"])([^\'"]+)\\1(\s*,\s*true\s*)?\)~x', function($match){
-            if(isset($match[3])) {
+        $str = preg_replace_callback('~(?<!@)@script\s*\(([\'"])([^\'"]+)\\1(\s*,\s*true\s*)?\)~x', function ($match) {
+            if (isset($match[3])) {
                 return "<?php inline_scripts(\"{$match[2]}\"); ?>";
             } else return "<?php include_scripts(\"{$match[2]}\"); ?>";
         }, $str);
@@ -748,10 +764,11 @@ class _{$grs} {$extend} {
      *
      * @file('resource/path')
      */
-    protected function parseResources(){
+    protected function parseResources()
+    {
         $str = &$this->str;
 
-        $str = preg_replace_callback('~(?<!@)@file\s*\(([^()]+)\)~x', function($match){
+        $str = preg_replace_callback('~(?<!@)@file\s*\(([^()]+)\)~x', function ($match) {
             return "<?=get_resource_url({$match[1]});?>";
         }, $str);
     }
@@ -761,10 +778,11 @@ class _{$grs} {$extend} {
      *
      * @file('resource/path')
      */
-    protected function parseUploads(){
+    protected function parseUploads()
+    {
         $str = &$this->str;
 
-        $str = preg_replace_callback('~(?<!@)@upload\s*\(([^()]+)\)~x', function($match){
+        $str = preg_replace_callback('~(?<!@)@upload\s*\(([^()]+)\)~x', function ($match) {
             return "<?=get_upload_url({$match[1]});?>";
         }, $str);
     }
@@ -774,10 +792,11 @@ class _{$grs} {$extend} {
      *
      * @config('config_name' [, 'config_type'])
      */
-    protected function parseConfigurations(){
+    protected function parseConfigurations()
+    {
         $str = &$this->str;
 
-        $str = preg_replace_callback('~(?<!@)@config\s*\(([^()]+)\)~x', function($match){
+        $str = preg_replace_callback('~(?<!@)@config\s*\(([^()]+)\)~x', function ($match) {
             return "<?=get_config({$match[1]});?>";
         }, $str);
     }
@@ -788,16 +807,13 @@ class _{$grs} {$extend} {
      * @url
      * @url('path')
      */
-    protected function parseUrls(){
+    protected function parseUrls()
+    {
         $str = &$this->str;
 
-        $str = preg_replace_callback('~(?<!@)@url\s*(\([^()]+\))?(\r?\n)?~x', function($match){
+        $str = preg_replace_callback('~(?<!@)@url\s*(\([^()]+\))?(\r?\n)?~x', function ($match) {
             $white = isset($match[2]) ? $match[2] : '';
-            return "<?=" .(isset($match[1]) ? "get_url({$match[1]})" : 'the_url()'). ";?>{$white}";
+            return "<?=" . (isset($match[1]) ? "get_url({$match[1]})" : 'the_url()') . ";?>{$white}";
         }, $str);
     }
 }
-
-
-
-

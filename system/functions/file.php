@@ -856,7 +856,7 @@ function do_upload($name, $target_name = '')
     $name2 = $GLOBALS['__uploaders__'][$name]['name'];
 
     if (!isset($_FILES[$name2]))
-        bad_implementation_error('Uploader &quot;' . $name . '&quot;');
+        implementation_error('Uploader &quot;' . $name . '&quot;');
 
     $options = $GLOBALS['__uploaders__'][$name]['options'];
 
@@ -875,7 +875,7 @@ function _do_upload($name, $name2, $options, $target_name = '')
 
     foreach ($_files as $_file) {
         if (!is_array($_file)) {
-            bad_implementation_error('Uploader &quot;' . $name . '&quot; contains invalid files and');
+            implementation_error('Uploader &quot;' . $name . '&quot; contains invalid files and');
         }
     }
 

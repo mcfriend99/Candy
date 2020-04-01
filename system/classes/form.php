@@ -51,72 +51,56 @@ define('VALIDATION_SUCCESS', 1);
 class Form
 {
 
-    /**
-     * @var array of controls.
+    /** @var array of controls.
      */
     var $controls = [];
-    /**
-     * @var string
+    /** @var string
      */
     var $form_open;
-    /**
-     * @var array of required fields.
+    /** @var array of required fields.
      */
     var $requireds = [];
-    /**
-     * @var Name of CSRF field.
+    /** @var Name of CSRF field.
      */
     public $csrf_name;
-    /**
-     * @var Value of CSRF field.
+    /** @var Value of CSRF field.
      */
     public $csrf_value;
-    /**
-     * @var Name of Submit Field.
+    /** @var Name of Submit Field.
      */
     var $submit_name;
-    /**
-     * @var Indicates whether to add a CSRF field to a form or not.
+    /** @var Indicates whether to add a CSRF field to a form or not.
      */
     var $no_csrf;
-    /**
-     * @var Indicates whether to add a submit field to a form if it contains no submit control or not.
+    /** @var Indicates whether to add a submit field to a form if it contains no submit control or not.
      * Default: False
      */
     var $no_submit;
-    /**
-     * @var Name of the form.
+    /** @var Name of the form.
      * Default: False
      */
     var $name;
-    /**
-     * @var string Method of the form POST, GET or PUT
+    /** @var string Method of the form POST, GET or PUT
      */
     var $method;
-    /**
-     * @var string The location the form submits to.
+    /** @var string The location the form submits to.
      * Default: POST
      */
     var $action;
-    /**
-     * @var bool Indicates whether a form has a file input control or not.
+    /** @var bool Indicates whether a form has a file input control or not.
      */
     var $has_files;
-    /**
-     * @var array of options in the form.
+    /** @var array of options in the form.
      */
     var $options;
-    /**
-     * @var Indicates whether to validate a form upon submit or not.
+    /** @var Indicates whether to validate a form upon submit or not.
      */
     var $no_validate;
-    /**
-     * @var Error generated while validating if any.
+    /** @var Error generated while validating if any.
      */
     public $validation_error;
 
-    /**
-     * Form constructor.
+    /** Form constructor.
      * @param $name
      * @param string $method
      * @param string $action
@@ -167,7 +151,6 @@ class Form
     }
 
     /**
-     *
      * Adds an array of controls to the form.
      *
      * @param array $controls
@@ -190,7 +173,6 @@ class Form
     }
 
     /**
-     *
      * Adds a single control to the form.
      *
      * @param $name
@@ -224,7 +206,6 @@ class Form
     }
 
     /**
-     *
      * Create a control that can be reused anywhere outside the form context.
      * Just in case someone needs it. Oh... Yes. We actually do.
      *
@@ -248,7 +229,6 @@ class Form
     }
 
     /**
-     *
      * Allows you to specify required controls in the form context and not in individual controls options or attribute.
      *
      * @param string $controls          Array list or a comma delimited string list of control names.
@@ -268,7 +248,6 @@ class Form
     }
 
     /**
-     *
      * Removes a control from the form.
      *
      * @param $name
@@ -294,7 +273,6 @@ class Form
     }
 
     /**
-     *
      * Draws a form on screen.
      *
      * @param array $options
@@ -377,7 +355,6 @@ class Form
     }
 
     /**
-     *
      * Verify that our CSRF token is valid.
      *
      * @return bool
@@ -392,7 +369,6 @@ class Form
     }
 
     /**
-     *
      * Draws a single control to HTML string.
      *
      * @param $name
@@ -403,7 +379,7 @@ class Form
     {
 
         if (!isset($this->controls[$name]))
-            bad_implementation_error('Form control &quot;' . $name . '&quot;');
+            implementation_error('Form control &quot;' . $name . '&quot;');
 
         $control = $this->_parseControl($name);
 
@@ -425,7 +401,6 @@ class Form
     }
 
     /**
-     *
      * Returns a control with the specified name within the form.
      *
      * @param $name
@@ -438,7 +413,6 @@ class Form
     }
 
     /**
-     *
      * Gets the text displayed on a control.
      *
      * @param $name
@@ -452,8 +426,7 @@ class Form
             : $this->getControl($name)['options']['text'], $this->name, $name);
     }
 
-    /**
-     * 
+    /** 
      * Gets the value of data in the control.
      *
      * @param $name
@@ -468,7 +441,6 @@ class Form
     }
 
     /**
-     *
      * Passes a control into its relative class implementation.
      *
      * @param $name
@@ -536,7 +508,6 @@ class Form
     }
 
     /**
-     *
      * Parses the default value of a control.
      * We use this to make sure setting default values do not result in PHP errors.
      *
@@ -560,7 +531,6 @@ class Form
     }
 
     /**
-     *
      * Gets the attributes associated with a control into HTML tag attribute description.
      *
      * @param $name
@@ -586,7 +556,6 @@ class Form
     }
 
     /**
-     *
      * Base Textbox and related controls template.
      *
      * @param $name
@@ -606,7 +575,6 @@ class Form
     }
 
     /**
-     *
      * A file control.
      *
      * @param $name
@@ -625,7 +593,6 @@ class Form
     }
 
     /**
-     *
      * A submit control.
      *
      * @param $name
@@ -639,7 +606,6 @@ class Form
     }
 
     /**
-     *
      * A button control.
      *
      * @param $name
@@ -656,7 +622,6 @@ class Form
     }
 
     /**
-     *
      * A reset control.
      *
      * @param $name
@@ -671,7 +636,6 @@ class Form
     }
 
     /**
-     *
      * A textarea control.
      *
      * @param $name
@@ -703,7 +667,6 @@ class Form
     }
 
     /**
-     *
      * A select control.
      * Set multiple=>true in $attr to make it a multiselect control.
      *
@@ -782,7 +745,6 @@ class Form
     }
 
     /**
-     *
      * A radio control.
      *
      * @param $name
@@ -809,7 +771,6 @@ class Form
     }
 
     /**
-     *
      * A Checkbox control.
      *
      * @param $name
@@ -829,7 +790,6 @@ class Form
     }
 
     /**
-     *
      * A hidden field control.
      *
      * @param $name
@@ -844,7 +804,6 @@ class Form
     }
 
     /**
-     *
      * A text control.
      *
      * @param $name
@@ -859,7 +818,6 @@ class Form
     }
 
     /**
-     *
      * A date picker control.
      *
      * @param $name
@@ -874,7 +832,6 @@ class Form
     }
 
     /**
-     *
      * A time picker control.
      *
      * @param $name
@@ -889,7 +846,6 @@ class Form
     }
 
     /**
-     *
      * A time picker control.
      *
      * @param $name
@@ -904,7 +860,6 @@ class Form
     }
 
     /**
-     *
      * An email control.
      *
      * @param $name
@@ -919,7 +874,6 @@ class Form
     }
 
     /**
-     *
      * A password control.
      *
      * @param $name
@@ -934,7 +888,6 @@ class Form
     }
 
     /**
-     *
      * A search control.
      *
      * @param $name
@@ -949,7 +902,6 @@ class Form
     }
 
     /**
-     *
      * A number control.
      *
      * @param $name
@@ -964,7 +916,6 @@ class Form
     }
 
     /**
-     *
      * A telephone control.
      *
      * @param $name
@@ -979,7 +930,6 @@ class Form
     }
 
     /**
-     *
      * A url control.
      *
      * @param $name
@@ -994,7 +944,6 @@ class Form
     }
 
     /**
-     *
      * A range slider control.
      *
      * @param $name
@@ -1017,7 +966,6 @@ class Form
 
 
     /**
-     *
      * Validates a form.
      *
      * @return int|mixed|string
@@ -1213,7 +1161,7 @@ class Form
             if (isset($rules['full_name']) && !regex_match($control_value, $regex::FULLNAME, true) && isset($rules['required']))
                 return $this->_validation_error('validation_fullname_fail', [$this->getControlText($name)], $default_error); // Value must be a person full name E.g. John Doe.
 
-            if (isset($rules['alphabets']) && !regex_match($control_value, $regex::ALPHABETS, true) && isset($rules['required']))
+            if (isset($rules['alphabets']) && !regex_match($control_value, $regex::ALPHABETHS, true) && isset($rules['required']))
                 return $this->_validation_error('validation_aplhabet_fail', [$this->getControlText($name)], $default_error); // Value must contain only alphabets.
 
             if (isset($rules['us_social_security_number']) && !regex_match($control_value, $regex::US_SOCIALSECURITY_NUMBER, true) && isset($rules['required']))
@@ -1288,7 +1236,6 @@ class Form
     }
 
     /**
-     *
      * Parses validation errors for output.
      *
      * @param $text
@@ -1316,7 +1263,6 @@ class Form
     }
 
     /**
-     *
      * Submits a form.
      *
      * @param null $function
@@ -1367,7 +1313,6 @@ class Form
     }
 
     /**
-     *
      * Saves a form directly to the database.
      * @see DB->insertUnpdate();
      * @see DB->insertUnique();
@@ -1381,7 +1326,7 @@ class Form
     function toDb($table = '', $unique_column = '', $exceptions = [], $should_update = true)
     {
 
-        do_action('before_form_save', $this->name, $table, $unique_column, $exception, $should_update);
+        do_action('before_form_save', $this->name, $table, $unique_column, $exceptions, $should_update);
 
         $insert = [];
 
