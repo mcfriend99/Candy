@@ -1,0 +1,7 @@
+{
+  "db_engine": "mysql",
+  "db_host": "locsalhost",
+  "db_user": "root",
+  "db_pass": "",
+  "db_name": ""
+}

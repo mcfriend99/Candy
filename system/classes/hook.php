@@ -47,15 +47,15 @@
  */
 
 
-if(!defined('CANDY')){
-	header('Location: /');
+if (!defined('CANDY')) {
+  header('Location: /');
 }
 
 
-if (!class_exists('Hook')){
+if (!class_exists('Hook')) {
   /**
-  * Hook
-  */
+   * Hook
+   */
   class Hook
   {
     /**
@@ -110,10 +110,11 @@ if (!class_exists('Hook')){
      * @param int $accepted_args optional. The number of arguments the function accept (default 1).
      * @return boolean true
      */
-    public function add_filter($tag, $function_to_add, $priority = 10, $accepted_args = 1) {
+    public function add_filter($tag, $function_to_add, $priority = 10, $accepted_args = 1)
+    {
       $idx =  $this->_filter_build_unique_id($tag, $function_to_add, $priority);
       $this->filters[$tag][$priority][$idx] = array('function' => $function_to_add, 'accepted_args' => $accepted_args);
-      unset( $this->merged_filters[ $tag ] );
+      unset($this->merged_filters[$tag]);
       return true;
     }
     /**
@@ -126,14 +127,15 @@ if (!class_exists('Hook')){
      * @param int $accepted_args optional. The number of arguments the function accepts (default: 1).
      * @return boolean Whether the function existed before it was removed.
      */
-    public function remove_filter( $tag, $function_to_remove, $priority = 10 ) {
+    public function remove_filter($tag, $function_to_remove, $priority = 10)
+    {
       $function_to_remove = $this->_filter_build_unique_id($tag, $function_to_remove, $priority);
 
       $r = isset($this->filters[$tag][$priority][$function_to_remove]);
 
-      if ( true === $r) {
+      if (true === $r) {
         unset($this->filters[$tag][$priority][$function_to_remove]);
-        if ( empty($this->filters[$tag][$priority]) )
+        if (empty($this->filters[$tag][$priority]))
           unset($this->filters[$tag][$priority]);
         unset($this->merged_filters[$tag]);
       }
@@ -147,15 +149,16 @@ if (!class_exists('Hook')){
      * @param int $priority The priority number to remove.
      * @return bool True when finished.
      */
-    public function remove_all_filters($tag, $priority = false) {
-      if( isset($this->filters[$tag]) ) {
-        if( false !== $priority && isset($this->filters[$tag][$priority]) )
+    public function remove_all_filters($tag, $priority = false)
+    {
+      if (isset($this->filters[$tag])) {
+        if (false !== $priority && isset($this->filters[$tag][$priority]))
           unset($this->filters[$tag][$priority]);
         else
           unset($this->filters[$tag]);
       }
 
-      if( isset($this->merged_filters[$tag]) )
+      if (isset($this->merged_filters[$tag]))
         unset($this->merged_filters[$tag]);
 
       return true;
@@ -171,16 +174,17 @@ if (!class_exists('Hook')){
      *   When using the $function_to_check argument, this function may return a non-boolean value that evaluates to false
      *   (e.g.) 0, so use the === operator for testing the return value.
      */
-    public function has_filter($tag, $function_to_check = false) {
+    public function has_filter($tag, $function_to_check = false)
+    {
       $has = !empty($this->filters[$tag]);
-      if ( false === $function_to_check || false == $has )
+      if (false === $function_to_check || false == $has)
         return $has;
 
-      if ( !$idx = $this->_filter_build_unique_id($tag, $function_to_check, false) )
+      if (!$idx = $this->_filter_build_unique_id($tag, $function_to_check, false))
         return false;
 
-      foreach ( (array) array_keys($this->filters[$tag]) as $priority ) {
-        if ( isset($this->filters[$tag][$priority][$idx]) )
+      foreach ((array) array_keys($this->filters[$tag]) as $priority) {
+        if (isset($this->filters[$tag][$priority][$idx]))
           return $priority;
       }
       return false;
@@ -194,45 +198,45 @@ if (!class_exists('Hook')){
      * @param mixed $var,... Additional variables passed to the functions hooked to <tt>$tag</tt>.
      * @return mixed The filtered value after all hooked functions are applied to it.
      */
-    public function apply_filters($tag, $value) {
+    public function apply_filters($tag, $value)
+    {
       $args = array();
       // Do 'all' actions first
-      if ( isset($this->filters['all']) ) {
+      if (isset($this->filters['all'])) {
         $this->current_filter[] = $tag;
         $args = func_get_args();
-        $this->_call_all_hook($args);
+        $this->__call_all_hook($args);
       }
 
-      if ( !isset($this->filters[$tag]) ) {
-        if ( isset($this->filters['all']) )
+      if (!isset($this->filters[$tag])) {
+        if (isset($this->filters['all']))
           array_pop($this->current_filter);
         return $value;
       }
 
-      if ( !isset($this->filters['all']) )
+      if (!isset($this->filters['all']))
         $this->current_filter[] = $tag;
 
       // Sort
-      if ( !isset( $this->merged_filters[ $tag ] ) ) {
+      if (!isset($this->merged_filters[$tag])) {
         ksort($this->filters[$tag]);
-        $this->merged_filters[ $tag ] = true;
+        $this->merged_filters[$tag] = true;
       }
 
-      reset( $this->filters[ $tag ] );
+      reset($this->filters[$tag]);
 
-      if ( empty($args) )
+      if (empty($args))
         $args = func_get_args();
 
       do {
-        foreach( (array) current($this->filters[$tag]) as $the_ )
-          if ( !is_null($the_['function']) ){
+        foreach ((array) current($this->filters[$tag]) as $the_)
+          if (!is_null($the_['function'])) {
             $args[1] = $value;
             $value = call_user_func_array($the_['function'], array_slice($args, 1, (int) $the_['accepted_args']));
           }
+      } while (next($this->filters[$tag]) !== false);
 
-      } while ( next($this->filters[$tag]) !== false );
-
-      array_pop( $this->current_filter );
+      array_pop($this->current_filter);
 
       return $value;
     }
@@ -244,39 +248,39 @@ if (!class_exists('Hook')){
      * @param array $args The arguments supplied to the functions hooked to <tt>$tag</tt>
      * @return mixed The filtered value after all hooked functions are applied to it.
      */
-    public function apply_filters_ref_array($tag, $args) {
+    public function apply_filters_ref_array($tag, $args)
+    {
       // Do 'all' actions first
-      if ( isset($this->filters['all']) ) {
+      if (isset($this->filters['all'])) {
         $this->current_filter[] = $tag;
         $all_args = func_get_args();
-        $this->_call_all_hook($all_args);
+        $this->__call_all_hook($all_args);
       }
 
-      if ( !isset($this->filters[$tag]) ) {
-        if ( isset($this->filters['all']) )
+      if (!isset($this->filters[$tag])) {
+        if (isset($this->filters['all']))
           array_pop($this->current_filter);
         return $args[0];
       }
 
-      if ( !isset($this->filters['all']) )
+      if (!isset($this->filters['all']))
         $this->current_filter[] = $tag;
 
       // Sort
-      if ( !isset( $this->merged_filters[ $tag ] ) ) {
+      if (!isset($this->merged_filters[$tag])) {
         ksort($this->filters[$tag]);
-        $this->merged_filters[ $tag ] = true;
+        $this->merged_filters[$tag] = true;
       }
 
-      reset( $this->filters[ $tag ] );
+      reset($this->filters[$tag]);
 
       do {
-        foreach( (array) current($this->filters[$tag]) as $the_ )
-          if ( !is_null($the_['function']) )
+        foreach ((array) current($this->filters[$tag]) as $the_)
+          if (!is_null($the_['function']))
             $args[0] = call_user_func_array($the_['function'], array_slice($args, 0, (int) $the_['accepted_args']));
+      } while (next($this->filters[$tag]) !== false);
 
-      } while ( next($this->filters[$tag]) !== false );
-
-      array_pop( $this->current_filter );
+      array_pop($this->current_filter);
 
       return $args[0];
     }
@@ -294,7 +298,8 @@ if (!class_exists('Hook')){
      * @param int $priority optional. Used to specify the order in which the functions associated with a particular action are executed (default: 10). Lower numbers correspond with earlier execution, and functions with the same priority are executed in the order in which they were added to the action.
      * @param int $accepted_args optional. The number of arguments the function accept (default 1).
      */
-    public function add_action($tag, $function_to_add, $priority = 10, $accepted_args = 1) {
+    public function add_action($tag, $function_to_add, $priority = 10, $accepted_args = 1)
+    {
       return $this->add_filter($tag, $function_to_add, $priority, $accepted_args);
     }
     /**
@@ -308,7 +313,8 @@ if (!class_exists('Hook')){
      *   When using the $function_to_check argument, this function may return a non-boolean value that evaluates to false
      *   (e.g.) 0, so use the === operator for testing the return value.
      */
-    public function has_action($tag, $function_to_check = false) {
+    public function has_action($tag, $function_to_check = false)
+    {
       return $this->has_filter($tag, $function_to_check);
     }
     /**
@@ -320,8 +326,9 @@ if (!class_exists('Hook')){
      * @param int $priority optional The priority of the function (default: 10).
      * @return boolean Whether the function is removed.
      */
-    public function remove_action( $tag, $function_to_remove, $priority = 10 ) {
-      return $this->remove_filter( $tag, $function_to_remove, $priority );
+    public function remove_action($tag, $function_to_remove, $priority = 10)
+    {
+      return $this->remove_filter($tag, $function_to_remove, $priority);
     }
     /**
      * remove_all_actions Remove all of the hooks from an action.
@@ -331,7 +338,8 @@ if (!class_exists('Hook')){
      * @param int $priority The priority number to remove them from.
      * @return bool True when finished.
      */
-    public function remove_all_actions($tag, $priority = false) {
+    public function remove_all_actions($tag, $priority = false)
+    {
       return $this->remove_all_filters($tag, $priority);
     }
     /**
@@ -342,54 +350,54 @@ if (!class_exists('Hook')){
      * @param mixed $arg,... Optional additional arguments which are passed on to the functions hooked to the action.
      * @return null Will return null if $tag does not exist in $filter array
      */
-    public function do_action($tag, $arg = '') {
+    public function do_action($tag, $arg = '')
+    {
 
-      if ( ! isset($this->actions) )
+      if (!isset($this->actions))
         $this->actions = array();
 
-      if ( ! isset($this->actions[$tag]) )
+      if (!isset($this->actions[$tag]))
         $this->actions[$tag] = 1;
       else
         ++$this->actions[$tag];
 
       // Do 'all' actions first
-      if ( isset($this->filters['all']) ) {
+      if (isset($this->filters['all'])) {
         $this->current_filter[] = $tag;
         $all_args = func_get_args();
-        $this->_call_all_hook($all_args);
+        $this->__call_all_hook($all_args);
       }
 
-      if ( !isset($this->filters[$tag]) ) {
-        if ( isset($this->filters['all']) )
+      if (!isset($this->filters[$tag])) {
+        if (isset($this->filters['all']))
           array_pop($this->current_filter);
         return;
       }
 
-      if ( !isset($this->filters['all']) )
+      if (!isset($this->filters['all']))
         $this->current_filter[] = $tag;
 
       $args = array();
-      if ( is_array($arg) && 1 == count($arg) && isset($arg[0]) && is_object($arg[0]) ) // array(&$this)
-        $args[] =& $arg[0];
+      if (is_array($arg) && 1 == count($arg) && isset($arg[0]) && is_object($arg[0])) // array(&$this)
+        $args[] = &$arg[0];
       else
         $args[] = $arg;
-      for ( $a = 2; $a < func_num_args(); $a++ )
+      for ($a = 2; $a < func_num_args(); $a++)
         $args[] = func_get_arg($a);
 
       // Sort
-      if ( !isset( $this->merged_filters[ $tag ] ) ) {
+      if (!isset($this->merged_filters[$tag])) {
         ksort($this->filters[$tag]);
-        $this->merged_filters[ $tag ] = true;
+        $this->merged_filters[$tag] = true;
       }
 
-      reset( $this->filters[ $tag ] );
+      reset($this->filters[$tag]);
 
       do {
-        foreach ( (array) current($this->filters[$tag]) as $the_ )
-          if ( !is_null($the_['function']) )
+        foreach ((array) current($this->filters[$tag]) as $the_)
+          if (!is_null($the_['function']))
             call_user_func_array($the_['function'], array_slice($args, 0, (int) $the_['accepted_args']));
-
-      } while ( next($this->filters[$tag]) !== false );
+      } while (next($this->filters[$tag]) !== false);
 
       array_pop($this->current_filter);
     }
@@ -401,46 +409,46 @@ if (!class_exists('Hook')){
      * @param array $args The arguments supplied to the functions hooked to <tt>$tag</tt>
      * @return null Will return null if $tag does not exist in $filter array
      */
-    public function do_action_ref_array($tag, $args) {
+    public function do_action_ref_array($tag, $args)
+    {
 
-      if ( ! isset($this->actions) )
+      if (!isset($this->actions))
         $this->actions = array();
 
-      if ( ! isset($this->actions[$tag]) )
+      if (!isset($this->actions[$tag]))
         $this->actions[$tag] = 1;
       else
         ++$this->actions[$tag];
 
       // Do 'all' actions first
-      if ( isset($this->filters['all']) ) {
+      if (isset($this->filters['all'])) {
         $this->current_filter[] = $tag;
         $all_args = func_get_args();
-        $this->_call_all_hook($all_args);
+        $this->__call_all_hook($all_args);
       }
 
-      if ( !isset($this->filters[$tag]) ) {
-        if ( isset($this->filters['all']) )
+      if (!isset($this->filters[$tag])) {
+        if (isset($this->filters['all']))
           array_pop($this->current_filter);
         return;
       }
 
-      if ( !isset($this->filters['all']) )
+      if (!isset($this->filters['all']))
         $this->current_filter[] = $tag;
 
       // Sort
-      if ( !isset( $merged_filters[ $tag ] ) ) {
+      if (!isset($this->merged_filters[$tag])) {
         ksort($this->filters[$tag]);
-        $merged_filters[ $tag ] = true;
+        $this->merged_filters[$tag] = true;
       }
 
-      reset( $this->filters[ $tag ] );
+      reset($this->filters[$tag]);
 
       do {
-        foreach( (array) current($this->filters[$tag]) as $the_ )
-          if ( !is_null($the_['function']) )
+        foreach ((array) current($this->filters[$tag]) as $the_)
+          if (!is_null($the_['function']))
             call_user_func_array($the_['function'], array_slice($args, 0, (int) $the_['accepted_args']));
-
-      } while ( next($this->filters[$tag]) !== false );
+      } while (next($this->filters[$tag]) !== false);
 
       array_pop($this->current_filter);
     }
@@ -449,11 +457,12 @@ if (!class_exists('Hook')){
      * @access public
      * @since 0.1
      * @param string $tag The name of the action hook.
-      * @return int The number of times action hook <tt>$tag</tt> is fired
+     * @return int The number of times action hook <tt>$tag</tt> is fired
      */
-    public function did_action($tag) {
+    public function did_action($tag)
+    {
 
-      if ( ! isset( $this->actions ) || ! isset( $this->actions[$tag] ) )
+      if (!isset($this->actions) || !isset($this->actions[$tag]))
         return 0;
 
       return $this->actions[$tag];
@@ -469,8 +478,9 @@ if (!class_exists('Hook')){
      * @since 0.1
      * @return string Hook name of the current filter or action.
      */
-    public function current_filter() {
-      return end( $this->current_filter );
+    public function current_filter()
+    {
+      return end($this->current_filter);
     }
     /**
      * Retrieve the name of the current action.
@@ -481,7 +491,8 @@ if (!class_exists('Hook')){
      *
      * @return string Hook name of the current action.
      */
-    function current_action() {
+    function current_action()
+    {
       return $this->current_filter();
     }
 
@@ -504,11 +515,12 @@ if (!class_exists('Hook')){
      *                            checks if any filter is currently being run.
      * @return bool Whether the filter is currently in the stack
      */
-    function doing_filter( $filter = null ) {
-      if ( null === $filter ) {
-        return ! empty( $this->current_filter );
+    function doing_filter($filter = null)
+    {
+      if (null === $filter) {
+        return !empty($this->current_filter);
       }
-      return in_array( $filter, $this->current_filter );
+      return in_array($filter, $this->current_filter);
     }
 
     /**
@@ -522,8 +534,9 @@ if (!class_exists('Hook')){
      *                            if any action is currently being run.
      * @return bool Whether the action is currently in the stack.
      */
-    function doing_action( $action = null ) {
-      return $this->doing_filter( $action );
+    function doing_action($action = null)
+    {
+      return $this->doing_filter($action);
     }
 
     /**
@@ -533,29 +546,30 @@ if (!class_exists('Hook')){
      * @param int|bool $priority Used in counting how many hooks were applied. If === false and $function is an object reference, we return the unique id only if it already has one, false otherwise.
      * @return string|bool Unique ID for usage as array key or false if $priority === false and $function is an object reference, and it does not already have a unique id.
      */
-    private function _filter_build_unique_id($tag, $function, $priority) {
+    private function _filter_build_unique_id($tag, $function, $priority)
+    {
       static $filter_id_count = 0;
 
-      if ( is_string($function) )
+      if (is_string($function))
         return $function;
 
-      if ( is_object($function) ) {
+      if (is_object($function)) {
         // Closures are currently implemented as objects
-        $function = array( $function, '' );
+        $function = array($function, '');
       } else {
         $function = (array) $function;
       }
 
-      if (is_object($function[0]) ) {
+      if (is_object($function[0])) {
         // Object Class Calling
-        if ( function_exists('spl_object_hash') ) {
+        if (function_exists('spl_object_hash')) {
           return spl_object_hash($function[0]) . $function[1];
         } else {
-          $obj_idx = get_class($function[0]).$function[1];
-          if ( !isset($function[0]->filter_id) ) {
-            if ( false === $priority )
+          $obj_idx = get_class($function[0]) . $function[1];
+          if (!isset($function[0]->filter_id)) {
+            if (false === $priority)
               return false;
-            $obj_idx .= isset($this->filters[$tag][$priority]) ? count((array)$this->filters[$tag][$priority]) : $filter_id_count;
+            $obj_idx .= isset($this->filters[$tag][$priority]) ? count((array) $this->filters[$tag][$priority]) : $filter_id_count;
             $function[0]->filter_id = $filter_id_count;
             ++$filter_id_count;
           } else {
@@ -564,9 +578,9 @@ if (!class_exists('Hook')){
 
           return $obj_idx;
         }
-      } else if ( is_string($function[0]) ) {
+      } else if (is_string($function[0])) {
         // Static Calling
-        return $function[0].$function[1];
+        return $function[0] . $function[1];
       }
     }
 
@@ -574,18 +588,18 @@ if (!class_exists('Hook')){
      * __call_all_hook
      * @access public
      * @since 0.1
-     * @param  (array) $args [description]
+     * @param array $args [description]
      */
-    public function __call_all_hook($args) {
-      reset( $this->filters['all'] );
+    public function __call_all_hook($args)
+    {
+      reset($this->filters['all']);
       do {
-        foreach( (array) current($this->filters['all']) as $the_ )
-          if ( !is_null($the_['function']) )
+        foreach ((array) current($this->filters['all']) as $the_)
+          if (!is_null($the_['function']))
             call_user_func_array($the_['function'], $args);
-
-      } while ( next($this->filters['all']) !== false );
+      } while (next($this->filters['all']) !== false);
     }
-  }//end class
+  } //end class
 
 
 }//end if

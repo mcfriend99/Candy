@@ -1,7 +1,7 @@
 <?php
 
-if(!defined('CANDY')){
-	header('Location: /');
+if (!defined('CANDY')) {
+    header('Location: /');
 }
 
 /*
@@ -15,6 +15,3 @@ $_LANGS = [
         'candy' => 'Candy',
     ],
 ];
-
-
-

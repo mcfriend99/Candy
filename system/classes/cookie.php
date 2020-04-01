@@ -35,8 +35,8 @@
  * @since	Version 1.0.0
  */
 
-if(!defined('CANDY')){
-	header('Location: /');
+if (!defined('CANDY')) {
+    header('Location: /');
 }
 
 /*
@@ -67,7 +67,8 @@ define("COOKIE_DOMAIN", get_config('cookie_domain', 'main'));
 define("COOKIE_SECRET_KEY", get_config('cookie_secret', 'main'));
 
 
-class Cookie {
+class Cookie
+{
 
 
     /**
@@ -81,20 +82,17 @@ class Cookie {
 
 
     /**
-     *
      * Checks if cookie exists.
      *
      * @param $name     Name of the cookie.
      * @return bool     True if cookie exists or False if not.
      */
-    function exists($name){
-
-		return isset($_COOKIE[$name]);
-
-	}
+    function exists($name)
+    {
+        return isset($_COOKIE[$name]);
+    }
 
     /**
-     *
      * Sets a cookie at the specified location.
      *
      * @param $name                     The name of the cookie.
@@ -102,88 +100,79 @@ class Cookie {
      * @param string $location          The location at which the cookie operates within the domain.
      * @return string|bool              The cookie string or False if cookie cannot be set within the current domain.
      */
-    function setCookie($name, $value, $location = "/"){
+    function setCookie($name, $value, $location = "/")
+    {
+        $this->random_token_string = apply_filters(
+            'cookie_random_token_string',
+            hash('sha256', mt_rand())
+        );
+        $cookie_string_first_part = $this->random_token_string . ':' . $value;
+        $this->cookie_string_hash = apply_filters(
+            'cookie_string_hash',
+            hash('sha256', $cookie_string_first_part . COOKIE_SECRET_KEY)
+        );
+        $cookie_string = apply_filters('cookie_string', $cookie_string_first_part . ':' . $this->cookie_string_hash);
 
-        $this->random_token_string = apply_filters('cookie_random_token_string', 
-            hash('sha256', mt_rand()));
-		$cookie_string_first_part = $this->random_token_string . ':' . $value;
-        $this->cookie_string_hash = apply_filters('cookie_string_hash', 
-            hash('sha256', $cookie_string_first_part . COOKIE_SECRET_KEY));
-        $cookie_string =apply_filters('cookie_string', $cookie_string_first_part . ':' . $this->cookie_string_hash);
-
-		if(setcookie($name, $cookie_string, time() + COOKIE_RUNTIME, $location)){
-			$result = $this->random_token_string . ':' . $this->cookie_string_hash;
+        if (setcookie($name, $cookie_string, time() + COOKIE_RUNTIME, $location)) {
+            $result = $this->random_token_string . ':' . $this->cookie_string_hash;
         } else $result = false;
-        
+
         do_action('on_cookie_set', $result, $name);
 
         return $result;
-	}
+    }
 
     /**
-     *
      * Deletes a cookie from a location within a domain.
      *
      * @param $name                     The name of the cookie to delete.
      * @param string $location          The location from which to delete cookie.
      * @return bool                     True if deleted or False otherwise.
      */
-    function deleteCookie($name, $location = '/'){
-
-		$result = setcookie($name, false, time() - (3600 * 3650), $location);
+    function deleteCookie($name, $location = '/')
+    {
+        $result = setcookie($name, false, time() - (3600 * 3650), $location);
         do_action('on_cookie_delete', $result, $name);
-        return result;
-	}
+        return $result;
+    }
 
 
     /**
-     *
      * Converts cookie to JSON string.
      *
      * @param string $name      Name of the cookie. Leave empty to return all cookies within the domain.
      * @return string           JSON string representing the cookie.
      */
-    function toJSON($name = ''){
-        
-        if(empty($name))
-		  $pre = $_COOKIE;
+    function toJSON($name = '')
+    {
+        if (empty($name))
+            $pre = $_COOKIE;
         else
             $pre = [$name => $this->getCookieValue($name)];
-        
-		return @json_encode($pre);
 
-	}
+        return @json_encode($pre);
+    }
 
 
     /**
-     *
      * Gets the value of a cookie.
      *
      * @param $name             The name of the cookie.
      * @return string|bool      The value of the cookie or false if cookie cannot be found or its value cannot be determined.
      */
-    function getCookieValue($name){
+    function getCookieValue($name)
+    {
+        list($token, $cookie_id, $hash) = explode(':', $_COOKIE[$name]);
 
+        if ($hash == hash('sha256', $token . ':' . $cookie_id . COOKIE_SECRET_KEY) && !empty($token)) {
 
-		list ($token, $cookie_id, $hash) = explode(':', $_COOKIE[$name]);
-
-		if ($hash == hash('sha256', $token . ':' .$cookie_id . COOKIE_SECRET_KEY) && !empty($token)) {
-
-			$this->random_token_string = $token;
-			$this->cookie_string_hash = $hash;
-			$result = apply_filters('cookie_value', $cookie_id);
-		} else {
-			$result = apply_filters('cookie_value', false);
-		}
+            $this->random_token_string = $token;
+            $this->cookie_string_hash = $hash;
+            $result = apply_filters('cookie_value', $cookie_id);
+        } else {
+            $result = apply_filters('cookie_value', false);
+        }
 
         do_action('on_cookie_get', $result, $name);
-	}
-
-
+    }
 }
-
-
-
-
-
-

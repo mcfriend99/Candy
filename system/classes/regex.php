@@ -35,7 +35,7 @@
  * @since	Version 1.0.0
  */
 
-if(!defined('CANDY')){
+if (!defined('CANDY')) {
 	header('Location: /');
 }
 
@@ -44,7 +44,8 @@ define("REGEX_NO_DELIMETER", "First and last string of regex must be a valid del
 /**
  * Candy's RegEx class.
  */
-class RegEx {
+class RegEx
+{
 
 
 	const LEADING_WHITESPACE = "/^\s+/";
@@ -149,41 +150,42 @@ class RegEx {
 	static private $matched = array();
 
 	// test our regex for conformity to PCRE specification.
-	static protected function test_regex($regex){
+	static protected function test_regex($regex)
+	{
 
 		$first = substr($regex, 0, 1);
 		$last = substr($regex, strlen($regex) - 1);
 
 		// We must have valid delimiters.
-		if($first != $last || ctype_alnum($first) || ctype_alnum($last)){
+		if ($first != $last || ctype_alnum($first) || ctype_alnum($last)) {
 			self::$error[] .= REGEX_NO_DELIMETER;
 			return false;
 		}
 
 		return true;
-
 	}
 
 	// prepares our regex properly for matching.
-	static protected function prepare_match($regex, $strict = false){
+	static protected function prepare_match($regex, $strict = false)
+	{
 
 
-		if(!self::test_regex($regex)){
+		if (!self::test_regex($regex)) {
 			return false;
 		}
 
 		$first = $regex[0];
-		$last = substr($regex, - 1);
+		$last = substr($regex, -1);
 
-		$diff = substr($regex, 1, - 1);
+		$diff = substr($regex, 1, -1);
 
-		if($strict == true){
-			if(substr($diff, 0, 1) != "^" && substr($diff, - 1) != "$"){
-				$new = "^(".$diff.")$";
-			} else if(substr($diff, 0, 1) == "^" && substr($diff, - 1) != "$"){
-				$new = $diff."$";
-			} else if(substr($diff, 0, 1) != "^" && substr($diff, - 1) == "$"){
-				$new = "^".$diff;
+		if ($strict == true) {
+			if (substr($diff, 0, 1) != "^" && substr($diff, -1) != "$") {
+				$new = "^(" . $diff . ")$";
+			} else if (substr($diff, 0, 1) == "^" && substr($diff, -1) != "$") {
+				$new = $diff . "$";
+			} else if (substr($diff, 0, 1) != "^" && substr($diff, -1) == "$") {
+				$new = "^" . $diff;
 			} else {
 				$new = $diff;
 			}
@@ -191,56 +193,54 @@ class RegEx {
 			$new = $diff;
 		}
 
-		$new_regex = $first.$new.$last;
+		$new_regex = $first . $new . $last;
 
 		return $new_regex;
-
 	}
 
 	/**
 	 * Can be called to find a particular stuff in a string.
 	 *
-     * @param $string string to match against
-     * @param $what what you intend to match (A regex)
+	 * @param $string string to match against
+	 * @param $what what you intend to match (A regex)
 	 * @return bool
-     * E.g. find an email in a string of text.
-     * Ex:
-     * $f = "me@mainone.com.sr/?";
-     * $b = new RegEx;
-     * $h = $b->find($f, $b::SPECIAL_CHARACTERS);
-     * foreach($h as $m){
-     * echo $m, "<br>";
-     * }
+	 * E.g. find an email in a string of text.
+	 * Ex:
+	 * $f = "me@mainone.com.sr/?";
+	 * $b = new RegEx;
+	 * $h = $b->find($f, $b::SPECIAL_CHARACTERS);
+	 * foreach($h as $m){
+	 * echo $m, "<br>";
+	 * }
 	 */
-	function find($string = null, $what = null){
+	function find($string = null, $what = null)
+	{
 
-		if(!self::test_regex($what)){
+		if (!self::test_regex($what)) {
 			return false;
 		}
 
 		$result = array();
-		if(is_array($what)){
+		if (is_array($what)) {
 
-			foreach($what as $regex){
+			foreach ($what as $regex) {
 				preg_match_all($regex, $string, $matches);
-				foreach($matches[0] as $match){
+				foreach ($matches[0] as $match) {
 					array_push($result, $match);
 				}
 			}
-
 		} else {
 			preg_match_all($what, $string, $matches);
-			foreach($matches[0] as $match){
+			foreach ($matches[0] as $match) {
 				array_push($result, $match);
 			}
 		}
 
-		if(!empty($result)){
+		if (!empty($result)) {
 			return $result;
 		} else {
 			return false;
 		}
-
 	}
 
 	/**
@@ -251,20 +251,21 @@ class RegEx {
 	 * @param bool $strict to perform a strict match.
 	 * @return bool
 	 */
-	static function test($string, $what, $strict = false){
+	static function test($string, $what, $strict = false)
+	{
 
 		// Using array just incase we want to match against multiple stuff.
 		$to_be_matched = array();
 
-		if(!is_array($what)){
-			if(!self::test_regex($what)){
+		if (!is_array($what)) {
+			if (!self::test_regex($what)) {
 				return false;
 			}
 			$what = self::prepare_match($what, $strict);
 			array_push($to_be_matched, $what);
 		} else {
-			foreach($what as $whatever){
-				if(!self::test_regex($whatever)){
+			foreach ($what as $whatever) {
+				if (!self::test_regex($whatever)) {
 					return false;
 				}
 				$whatever_new = self::prepare_match($whatever, $strict);
@@ -272,55 +273,46 @@ class RegEx {
 			}
 		}
 
-		foreach($to_be_matched as $matching){
+		foreach ($to_be_matched as $matching) {
 
-			if(!preg_match_all($matching, $string, $matches)){
+			if (!preg_match_all($matching, $string, $matches)) {
 				return false;
 			}
 
-			if(!empty($matches[0])){
-				foreach($matches[0] as $match){
-					if(!in_array($match, self::$matched))
+			if (!empty($matches[0])) {
+				foreach ($matches[0] as $match) {
+					if (!in_array($match, self::$matched))
 						array_push(self::$matched, $match);
 				}
 			} else {
 				return false;
 			}
-
 		}
 
 		return true;
-
 	}
 
 	/**
-     * Matches a string against any regex.
-     * @param $string string to match against
-     * @param $what what you intend to match (A regex)
-     * @param bool $strict to perform a strict match.
+	 * Matches a string against any regex.
+	 * @param $string string to match against
+	 * @param $what what you intend to match (A regex)
+	 * @param bool $strict to perform a strict match.
 	 * @return bool
 	 */
-	static function match($string, $what, $strict = false){
+	static function match($string, $what, $strict = false)
+	{
 
-		if($test = self::test($string, $what, $strict)){
+		if ($test = self::test($string, $what, $strict)) {
 			return self::$matched;
 		} else {
 			return false;
 		}
-
 	}
 
 
-	static function error(){
+	static function error()
+	{
 
-		return (!empty(self::$error)?"REGEX_ERROR: ".self::$error[0]:"");
-
+		return (!empty(self::$error) ? "REGEX_ERROR: " . self::$error[0] : "");
 	}
-
-
 }
-
-
-
-
-

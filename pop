@@ -6,7 +6,7 @@ define('CANDY', true);
 
 $actions = $_SERVER['argv'];
 
-if(count($actions) <= 1)
+if (count($actions) <= 1)
     exit("No argument supplied to pop.\n");
 
 function find_php($include_args = true)
@@ -16,11 +16,11 @@ function find_php($include_args = true)
         $args[] = '-qrr';
     }
 
-    $args = $include_args && $args ? ' '.implode(' ', $args) : '';
+    $args = $include_args && $args ? ' ' . implode(' ', $args) : '';
 
     // PHP_BINARY return the current sapi executable
     if (PHP_BINARY && in_array(PHP_SAPI, array('cli', 'cli-server', 'phpdbg')) && is_file(PHP_BINARY)) {
-        return PHP_BINARY.$args;
+        return PHP_BINARY . $args;
     }
 
     if ($php = getenv('PHP_PATH')) {
@@ -37,7 +37,7 @@ function find_php($include_args = true)
         }
     }
 
-    if (is_executable($php = PHP_BINDIR.('\\' === DIRECTORY_SEPARATOR ? '\\php.exe' : '/php'))) {
+    if (is_executable($php = PHP_BINDIR . ('\\' === DIRECTORY_SEPARATOR ? '\\php.exe' : '/php'))) {
         return $php;
     }
 
@@ -75,7 +75,7 @@ function find_php($include_args = true)
     }
     foreach ($suffixes as $suffix) {
         foreach ($dirs as $dir) {
-            if (@is_file($file = $dir.DIRECTORY_SEPARATOR.'php'.$suffix) && ('\\' === DIRECTORY_SEPARATOR || is_executable($file))) {
+            if (@is_file($file = $dir . DIRECTORY_SEPARATOR . 'php' . $suffix) && ('\\' === DIRECTORY_SEPARATOR || is_executable($file))) {
                 return $file;
             }
         }
@@ -106,15 +106,15 @@ define('CONFIG_DIR', 'configs');
 define('CACHE_DIR', 'system/cache');
 
 // Load Configs.
-$config_files = get_directory(CONFIG_DIR, CANDY_SCAN_FILES, '.candy');
-foreach($config_files as $file){
+$config_files = get_directory(CONFIG_DIR, CANDY_SCAN_FILES, '.json');
+foreach ($config_files as $file) {
     load_configs($file);
 }
 unset($config_files);
 
 // Load Languages.
-$langs_files = get_directory(get_config('language_dir', 'main'), CANDY_SCAN_FILES, '.candy');
-foreach($langs_files as $file){
+$langs_files = get_directory(get_config('language_dir', 'main'), CANDY_SCAN_FILES, '.json');
+foreach ($langs_files as $file) {
     load_texts($file);
 }
 // Free variable name for use.
@@ -129,11 +129,11 @@ define('SITE_DIR', get_config('site_dir', 'main'));
 
 // Load Templates.
 $template_files = get_directory(get_config('template_dir', 'main'), CANDY_SCAN_FILES);
-foreach($template_files as $file){
+foreach ($template_files as $file) {
     $crname = pathinfo($file, PATHINFO_BASENAME);
-    if(starts_with($crname, '.')) continue;
-    
-	$s = new Chocolate(CACHE_DIR . '/templates');
+    if (starts_with($crname, '.')) continue;
+
+    $s = new Chocolate(CACHE_DIR . '/templates');
     $s->set_file($file);
     $s->render(false);
 }
@@ -141,7 +141,7 @@ foreach($template_files as $file){
 unset($template_files);
 
 $act = strtolower($actions[1]);
-switch($act){
+switch ($act) {
 
     case 'hide':
 
@@ -161,11 +161,11 @@ switch($act){
         $host = 'localhost';
         $port = '8000';
 
-        if(!empty($type)){
+        if (!empty($type)) {
             $krs = explode(':', $type);
 
-            if(preg_match('/^\d+$/', $krs[0]) && !isset($krs[1])){
-                 $port = $krs[0];
+            if (preg_match('/^\d+$/', $krs[0]) && !isset($krs[1])) {
+                $port = $krs[0];
             } else {
 
                 $host = $krs[0];
@@ -186,7 +186,8 @@ switch($act){
         }
 
         $line = "Candy development server started at http://{$host}:{$port}\n\n";
-        $command = sprintf('%s -S %s:%s -t %s',
+        $command = sprintf(
+            '%s -S %s:%s -t %s',
             escapeshellarg(find_php(false)), // Php executable path.
             $host,
             $port,
@@ -208,31 +209,28 @@ switch($act){
 
         $allowed = ['cache', 'uploads', 'plugin', 'plugins'];
 
-        if(!empty($type)){
-            if(!in_array($type, $allowed)){
+        if (!empty($type)) {
+            if (!in_array($type, $allowed)) {
                 exit("Invalid pop command!\n");
             } else {
                 $sr = $type;
             }
         } else $type = $sr = 'cache';
 
-        if($type == 'cache') $sr = CACHE_DIR;
-        elseif($type == 'templates') $sr = CACHE_DIR . '/templates';
-        elseif($type == 'languages') $sr = CACHE_DIR . '/langs';
-        elseif($type == 'config') $sr = CACHE_DIR . '/configs';
-        elseif($type == 'plugins') $sr = PLUGIN_DIR;
-        elseif($type == 'plugin'){
-            if(empty($name)) exit("Invalid pop command!\n");
+        if ($type == 'cache') $sr = CACHE_DIR;
+        elseif ($type == 'templates') $sr = CACHE_DIR . '/templates';
+        elseif ($type == 'plugins') $sr = PLUGIN_DIR;
+        elseif ($type == 'plugin') {
+            if (empty($name)) exit("Invalid pop command!\n");
             else $sr = PLUGIN_DIR . '/' . $name;
 
-            if(!file_exists($sr) || !is_dir($sr))
+            if (!file_exists($sr) || !is_dir($sr))
                 exit("Plugin {$name} cannot be found and so was not removed.\n");
         } else $sr = $type;
 
-        if(!file_exists($sr) || !is_dir($sr)) {
+        if (!file_exists($sr) || !is_dir($sr)) {
             mkdir($sr);
-            exit(
-"
+            exit("
 Your candy application looks broken!
             
 We could not find the {$sr} directory and took the liberty of creating it for you.
@@ -243,12 +241,12 @@ You are now good to go.
 
                 foreach (get_directory($sr, ($type == 'cache' ? CANDY_SCAN_FILES : CANDY_SCAN_ALL), '', -1, false, CANDY_SORT_FILES_FIRST) as $file) {
                     $crname = pathinfo($file, PATHINFO_BASENAME);
-                    if(starts_with($crname, '.')) continue;
+                    if (starts_with($crname, '.')) continue;
                     @unlink($file);
                     @rmdir($file);
                 }
 
-                if($type == 'plugin' || $type == 'plugins')
+                if ($type == 'plugin' || $type == 'plugins')
                     @rmdir($sr);
 
                 $sr = get_directory_name($sr);
@@ -260,17 +258,17 @@ You are now good to go.
         break;
 
     case 'new':
-        if(empty($type) || empty($name))
+        if (empty($type) || empty($name))
             exit("Invalid pop command!\n");
 
-        switch($type){
+        switch ($type) {
 
             case 'language':
                 $g = get_config('language_dir', 'main');
-                $n = $g . '/' . $name . '.candy';
+                $n = $g . '/' . $name . '.json';
 
-                if(!file_exists($n)){
-                    if(file_put_contents($n, "#language {$name}\n")){
+                if (!file_exists($n)) {
+                    if (file_put_contents($n, json_encode(['language' => $name], JSON_PRETTY_PRINT))) {
 
                         exit("Created new language file {$name} in {$g}\n");
                     } else {
@@ -289,7 +287,7 @@ You are now good to go.
                 $n2 = $g2 . '/' . $name . '.html';
 
                 $view_content =
-"<?php
+                    "<?php
 
 if(!defined('CANDY')){
     header('Location: /');
@@ -297,29 +295,29 @@ if(!defined('CANDY')){
 
 // Process view logic here...
 
-".($type == 'view' ? "get_template(\"{$name}.html\");" : '')."
+" . ($type == 'view' ? "get_template(\"{$name}.html\");" : '') . "
 
 ";
 
                 $view_content2 =
-"<!DOCTYPE html>
+                    "<!DOCTYPE html>
 <html lang=\"@config('language', 'main')\">
 <head>
     <meta charset=\"utf-8\">
     <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">
     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
-    <title>" .(ucwords(str_replace('_', ' ', $name))). "</title>
+    <title>" . (ucwords(str_replace('_', ' ', $name))) . "</title>
 </head>
 <body>
 
 </body>
 </html>";
 
-                if(!file_exists($n)){
-                    if(file_put_contents($n, $view_content)){
+                if (!file_exists($n)) {
+                    if (file_put_contents($n, $view_content)) {
                         $p = false;
 
-                        if($type == 'view') {
+                        if ($type == 'view') {
                             if (!file_exists($n2)) {
                                 if (file_put_contents($n2, $view_content2)) {
                                     $p = true;
@@ -327,7 +325,7 @@ if(!defined('CANDY')){
                             }
                         } else $p = true;
 
-                        exit("Created new view file {$name} in {$g}" .($type == 'view' ? " and an associated template file " .($p ? " was also created in {$g2}." : " could not be created either because you do not have permission to write into the directory or the template already exists.") : ''). "\n");
+                        exit("Created new view file {$name} in {$g}" . ($type == 'view' ? " and an associated template file " . ($p ? " was also created in {$g2}." : " could not be created either because you do not have permission to write into the directory or the template already exists.") : '') . "\n");
                     } else {
                         exit("Could not create view file {$name} in {$g}. Please check that you have permission to write into the directory.\n");
                     }
@@ -340,15 +338,15 @@ if(!defined('CANDY')){
 
             case 'plugin':
 
-                if(!empty($extra)){
-                    if(!in_array($extra, ['--plain', '--novendor', '--full']))
+                if (!empty($extra)) {
+                    if (!in_array($extra, ['--plain', '--novendor', '--full']))
                         exit("Invalid pop command modifier {$extra}!");
                 } else $extra = '--full';
 
 
-                if(file_exists(PLUGIN_DIR . "/{$name}") || is_dir(PLUGIN_DIR . "/{$name}")){
+                if (file_exists(PLUGIN_DIR . "/{$name}") || is_dir(PLUGIN_DIR . "/{$name}")) {
 
-                    if(file_exists(PLUGIN_DIR . "/{$name}/{$name}.candy")){
+                    if (file_exists(PLUGIN_DIR . "/{$name}/{$name}.json")) {
                         exit("Plugin {$name} already exists.\n");
                     }
                 } else {
@@ -356,19 +354,19 @@ if(!defined('CANDY')){
                 }
 
                 // Create plugin header file.
-                $a1 = @file_put_contents(PLUGIN_DIR . "/{$name}/{$name}.candy", "#name ". ucfirst($name) ."\n#version 1.0");
+                $a1 = @file_put_contents(PLUGIN_DIR . "/{$name}/{$name}.json", json_encode(['name' => ucfirst($name), 'version' => '1.0'], JSON_PRETTY_PRINT));
 
                 // Create the plugin index file.
                 $a2 = @file_put_contents(PLUGIN_DIR . "/{$name}/index.php", "<?php\n\n\n");
 
-                if(empty($extra) || $extra != '--plain') {
+                if (empty($extra) || $extra != '--plain') {
 
                     // Create plugin files folder
                     if (!file_exists(PLUGIN_DIR . "/{$name}/{$name}") || !is_dir(PLUGIN_DIR . "/{$name}/{$name}")) {
                         $a3 = @mkdir(PLUGIN_DIR . "/{$name}/{$name}");
                     } else $a3 = true;
 
-                    if($extra != '--novendor') {
+                    if ($extra != '--novendor') {
                         // Create vendors folder.
                         if (!file_exists(PLUGIN_DIR . "/{$name}/vendor") || !is_dir(PLUGIN_DIR . "/{$name}/vendor")) {
                             $a4 = @mkdir(PLUGIN_DIR . "/{$name}/vendor");
@@ -377,7 +375,7 @@ if(!defined('CANDY')){
                 } else $a3 = $a4 = true;
 
 
-                if(!$a1 || !$a2 || !$a3 || !$a4){
+                if (!$a1 || !$a2 || !$a3 || !$a4) {
                     exit("Not all required files for plugin {$name} could be created.\n");
                 } else {
                     exit("Plugin {$name} created successfully.\n");
@@ -403,6 +401,3 @@ if(!defined('CANDY')){
 
         break;
 }
-
-
-

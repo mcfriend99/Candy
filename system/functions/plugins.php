@@ -1,6 +1,6 @@
 <?php
 
-/**
+/** 
  * Candy-PHP - Code the simpler way.
  *
  * The open source PHP Model-View-Template framework.
@@ -35,44 +35,39 @@
  * @since	Version 1.0.0
  */
 
-if(!defined('CANDY')){
-	header('Location: /');
+if (!defined('CANDY')) {
+    header('Location: /');
 }
 
 
 /**
- *
  * Loads a plugin and make it available for use in a context.
  *
  * @param string $s
  */
-function load_plugins($s = ''){
-    
-    global $__plugins__;
-    
-    if(!is_string($s) && !is_array($s))
+function load_plugins($s = '')
+{
+    if (!is_string($s) && !is_array($s))
         return;
-    
-    if(is_string($s)){
-        
+
+    if (is_string($s)) {
+
         $s = explode(',', $s);
     }
-    
-    foreach($s as $a){
-            
-        $__plugins__->load_plugin(trim($a));
+
+    foreach ($s as $a) {
+
+        $GLOBALS['__plugins__']->load_plugin(trim($a));
     }
 }
 
 
-/**
- * Gets all the headers of a plugin.
+/** Gets all the headers of a plugin.
  *
  * @param $plugin_name
  * @return array
  */
-function plugin_headers($plugin_name){
-
-    global $__plugins__;
-    return $__plugins__->headers($plugin_name);
+function plugin_headers($plugin_name)
+{
+    return $GLOBALS['__plugins__']->headers($plugin_name);
 }

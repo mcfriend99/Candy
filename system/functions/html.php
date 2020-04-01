@@ -35,61 +35,57 @@
  * @since	Version 1.0.0
  */
 
-if(!defined('CANDY')){
-	header('Location: /');
+if (!defined('CANDY')) {
+    header('Location: /');
 }
 
 
 /**
- *
  * Adds an html template concept.
  *
  * @param $name             Name of the concept.
  * @param string $html      String of the template.
  * @param bool $return      Whether to return string or print to screen.
  */
-function add_html($name, $html = '%s', $return = false){
-    global $__htmls__;
-    $__htmls__[$name][0] = $html;
-    $__htmls__[$name][1] = $return;
+function add_html($name, $html = '%s', $return = false)
+{
+    $GLOBALS['__htmls__'][$name][0] = $html;
+    $GLOBALS['__htmls__'][$name][1] = $return;
 }
 
 /**
- *
  * Shows an html template.
  *
  * @args[0]                         Name of the concept.
  * @args[1] .... @args[n]           The replacements for %s.
- *
  */
-function show_html(){
-    global $__htmls__;
-
+function show_html()
+{
     $args = func_get_args();
 
-    if(count($args) < 1){
+    if (count($args) < 1) {
 
         return;
     }
 
     $name = $args[0];
 
-    if(!isset($__htmls__[$name]))
+    if (!isset($GLOBALS['__htmls__'][$name]))
         model_error('Html &quot;' . $name . '&quot;');
 
-    preg_match_all('/\%s/', $__htmls__[$name][0], $matches);
+    preg_match_all('/\%s/', $GLOBALS['__htmls__'][$name][0], $matches);
 
-    if(count($matches[0]) != count($args) - 1)
+    if (count($matches[0]) != count($args) - 1)
         implementation_error('Html &quot;' . $name . '&quot;', 'correctly');
 
     //$args = array_delete($args, $args[0]);
-    $args[0] = preg_replace('/\%(?!s)/', '%%', $__htmls__[$name][0]);
+    $args[0] = preg_replace('/\%(?!s)/', '%%', $GLOBALS['__htmls__'][$name][0]);
 
-	$return = $__htmls__[$name][1];
+    $return = $GLOBALS['__htmls__'][$name][1];
 
-	if(!$return)
-    	echo call('sprintf', $args);
-	else return call('sprintf', $args);
+    if (!$return)
+        echo call('sprintf', $args);
+    else return call('sprintf', $args);
 }
 
 /**
@@ -98,23 +94,17 @@ function show_html(){
  * @param $name
  * @return string
  */
-function get_html($name){
-    global $__htmls__;
-
-    if(!isset($__htmls__[$name]))
+function get_html($name)
+{
+    if (!isset($GLOBALS['__htmls__'][$name]))
         return '';
-    else return $__htmls__[$name][0];
+    else return $GLOBALS['__htmls__'][$name][0];
 }
 
 /**
- *
  * Shorthand for show_html().
- *
  */
-function html(){
-
+function html()
+{
     return call('show_html', func_get_args());
 }
-
-
-

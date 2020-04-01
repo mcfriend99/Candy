@@ -35,8 +35,8 @@
  * @since	Version 1.0.0
  */
 
-if(!defined('CANDY')){
-	header('Location: /');
+if (!defined('CANDY')) {
+    header('Location: /');
 }
 
 /**
@@ -44,67 +44,80 @@ if(!defined('CANDY')){
  */
 
 
-function db_select($table, $columns = null, $where = null, $order = null, $limit = null, $where_extra = null){
+function db_select($table, $columns = null, $where = null, $order = null, $limit = null, $where_extra = null)
+{
     global $db;
     return $db->select($table, $columns, $where, $order, $limit, $where_extra);
 }
 
-function db_select_or($table, $columns = null, $where = null, $order = null, $limit = null, $where_extra = null){
+function db_select_or($table, $columns = null, $where = null, $order = null, $limit = null, $where_extra = null)
+{
     global $db;
     return $db->orSelect($table, $columns, $where, $order, $limit, $where_extra);
 }
 
-function db_select_like($table, $columns = null, $where = null, $order = null, $limit = null, $where_extra = null){
+function db_select_like($table, $columns = null, $where = null, $order = null, $limit = null, $where_extra = null)
+{
     global $db;
     return $db->likeSelect($table, $columns, $where, $order, $limit, $where_extra);
 }
 
-function db_insert($table, $data){
+function db_insert($table, $data)
+{
     global $db;
     return $db->insert($table, $data);
 }
 
-function db_insert_unique($table, $data, $exception = []){
+function db_insert_unique($table, $data, $exception = [])
+{
     global $db;
     return $db->insertUnique($table, $data, $exception);
 }
 
-function db_insert_update($table, $id, $data){
+function db_insert_update($table, $id, $data)
+{
     global $db;
     return $db->insertUpdate($table, $id, $data);
 }
 
-function db_update($table, $data, $where = null){
+function db_update($table, $data, $where = null)
+{
     global $db;
     return $db->update($table, $data, $where);
 }
 
-function db_delete($table, $where){
+function db_delete($table, $where)
+{
     global $db;
     return $db->delete($table, $where);
 }
 
-function db_query($s){
+function db_query($s)
+{
     global $db;
     return $db->query($s);
 }
 
-function db_escape($s){
+function db_escape($s)
+{
     global $db;
     return $db->escape($s);
 }
 
-function db_connection(){
+function db_connection()
+{
     global $db;
     return $db->connection();
 }
 
-function db_close(){
+function db_close()
+{
     global $db;
     return $db->close();
 }
 
-function db_errors(){
+function db_errors()
+{
     global $db;
     return $db->errors;
 }
@@ -119,23 +132,22 @@ function db_errors(){
  * @param $name
  * @param $function
  */
-function add_db(){
-    global $__dbs__;
-    
+function add_query()
+{
     $args = func_get_args();
-    
-    if(count($args) < 3){
-        
+
+    if (count($args) < 3) {
+
         throw new Exception('Invalid Database concept.');
     }
-    
+
     $name = $args[0];
     $type = $args[1];
-    
+
     $args = array_delete($args, $args[0]);
     $args = array_delete($args, $args[0]);
-    
-    $__dbs__[$name] = ['type' => $type, 'args' => $args];
+
+    $GLOBALS['__queries__'][$name] = ['type' => $type, 'args' => $args];
 }
 
 /**
@@ -146,19 +158,18 @@ function add_db(){
  * @param array $unknowns       Array of replacements for '?' in the order they appear in the concept.
  * @return bool|object
  */
-function call_db($name, $unknowns = []){
-    global $__dbs__;
-    
-    if(isset($__dbs__[$name])){
-        
-        try{
-            
-            $type = $__dbs__[$name]['type'];
-            $args = $__dbs__[$name]['args'];
+function call_query($name, $unknowns = [])
+{
+    if (isset($GLOBALS['__queries__'][$name])) {
+
+        try {
+
+            $type = $GLOBALS['__queries__'][$name]['type'];
+            $args = $GLOBALS['__queries__'][$name]['args'];
 
             $unknown_state = -1;
 
-            if(in_array($type, ['select', 'select_or', 'select_like'])){
+            if (in_array($type, ['select', 'select_or', 'select_like'])) {
 
                 $table = $args[0];
                 $columns = isset($args[1]) ? $args[1] : null;
@@ -167,60 +178,63 @@ function call_db($name, $unknowns = []){
                 $limit = isset($args[4]) ? $args[4] : null;
                 $where_extra = isset($args[5]) ? $args[5] : null;
 
-                if(!empty($columns)){
-                    foreach($columns as $x => $column){
+                if (!empty($columns)) {
+                    foreach ($columns as $x => $column) {
 
-                        if(strpos($column, '?') > -1){
+                        if (strpos($column, '?') > -1) {
                             $unknown_state++;
                             $columns[$x] = str_replace('?', $unknowns[$unknown_state], $column);
                         }
                     }
                 }
 
-                if(!empty($where)){
-                    foreach($where as $key => $value){
+                if (!empty($where)) {
+                    foreach ($where as $key => $value) {
 
-                        if(strpos($value, '?') > -1){
+                        if (strpos($value, '?') > -1) {
                             $unknown_state++;
                             $where[$key] = str_replace('?', $unknowns[$unknown_state], $value);
                         }
                     }
                 }
 
-                if(strpos($order, '?') > -1){
+                if (strpos($order, '?') > -1) {
                     $unknown_state++;
                     $order = str_replace('?', $unknowns[$unknown_state], $order);
                 }
 
-                if(strpos($limit, '?') > -1){
+                if (strpos($limit, '?') > -1) {
                     $unknown_state++;
                     $limit = str_replace('?', $unknowns[$unknown_state], $limit);
                 }
 
-                if(strpos($where_extra, '?') > -1){
+                if (strpos($where_extra, '?') > -1) {
                     $unknown_state++;
                     $where_extra = str_replace('?', $unknowns[$unknown_state], $where_extra);
                 }
 
-                switch($type){
+                switch ($type) {
 
-                    case 'select': return db_select($table, $columns, $where, $order, $limit, $where_extra);
-                    case 'select_or': return db_select_or($table, $columns, $where, $order, $limit, $where_extra);
-                    case 'select_like': return db_select_like($table, $columns, $where, $order, $limit, $where_extra);
+                    case 'select':
+                        return db_select($table, $columns, $where, $order, $limit, $where_extra);
+                    case 'select_or':
+                        return db_select_or($table, $columns, $where, $order, $limit, $where_extra);
+                    case 'select_like':
+                        return db_select_like($table, $columns, $where, $order, $limit, $where_extra);
                 }
             }
 
-            switch($type){
+            switch ($type) {
 
                 case 'insert':
 
                     $table = $args[0];
                     $data = isset($args[1]) ? $args[1] : null;
 
-                    if(!empty($data)){
-                        foreach($data as $key => $value){
+                    if (!empty($data)) {
+                        foreach ($data as $key => $value) {
 
-                            if(strpos($value, '?') > -1){
+                            if (strpos($value, '?') > -1) {
                                 $unknown_state++;
                                 $data[$key] = str_replace('?', $unknowns[$unknown_state], $value);
                             }
@@ -237,20 +251,20 @@ function call_db($name, $unknowns = []){
                     $data = isset($args[1]) ? $args[1] : null;
                     $exception = isset($args[2]) ? $args[2] : null;
 
-                    if(!empty($data)){
-                        foreach($data as $key => $value){
+                    if (!empty($data)) {
+                        foreach ($data as $key => $value) {
 
-                            if(strpos($value, '?') > -1){
+                            if (strpos($value, '?') > -1) {
                                 $unknown_state++;
                                 $data[$key] = str_replace('?', $unknowns[$unknown_state], $value);
                             }
                         }
                     }
 
-                    if(!empty($exception)){
-                        foreach($exception as $x => $column){
+                    if (!empty($exception)) {
+                        foreach ($exception as $x => $column) {
 
-                            if(strpos($column, '?') > -1){
+                            if (strpos($column, '?') > -1) {
                                 $unknown_state++;
                                 $exception[$x] = str_replace('?', $unknowns[$unknown_state], $column);
                             }
@@ -267,15 +281,15 @@ function call_db($name, $unknowns = []){
                     $id = isset($args[1]) ? $args[1] : null;
                     $data = isset($args[2]) ? $args[2] : null;
 
-                    if(strpos($id, '?') > -1){
+                    if (strpos($id, '?') > -1) {
                         $unknown_state++;
                         $id = str_replace('?', $unknowns[$unknown_state], $id);
                     }
 
-                    if(!empty($data)){
-                        foreach($data as $key => $value){
+                    if (!empty($data)) {
+                        foreach ($data as $key => $value) {
 
-                            if(strpos($value, '?') > -1){
+                            if (strpos($value, '?') > -1) {
                                 $unknown_state++;
                                 $data[$key] = str_replace('?', $unknowns[$unknown_state], $value);
                             }
@@ -292,20 +306,20 @@ function call_db($name, $unknowns = []){
                     $data = isset($args[1]) ? $args[1] : null;
                     $where = isset($args[2]) ? $args[2] : null;
 
-                    if(!empty($data)){
-                        foreach($data as $key => $value){
+                    if (!empty($data)) {
+                        foreach ($data as $key => $value) {
 
-                            if(strpos($value, '?') > -1){
+                            if (strpos($value, '?') > -1) {
                                 $unknown_state++;
                                 $data[$key] = str_replace('?', $unknowns[$unknown_state], $value);
                             }
                         }
                     }
 
-                    if(!empty($where)){
-                        foreach($where as $key => $value){
+                    if (!empty($where)) {
+                        foreach ($where as $key => $value) {
 
-                            if(strpos($value, '?') > -1){
+                            if (strpos($value, '?') > -1) {
                                 $unknown_state++;
                                 $where[$key] = str_replace('?', $unknowns[$unknown_state], $value);
                             }
@@ -321,10 +335,10 @@ function call_db($name, $unknowns = []){
                     $table = $args[0];
                     $where = isset($args[1]) ? $args[1] : null;
 
-                    if(!empty($where)){
-                        foreach($where as $key => $value){
+                    if (!empty($where)) {
+                        foreach ($where as $key => $value) {
 
-                            if(strpos($value, '?') > -1){
+                            if (strpos($value, '?') > -1) {
                                 $unknown_state++;
                                 $where[$key] = str_replace('?', $unknowns[$unknown_state], $value);
                             }
@@ -339,17 +353,17 @@ function call_db($name, $unknowns = []){
                     $final = '';
 
                     $queries = explode('?', $query);
-                
-                    if(count($queries) > count($unknowns) + 1){
 
-                         bad_model_error('&quot;' . $name . '&quot; database concept.');
+                    if (count($queries) > count($unknowns) + 1) {
+
+                        bad_model_error('&quot;' . $name . '&quot; database concept.');
                     }
 
-                    for($i = 1; $i < count($queries); $i++){
+                    for ($i = 1; $i < count($queries); $i++) {
 
                         $s = $queries[$i - 1];
 
-                        if(preg_match('/=\s*$/sim', $s)){
+                        if (preg_match('/=\s*$/sim', $s)) {
 
                             $ur = db_escape($unknowns[$i - 1]);
                         } else {
@@ -362,15 +376,12 @@ function call_db($name, $unknowns = []){
 
                     return db_query($final);
             }
-        } catch(Exception $e){
-            
+        } catch (Exception $e) {
+
             bad_model_error('&quot;' . $name . '&quot; database concept.');
         }
-        
     } else {
-        
+
         model_error('Database &quot;' . $name . '&quot;');
     }
 }
-
-

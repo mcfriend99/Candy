@@ -1,5 +1,6 @@
 <?php
-/**
+
+/** 
  * Candy-PHP - Code the simpler way.
  *
  * The open source PHP Model-View-Template framework.
@@ -37,50 +38,53 @@
 
 
 /**
- *
  * Gets the dial code of a visitors's country.
  *
  * @param string $country
  * @return int
  */
-function get_dial_code(){
-
+function get_dial_code()
+{
     return is_object(visitor_ip_details()) ? dial_code(visitor_ip_details()->country) : 234 /* Default to Nigeria. */;
 }
 
 /**
- *
  * Formats a phone number for aesthetics.
  *
  * @param $phone
  * @param string $country
  * @return string
  */
-function format_phone($phone, $country = ''){
-
-    if(empty($country))
+function format_phone($phone, $country = '')
+{
+    if (empty($country))
         $country = session('country');
 
     $country = strtolower($country);
     $dial_code = get_dial_code();
 
-    if($phone[0] == '+')
+    if ($phone[0] == '+')
         $phone = substr($phone, 1);
-    elseif(preg_match('~^009~', $phone))
+    elseif (preg_match('~^009~', $phone))
         $phone = substr($phone, 3);
 
-    $f = preg_split('/\s+/',
-        preg_replace('/([0-9])/', '$1 ',
-            ($phone[0] != '0' ? substr($phone, strlen($dial_code)) : substr($phone, 1))));
+    $f = preg_split(
+        '/\s+/',
+        preg_replace(
+            '/([0-9])/',
+            '$1 ',
+            ($phone[0] != '0' ? substr($phone, strlen($dial_code)) : substr($phone, 1))
+        )
+    );
 
     // TODO: Add formatting for specific countries.
 
-    switch($country){
+    switch ($country) {
         default:
             $f[5] .= ' ';
             $f[2] .= ' ';
             $g = null;
-            foreach($f as $r){
+            foreach ($f as $r) {
                 $g .= $r;
             }
             return apply_filters('format_phone', '0' . $g);
@@ -89,35 +93,32 @@ function format_phone($phone, $country = ''){
 }
 
 /**
- *
- * creates a concealed string from a phone number.
+ * Creates a concealed string from a phone number.
  * E.g. Turns 08008008666 to 0800 xxx xxx6.
  *
  * @param $phone
  * @param string $country
  * @return null|string
  */
-function conceal_phone($phone, $country = ''){
+function conceal_phone($phone, $country = '')
+{
     $country = strtolower($country);
 
-    if(empty($country))
+    if (empty($country))
         $country = get_config('country', 'main');
 
     // TODO: Add formatting for specific countries.
 
-    switch($country){
+    switch ($country) {
         default:
             $f = preg_split('/\s+/', format_phone($phone, $country));
             $f[1] = ' xxx ';
             $f[2] = 'xxx' . substr(trim($f[2]), 3);
             $g = null;
-            foreach($f as $r){
+            foreach ($f as $r) {
                 $g .= $r;
             }
             return apply_filters('conceal_phone', $g);
             break;
     }
 }
-
-
-
