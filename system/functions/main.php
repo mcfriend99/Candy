@@ -445,9 +445,9 @@ function get_template($s, $return = false)
     }
 
     if ($file = get_template_file($s)) {
-        if (file_exists(THEME_DIR . '/' . $file)) {
+        if (file_exists(TEMPLATE_DIR . '/' . $file)) {
             $t = new Chocolate(CACHE_DIR . '/templates');
-            $t->set_file(THEME_DIR . '/' . $file);
+            $t->set_file(TEMPLATE_DIR . '/' . $file);
             $t->render();
         }
     }
@@ -469,7 +469,7 @@ function get_template_file($s)
         $_fg = 'mobile/all';
 
         if (preg_match('~^([a-zA-Z]+)\_(tablet|10|series40|series60)$~', $GLOBALS['__platform__'], $match)) {
-            if (!file_exists(THEME_DIR . "/{$_cg}/" . $s)) {
+            if (!file_exists(TEMPLATE_DIR . "/{$_cg}/" . $s)) {
                 $_cg = 'mobile/' . $match[0][1];
             }
         }
@@ -477,15 +477,15 @@ function get_template_file($s)
         $_cg = $_fg = 'web';
     }
 
-    if (file_exists(THEME_DIR . "/{$_cg}/_overrides_/" . $s)) {
+    if (file_exists(TEMPLATE_DIR . "/{$_cg}/_overrides_/" . $s)) {
         return "{$_cg}/_overrides_/" . $s;
-    } elseif (file_exists(THEME_DIR . "/{$_cg}/" . $s)) {
+    } elseif (file_exists(TEMPLATE_DIR . "/{$_cg}/" . $s)) {
         return "{$_cg}/" . $s;
-    } elseif (file_exists(THEME_DIR . "/{$_fg}/_overrides_/" . $s)) {
+    } elseif (file_exists(TEMPLATE_DIR . "/{$_fg}/_overrides_/" . $s)) {
         return "{$_fg}/_overrides_/" . $s;
-    } elseif (file_exists(THEME_DIR . "/{$_fg}/" . $s)) {
+    } elseif (file_exists(TEMPLATE_DIR . "/{$_fg}/" . $s)) {
         return "{$_fg}/" . $s;
-    } elseif (file_exists(THEME_DIR . "/web/_overrides_/" . $s)) {
+    } elseif (file_exists(TEMPLATE_DIR . "/web/_overrides_/" . $s)) {
         return "web/_overrides_/" . $s;
     } else {
         return "web/" . $s;

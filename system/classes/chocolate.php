@@ -308,10 +308,10 @@ class _{$grs} {$extend} {
 
             if ($file = get_template_file($this->parent)) {
 
-                if (file_exists(THEME_DIR . '/' . $file)) {
+                if (file_exists(TEMPLATE_DIR . '/' . $file)) {
 
                     $t = $t = new Chocolate($this->cache_dir, $this->auto_escape);
-                    $t->set_file(THEME_DIR . '/' . $file);
+                    $t->set_file(TEMPLATE_DIR . '/' . $file);
                     $t->render(false);
 
                     $this->parent = $t->cache_file;
@@ -592,10 +592,10 @@ class _{$grs} {$extend} {
 
             if ($file = get_template_file($match[1])) {
 
-                if (file_exists(THEME_DIR . '/' . $file)) {
+                if (file_exists(TEMPLATE_DIR . '/' . $file)) {
 
                     $t = $t = new Chocolate($this->cache_dir, $this->auto_escape);
-                    $t->set_file(THEME_DIR . '/' . $file);
+                    $t->set_file(TEMPLATE_DIR . '/' . $file);
                     $t->render(false);
 
                     return "<?php require_once \"{$t->cache_file}\"; new _" . (pathinfo($t->cache_file, PATHINFO_FILENAME)) . "(); ?>";

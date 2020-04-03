@@ -88,8 +88,9 @@ unset($app_files);
 define('REWRITE_BASE', get_config('rewrite_base', 'main'));
 define('ROOT', CANDY_PATH . '/');
 define('PLUGIN_DIR', CANDY_PATH . '/' . get_config('plugin_dir', 'main'));
+define('ASSETS_REAL_DIR', CANDY_PATH . '/' . get_config('public_dir', 'main') . '/' . get_config('assets_dir', 'main'));
 define('ASSETS_DIR', CANDY_PATH . '/' . get_config('assets_dir', 'main'));
-define('THEME_DIR', CANDY_PATH . '/' . get_config('template_dir', 'main'));
+define('TEMPLATE_DIR', CANDY_PATH . '/' . get_config('template_dir', 'main'));
 define('SITE_DIR', CANDY_PATH . '/' . get_config('site_dir', 'main'));
 define('UPLOADS_DIR', CANDY_PATH . '/' . get_config('uploads_dir', 'main'));
 

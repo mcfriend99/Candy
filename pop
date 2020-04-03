@@ -124,7 +124,7 @@ define('REWRITE_BASE', get_config('rewrite_base', 'main'));
 define('ROOT', $_SERVER['DOCUMENT_ROOT']);
 define('PLUGIN_DIR', get_config('plugin_dir', 'main'));
 define('ASSETS_DIR', get_config('assets_dir', 'main'));
-define('THEME_DIR', get_config('template_dir', 'main'));
+define('TEMPLATE_DIR', get_config('template_dir', 'main'));
 define('SITE_DIR', get_config('site_dir', 'main'));
 
 // Load Templates.

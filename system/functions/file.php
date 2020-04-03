@@ -279,7 +279,7 @@ function include_scripts($s = null)
 
             foreach ($files as $f) {
                 $f = trim($f);
-                if (file_exists(ASSETS_DIR . '/js/' . $f . '.js')) {
+                if (file_exists(ASSETS_REAL_DIR . '/js/' . $f . '.js')) {
 
                     echo '<script src="' . get_resource_url('js/' . $f . '.js') . '"' . ($async ? ' async="true"' : '') . '></script>';
                 } else {
@@ -335,7 +335,7 @@ function get_scripts($s = null)
 
             foreach ($files as $f) {
                 $f = trim($f);
-                if (file_exists(ASSETS_DIR . '/js/' . $f . '.js')) {
+                if (file_exists(ASSETS_REAL_DIR . '/js/' . $f . '.js')) {
 
                     $result .= '<script src="' . get_resource_url('js/' . $f . '.js') . '"' . ($async ? ' async="true"' : '') . '></script>';
                 } else {
@@ -387,9 +387,9 @@ function inline_scripts($s = null)
 
             foreach ($files as $f) {
                 $f = trim($f);
-                if (file_exists(ASSETS_DIR . '/js/' . $f . '.js')) {
+                if (file_exists(ASSETS_REAL_DIR . '/js/' . $f . '.js')) {
 
-                    echo '<script type="application/javascript">' . file_get_contents(ASSETS_DIR . '/js/' . $f . '.js') . '</script>';
+                    echo '<script type="application/javascript">' . file_get_contents(ASSETS_REAL_DIR . '/js/' . $f . '.js') . '</script>';
                 } else {
 
                     implementation_error('Script &quot;' . $key . '&quot;');
@@ -442,9 +442,9 @@ function get_inline_scripts($s = null)
 
             foreach ($files as $f) {
                 $f = trim($f);
-                if (file_exists(ASSETS_DIR . '/js/' . $f . '.js')) {
+                if (file_exists(ASSETS_REAL_DIR . '/js/' . $f . '.js')) {
 
-                    $result .= '<script type="application/javascript">' . file_get_contents(ASSETS_DIR . '/js/' . $f . '.js') . '</script>';
+                    $result .= '<script type="application/javascript">' . file_get_contents(ASSETS_REAL_DIR . '/js/' . $f . '.js') . '</script>';
                 } else {
 
                     implementation_error('Script &quot;' . $key . '&quot;');
@@ -551,7 +551,7 @@ function include_styles($s = null)
 
             foreach ($files as $f) {
                 $f = trim($f);
-                if (file_exists(ASSETS_DIR . '/css/' . $f . '.css')) {
+                if (file_exists(ASSETS_REAL_DIR . '/css/' . $f . '.css')) {
 
                     echo '<link rel="stylesheet" href="' . get_resource_url('css/' . $f . '.css') . '" />';
                 } else {
@@ -605,7 +605,7 @@ function get_styles($s = null)
 
             foreach ($files as $f) {
                 $f = trim($f);
-                if (file_exists(ASSETS_DIR . '/css/' . $f . '.css')) {
+                if (file_exists(ASSETS_REAL_DIR . '/css/' . $f . '.css')) {
 
                     $result .= '<link rel="stylesheet" href="' . get_resource_url('css/' . $f . '.css') . '" />';
                 } else {
@@ -658,9 +658,9 @@ function inline_styles($s = null)
 
             foreach ($files as $f) {
                 $f = trim($f);
-                if (file_exists(ASSETS_DIR . '/css/' . $f . '.css')) {
+                if (file_exists(ASSETS_REAL_DIR . '/css/' . $f . '.css')) {
 
-                    echo '<style type="text/css">' . file_get_contents(ASSETS_DIR . '/css/' . $f . '.css') . '</style>';
+                    echo '<style type="text/css">' . file_get_contents(ASSETS_REAL_DIR . '/css/' . $f . '.css') . '</style>';
                 } else {
 
                     implementation_error('Style &quot;' . $key . '&quot;');
@@ -712,9 +712,9 @@ function get_inline_styles($s = null)
 
             foreach ($files as $f) {
                 $f = trim($f);
-                if (file_exists(ASSETS_DIR . '/css/' . $f . '.css')) {
+                if (file_exists(ASSETS_REAL_DIR . '/css/' . $f . '.css')) {
 
-                    $result .= '<style type="text/css">' . file_get_contents(ASSETS_DIR . '/css/' . $f . '.css') . '</style>';
+                    $result .= '<style type="text/css">' . file_get_contents(ASSETS_REAL_DIR . '/css/' . $f . '.css') . '</style>';
                 } else {
 
                     implementation_error('Style &quot;' . $key . '&quot;');
