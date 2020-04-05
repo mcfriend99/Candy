@@ -553,14 +553,20 @@ function countries($language = '')
 
 
 
-function country_name($country_code, $language = '')
+function country_name($country_code = '', $language = '')
 {
     $countries = countries($language);
+    if (empty($country_code)) {
+        $country_code = get_config('country', 'main');
+    }
     return isset($countries[strtolower($country_code)]) ? $countries[strtolower($country_code)] : '';
 }
 
-function dial_code($country_code)
+function dial_code($country_code = '')
 {
     global $_DIAL_CODES;
+    if (empty($country_code)) {
+        $country_code = get_config('country', 'main');
+    }
     return isset($_DIAL_CODES[strtolower($country_code)]) ? $_DIAL_CODES[strtolower($country_code)] : false;
 }
