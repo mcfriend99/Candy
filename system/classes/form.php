@@ -1301,6 +1301,8 @@ class Form
 
                 do_action('after_form_submit', $this->name);
             }
+
+            return true;
         } else if ($this->no_submit) {
 
             return true;
