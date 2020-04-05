@@ -1247,11 +1247,14 @@ class Form
     {
         $res = '';
         if (!empty($default)) {
-            $default = ucwords(str_replace('_', ' ', $default));
+            $default = ucfirst(str_replace('_', ' ', $default));
             $res = $default;
         } else {
             $text = get_config($text, 'validation');
             if (!empty($args)) {
+                foreach ($args as &$arg) {
+                    $arg = ucfirst(str_replace('_', ' ', $arg));
+                }
                 $args = array_merge([$text], $args);
                 $res = call('sprintf', $args);
             } else {
